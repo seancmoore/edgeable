@@ -139,6 +139,19 @@ export default function SubscriberDetail() {
         </CardContent>
       </Card>
 
+      <Card className="mb-4">
+        <CardContent className="grid grid-cols-2 gap-5 p-5 sm:grid-cols-3 sm:p-6">
+          <Stat label="Referral code" value={subscriber.referralCode ? <span className="font-mono">{subscriber.referralCode}</span> : '—'} />
+          <Stat
+            label="Referred by"
+            value={subscriber.referredByCode
+              ? <span className="font-mono">{subscriber.referredByCode}{subscriber.referralBonusApplied ? '' : ' (pending)'}</span>
+              : '—'}
+          />
+          <Stat label="Referrals made" value={Number(subscriber.referralCount || 0)} />
+        </CardContent>
+      </Card>
+
       <EditProfileSection subscriber={subscriber} onUpdated={reload} />
 
       <div className="mb-8 flex flex-wrap items-center gap-3">

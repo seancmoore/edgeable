@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { UserPlus, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '../AuthContext.jsx';
 import {
@@ -15,6 +15,7 @@ import { Label } from '../components/ui/label.jsx';
 export default function Signup() {
   const { signup, currentUser, loading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const errorRef = useRef(null);
 
   const [displayName, setDisplayName] = useState('');
@@ -23,6 +24,9 @@ export default function Signup() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [referralCode, setReferralCode] = useState((searchParams.get('ref') || '').toUpperCase());
+  const [agreeAge, setAgreeAge] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,10 +68,12 @@ export default function Signup() {
     }
     if (password.length < 6) return fail('Password must be at least 6 characters.');
     if (password !== confirmPassword) return fail("Passwords don't match.");
+    if (!agreeAge) return fail('Please confirm you meet the age requirements.');
+    if (!agreeTerms) return fail('Please agree to the Terms and Privacy Policy to continue.');
 
     setSubmitting(true);
     try {
-      await signup({ displayName, email, telegramUsername, phone, password });
+      await signup({ displayName, email, telegramUsername, phone, password, referralCode });
       navigate('/dashboard', { replace: true });
     } catch (err) {
       fail(err.message || 'Sign-up failed. Please try again.');
@@ -190,12 +196,63 @@ export default function Signup() {
               </div>
             </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="referralCode">Referral code (optional)</Label>
+              <Input
+                id="referralCode"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                maxLength={12}
+                autoCapitalize="characters"
+                autoCorrect="off"
+                placeholder="Got a code from a friend?"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter a friend's code and you'll each get 2 extra weeks once you're approved.
+              </p>
+            </div>
+
             <div className="flex gap-2 rounded-md border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
               <Info className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
                 After signing up your account will be <strong className="text-foreground">inactive</strong>{' '}
                 until your first payment is processed. You'll be able to submit a renewal request from your dashboard.
               </span>
+            </div>
+
+            <div className="space-y-3 rounded-md border border-border bg-muted/40 p-3">
+              <label className="flex cursor-pointer gap-2.5 text-xs leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={agreeAge}
+                  onChange={(e) => setAgreeAge(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                />
+                <span>
+                  I am at least <strong className="text-foreground">21 years old</strong> (or the legal
+                  gambling age where I live).
+                </span>
+              </label>
+              <label className="flex cursor-pointer gap-2.5 text-xs leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                />
+                <span>
+                  I have read and agree to the{' '}
+                  <Link to="/terms" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
+                    Terms &amp; Disclaimers
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                  , including that Edgeable sells opinions and information only, places no wagers, gives no
+                  financial advice, and is not responsible for any losses.
+                </span>
+              </label>
             </div>
 
             <Button type="submit" disabled={submitting} size="lg" className="w-full">

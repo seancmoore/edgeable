@@ -16,6 +16,8 @@ import {
   isValidTelegramUsername, isValidPhone, lookupAuthEmail,
   normalizeEmail, isValidEmail,
 } from './utils/auth.js';
+import { LEGAL } from './utils/legal.js';
+import { generateReferralCode, normalizeReferralCode } from './utils/referrals.js';
 
 const AuthContext = createContext(null);
 
@@ -56,6 +58,8 @@ export function AuthProvider({ children }) {
     return unsub;
   }, [currentUser]);
 
+  // Sign in by email, Telegram username, or phone. Resolves the identifier to
+  // the account's auth email via the public lookup docs, then signs in directly.
   const login = async (identifier, password) => {
     const authEmail = await lookupAuthEmail(identifier);
     if (!authEmail) {
@@ -86,10 +90,11 @@ export function AuthProvider({ children }) {
     return v;
   };
 
-  const signup = async ({ displayName, email, telegramUsername, phone, password }) => {
+  const signup = async ({ displayName, email, telegramUsername, phone, password, referralCode }) => {
     const username = normalizeTelegramUsername(telegramUsername);
     const normalizedPhone = normalizePhone(phone);
     const authEmail = normalizeEmail(email);
+    const enteredCode = normalizeReferralCode(referralCode);
     const hasUsername = !!username;
     const hasPhone = !!normalizedPhone;
 
@@ -114,46 +119,88 @@ export function AuthProvider({ children }) {
 
     // Write the profile + login-lookup docs for a uid. Atomic: either the user
     // doc and both lookup docs all land, or none of them do.
+    const CODE_COLLISION = '__referral_code_collision__';
     const writeProfileDocs = async (uid) => {
-      await runTransaction(db, async (txn) => {
-        const userRef = doc(db, 'users', uid);
-        const usernameRef = hasUsername ? doc(db, 'usernames', username) : null;
-        const phoneRef = hasPhone ? doc(db, 'phones', normalizedPhone) : null;
+      // Retry only on the (astronomically rare) own-code collision.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const ownCode = generateReferralCode();
+        try {
+          await runTransaction(db, async (txn) => {
+            const userRef = doc(db, 'users', uid);
+            const usernameRef = hasUsername ? doc(db, 'usernames', username) : null;
+            const phoneRef = hasPhone ? doc(db, 'phones', normalizedPhone) : null;
+            const ownCodeRef = doc(db, 'referralCodes', ownCode);
+            const enteredCodeRef = enteredCode ? doc(db, 'referralCodes', enteredCode) : null;
 
-        // Reads first (transactions require all reads before writes).
-        if (usernameRef) {
-          const unameSnap = await txn.get(usernameRef);
-          if (unameSnap.exists() && unameSnap.data().uid !== uid) {
-            throw new Error('That Telegram username is already taken.');
-          }
-        }
-        if (phoneRef) {
-          const phoneSnap = await txn.get(phoneRef);
-          if (phoneSnap.exists() && phoneSnap.data().uid !== uid) {
-            throw new Error('That phone number is already registered.');
-          }
-        }
+            // Reads first (transactions require all reads before writes).
+            if (usernameRef) {
+              const unameSnap = await txn.get(usernameRef);
+              if (unameSnap.exists() && unameSnap.data().uid !== uid) {
+                throw new Error('That Telegram username is already taken.');
+              }
+            }
+            if (phoneRef) {
+              const phoneSnap = await txn.get(phoneRef);
+              if (phoneSnap.exists() && phoneSnap.data().uid !== uid) {
+                throw new Error('That phone number is already registered.');
+              }
+            }
+            const ownCodeSnap = await txn.get(ownCodeRef);
+            if (ownCodeSnap.exists()) throw new Error(CODE_COLLISION);
 
-        txn.set(userRef, {
-          displayName: displayName.trim(),
-          email: authEmail,
-          authEmail,
-          telegramUsername: hasUsername ? username : '',
-          phone: hasPhone ? normalizedPhone : '',
-          role: 'user',
-          status: 'inactive',
-          createdAt: Timestamp.fromDate(new Date()),
-        });
-        if (usernameRef) txn.set(usernameRef, { uid, authEmail });
-        if (phoneRef) txn.set(phoneRef, { uid, authEmail });
-      });
+            // Resolve the referral code the user entered (if any). An entered
+            // code that doesn't resolve (or points at themselves) is rejected.
+            let referredByUid = '';
+            if (enteredCodeRef) {
+              const entSnap = await txn.get(enteredCodeRef);
+              if (!entSnap.exists()) throw new Error("That referral code isn't valid.");
+              referredByUid = entSnap.data().uid || '';
+              if (!referredByUid || referredByUid === uid) {
+                throw new Error("That referral code isn't valid.");
+              }
+            }
+
+            txn.set(userRef, {
+              displayName: displayName.trim(),
+              email: authEmail,
+              authEmail,
+              telegramUsername: hasUsername ? username : '',
+              phone: hasPhone ? normalizedPhone : '',
+              role: 'user',
+              status: 'inactive',
+              createdAt: Timestamp.fromDate(new Date()),
+              // Record of the user's consent at signup (proof of which legal
+              // version they accepted). The signup form requires both the age and
+              // Terms/Privacy checkboxes before this write can happen.
+              acceptedTermsAt: Timestamp.fromDate(new Date()),
+              acceptedTermsVersion: LEGAL.version,
+              // Referral program: own code + who referred them (if anyone).
+              referralCode: ownCode,
+              referredByCode: referredByUid ? enteredCode : '',
+              referredByUid,
+              referralBonusApplied: false,
+              referralCount: 0,
+            });
+            if (usernameRef) txn.set(usernameRef, { uid, authEmail });
+            if (phoneRef) txn.set(phoneRef, { uid, authEmail });
+            txn.set(ownCodeRef, { uid });
+          });
+          return; // success
+        } catch (err) {
+          if (err.message === CODE_COLLISION) continue; // regenerate own code, retry
+          throw err;
+        }
+      }
+      throw new Error('Could not generate a referral code. Please try again.');
     };
 
     // A taken username/phone is something the user must fix; everything else
     // (permission-denied, network/"unavailable") is a transient infra issue
     // they should simply retry. Keep them distinguishable for messaging.
-    const isUniquenessError = (err) =>
-      /already taken|already registered/i.test(err?.message || '');
+    // User-fixable input errors (taken username/phone, bad referral code) must
+    // surface as-is, not be masked as a transient "temporary database error".
+    const isUserInputError = (err) =>
+      /already taken|already registered|referral code/i.test(err?.message || '');
     const DB_RETRY_MESSAGE =
       "We couldn't finish creating your account due to a temporary database error. " +
       'Please wait a minute and try again.';
@@ -182,7 +229,7 @@ export function AuthProvider({ children }) {
         try {
           await writeProfileDocs(existing.user.uid);
         } catch (healErr) {
-          if (isUniquenessError(healErr)) throw healErr;
+          if (isUserInputError(healErr)) throw healErr;
           throw new Error(DB_RETRY_MESSAGE);
         }
         try { await sendEmailVerification(existing.user); } catch { /* non-fatal */ }
@@ -200,7 +247,7 @@ export function AuthProvider({ children }) {
       for (let i = 0; i < 3; i++) {
         try { await cred.user.delete(); break; } catch { /* keep trying */ }
       }
-      if (isUniquenessError(err)) throw err;
+      if (isUserInputError(err)) throw err;
       throw new Error(DB_RETRY_MESSAGE);
     }
 

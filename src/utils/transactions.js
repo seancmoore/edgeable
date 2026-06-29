@@ -18,6 +18,7 @@ import {
 import { db, storage } from '../firebase.js';
 import { applyLength } from './dateMath.js';
 import { toDate } from './subscription.js';
+import { maybeApplyReferralBonus } from './referrals.js';
 
 // Compute the start point for extending a subscription:
 // active subs extend from current end; expired/missing extend from today.
@@ -131,6 +132,15 @@ export async function createTransaction({
     // Roll back only an image WE uploaded here (don't delete a reused request image)
     if (hasUpload) await deleteProofImage(path);
     throw err;
+  }
+
+  // Referral bonus: if this subscriber was referred and hasn't been credited
+  // yet, grant +2 weeks to them and their referrer (once only). Never let a
+  // bonus failure fail the approval itself — the subscriber is already extended.
+  try {
+    await maybeApplyReferralBonus(subscriberUid, admin);
+  } catch (e) {
+    console.error('Referral bonus failed (subscriber still activated):', e);
   }
 
   return { txnId, extendFrom, newEnd };

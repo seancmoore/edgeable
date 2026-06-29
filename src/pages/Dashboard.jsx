@@ -6,6 +6,7 @@ import AppShell, { PageHeader } from '../components/AppShell.jsx';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
 import ProfileCard from '../components/ProfileCard.jsx';
 import MyRequestsList from '../components/MyRequestsList.jsx';
+import ReferralCard from '../components/ReferralCard.jsx';
 import AccountHistory from '../components/AccountHistory.jsx';
 import PerformanceCard from '../components/PerformanceCard.jsx';
 import RequestProfileUpdateModal from '../components/RequestProfileUpdateModal.jsx';
@@ -117,6 +118,8 @@ export default function Dashboard() {
             </Button>
           </div>
         </Card>
+
+        <ReferralCard userDoc={userDoc} />
 
         <ProfileCard userDoc={userDoc} onRequestUpdate={() => setShowProfileModal(true)} />
         {currentUser && (

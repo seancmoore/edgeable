@@ -78,6 +78,20 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // ── referral codes (uniqueness + code→uid lookup) ───────
+    // Read is signed-in only (resolved during signup, which is authenticated —
+    // no public exposure). List denied so codes can't be dumped. A user claims
+    // exactly one code for their own uid at signup; admin manages the rest
+    // (backfill runs via Admin SDK and bypasses rules).
+    match /referralCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid']);
+      allow update, delete: if isAdmin();
+    }
+
     // ── config (payment info, etc.) ─────────────────────────
     // Payment info needs to be readable by subscribers so they can see
     // the Cashapp/Zelle recipients on the renewal request form.

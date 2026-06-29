@@ -35,7 +35,14 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout>
+    <AuthLayout
+      footer={
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <Link to="/terms" className="hover:text-foreground hover:underline">Terms &amp; Disclaimers</Link>
+          <Link to="/privacy" className="hover:text-foreground hover:underline">Privacy Policy</Link>
+        </div>
+      }
+    >
       <Card>
         <CardContent className="p-6 sm:p-8">
           <div className="mb-6">

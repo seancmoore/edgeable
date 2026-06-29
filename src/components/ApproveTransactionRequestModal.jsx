@@ -22,15 +22,29 @@ export default function ApproveTransactionRequestModal({ request, admin, onClose
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [subscriberDoc, setSubscriberDoc] = useState(null);
+  const [referrerName, setReferrerName] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const snap = await getDoc(doc(db, 'users', request.subscriberUid));
-      if (!cancelled) setSubscriberDoc(snap.exists() ? snap.data() : null);
+      if (cancelled) return;
+      const data = snap.exists() ? snap.data() : null;
+      setSubscriberDoc(data);
+      // If this subscriber was referred and hasn't been credited yet, look up
+      // the referrer so the admin can sanity-check before the auto-bonus fires.
+      if (data?.referredByUid && !data.referralBonusApplied) {
+        const refSnap = await getDoc(doc(db, 'users', data.referredByUid));
+        if (!cancelled) {
+          const r = refSnap.exists() ? refSnap.data() : null;
+          setReferrerName(r ? (r.telegramUsername ? `@${r.telegramUsername}` : r.displayName || 'a member') : '(account no longer exists)');
+        }
+      }
     })();
     return () => { cancelled = true; };
   }, [request.subscriberUid]);
+
+  const pendingReferral = !!(subscriberDoc?.referredByUid && !subscriberDoc.referralBonusApplied);
 
   const lengthChanged = JSON.stringify(length) !== JSON.stringify(request.length);
   const priceChanged = Number(price) !== Number(request.declaredPrice);
@@ -106,6 +120,17 @@ export default function ApproveTransactionRequestModal({ request, admin, onClose
             <div className="mt-1.5 text-xs text-muted-foreground">Subscriber notes: {request.notes}</div>
           )}
         </div>
+
+        {pendingReferral && (
+          <div className="rounded-md border border-primary/30 bg-primary/10 p-3 text-sm text-foreground/85">
+            <div className="font-medium text-foreground">Referred by {referrerName || '…'}</div>
+            <div className="mt-0.5 text-muted-foreground">
+              Code <span className="font-mono">{subscriberDoc.referredByCode}</span>. Approving will
+              auto-grant <strong className="text-foreground">+2 weeks</strong> to this user and to the
+              referrer. Reject instead if this looks like a self-referral.
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="Final length to credit">
