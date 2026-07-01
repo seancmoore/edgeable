@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150" width="520" height="150">
+  
+  <defs>
+    <clipPath id="wTop"><polygon points="-60,-60 580,-60 580,51.9 -60,103.1"></polygon></clipPath>
+    <clipPath id="wBot"><polygon points="-60,103.1 580,51.9 580,210 -60,210"></polygon></clipPath>
+  </defs>
+  <g clip-path="url(#wTop)" transform="translate(-14,1.12)">
+    <text x="260" y="113" text-anchor="middle" font-family="&#39;Bodoni Moda&#39;, serif" font-weight="600" font-size="104" letter-spacing="0.5" fill="#f4efe6">Edgeable</text>
+  </g>
+  <g clip-path="url(#wBot)">
+    <text x="260" y="113" text-anchor="middle" font-family="&#39;Bodoni Moda&#39;, serif" font-weight="600" font-size="104" letter-spacing="0.5" fill="#f4efe6">Edgeable</text>
+  </g>
+  <line x1="6" y1="97.8" x2="520" y2="56.7" stroke="#d8b773" stroke-width="4.5" stroke-linecap="round"></line>
+</svg>

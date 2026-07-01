@@ -1,82 +1,42 @@
+import EdgeableLogo from './EdgeableLogo.jsx';
+import { useTheme } from '../ThemeContext.jsx';
 import { cn } from '../lib/utils.js';
 
 /**
- * Edgeable wordmark — custom cut-edge "E" + Space Grotesk "dgeable".
- * The right edge of the E tapers diagonally inward, visual pun on "edge".
- *
- * Sizes scale with font-size (the SVG uses em-based height), so wrap in any
- * font-size you want or pass a `size` shortcut.
+ * Edgeable wordmark — Edge Club "sliced & sliding" identity.
+ * Thin wrapper over <EdgeableLogo> so existing call sites keep the same
+ * { size, className } API while adopting the new brand. The logo picks
+ * its dark/light glyph colors from the active theme.
  */
-const SIZE_CLASSES = {
-  sm: 'text-lg',     // ~18px
-  md: 'text-2xl',    // ~24px
-  lg: 'text-4xl',    // ~36px
-  xl: 'text-5xl sm:text-6xl', // hero
+const SIZE_HEIGHTS = {
+  sm: 20, // header lockup
+  md: 26,
+  lg: 34,
+  xl: 46,
 };
 
-export default function Wordmark({ size = 'md', className, accentColor = false }) {
+export default function Wordmark({ size = 'md', className }) {
+  const { resolvedTheme } = useTheme();
   return (
-    <span
-      className={cn(
-        'inline-flex items-baseline font-display font-semibold tracking-tight text-foreground',
-        SIZE_CLASSES[size] || SIZE_CLASSES.md,
-        className,
-      )}
+    <EdgeableLogo
+      variant="lockup"
+      mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
+      height={SIZE_HEIGHTS[size] || SIZE_HEIGHTS.md}
+      className={cn('shrink-0', className)}
       aria-label="Edgeable"
-    >
-      <CutEdgeE accent={accentColor} />
-      <span aria-hidden>dgeable</span>
-    </span>
+    />
   );
 }
 
-/**
- * Just the E mark — for favicons, avatars, tight spots.
- * Pass `className` with a height (e.g. "h-8 w-auto").
- */
-export function EdgeMark({ className, accent = false }) {
+/** Icon-only mark — for avatars, favicons, tight spots. */
+export function EdgeMark({ className }) {
+  const { resolvedTheme } = useTheme();
   return (
-    <svg
-      viewBox="0 0 60 70"
-      role="img"
+    <EdgeableLogo
+      variant="icon"
+      mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
+      className={cn('inline-flex', className)}
       aria-label="Edgeable mark"
-      className={cn('h-8 w-auto text-foreground', className)}
-    >
-      <EPath accent={accent} />
-    </svg>
-  );
-}
-
-function CutEdgeE({ accent }) {
-  return (
-    <svg
-      viewBox="0 0 60 70"
-      aria-hidden
-      style={{ height: '0.72em', width: 'auto', display: 'inline-block', marginRight: '0.02em' }}
-    >
-      <EPath accent={accent} />
-    </svg>
-  );
-}
-
-function EPath({ accent }) {
-  return (
-    <g>
-      <path
-        d="M 0 0 L 60 0 L 60 12 L 12 12 L 12 30 L 50 30 L 50 42 L 12 42 L 12 58 L 40 58 L 40 70 L 0 70 Z"
-        fill="currentColor"
-      />
-      {accent && (
-        <line
-          x1="60"
-          y1="6"
-          x2="40"
-          y2="64"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      )}
-    </g>
+    />
   );
 }

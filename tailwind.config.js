@@ -54,16 +54,32 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
+        // Edge Club brand tokens
+        gold: {
+          DEFAULT: 'hsl(var(--gold))',
+          ink: 'hsl(var(--gold-ink))',
+          brass: 'hsl(var(--brass))',
+        },
+        win: 'hsl(var(--success))',
+        loss: 'hsl(var(--destructive))',
+        surface2: 'hsl(var(--surface-2))',
+        hairline: 'hsl(var(--hairline))',
+        dim: 'hsl(var(--dim))',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        card: '18px',
+        field: '11px',
+      },
+      letterSpacing: {
+        eyebrow: '0.2em',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['"Space Grotesk"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        sans: ['Mulish', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['"Bodoni Moda"', 'Georgia', 'ui-serif', 'serif'],
+        mono: ['"Spline Sans Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       keyframes: {
         'fade-in': {

@@ -29,7 +29,7 @@ function cumulative(entries) {
   return points;
 }
 
-const TITLE = 'text-xs font-medium uppercase tracking-wider text-muted-foreground';
+const TITLE = 'eyebrow';
 
 const CHART_RANGES = [
   { key: 'week', label: 'Week', blurb: 'past week', days: 7 },
@@ -170,8 +170,9 @@ export default function PerformanceCard({ uid, userDoc }) {
         </div>
       ) : (
         <>
-          <div className={cn('mt-2 font-display text-4xl font-bold leading-none', unitsColor(displayTotal))}>
+          <div className={cn('mt-2 font-mono text-4xl font-semibold leading-none tabular-nums', unitsColor(displayTotal))}>
             {formatUnits(displayTotal)}
+            <span className="ml-1 align-baseline text-lg font-medium text-muted-foreground">units</span>
             {dollarValue != null && (
               <span className="ml-2 text-xl font-semibold">{formatDollars(dollarValue)}</span>
             )}
@@ -230,9 +231,7 @@ export default function PerformanceCard({ uid, userDoc }) {
       {recent.length > 0 && (
         <>
           <div className="my-4 border-t border-border" />
-          <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Recent days
-          </div>
+          <div className="eyebrow mb-2">Recent days</div>
           <ul className="m-0 list-none p-0">
             {recent.map((e) => (
               <DayRow key={e.id} e={e} unitSize={unitSize} hasWindow={hasWindow} onSeeNotes={setNoteFor} />
@@ -291,7 +290,7 @@ function DayRow({ e, unitSize, hasWindow, onSeeNotes }) {
           </button>
         )}
       </div>
-      <span className={cn('text-sm font-semibold', unitsColor(e.units))}>
+      <span className={cn('font-mono text-sm font-semibold tabular-nums', unitsColor(e.units))}>
         {formatUnits(e.units)}
         {dollar != null && <span className="ml-2 font-medium opacity-85">{formatDollars(dollar)}</span>}
       </span>

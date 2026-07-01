@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { unitsCssColor } from '../utils/pnl.js';
 
 // Monotone-cubic spline (Fritsch–Carlson) → smooth, non-overshooting curve.
 // Returns an SVG path string of cubic bezier segments through the points.
@@ -66,7 +65,9 @@ export default function PerformanceChart({ series, height = 120, onScrub }) {
 
   if (!geom) return null;
 
-  const color = unitsCssColor(series[n - 1].cum);
+  // Edge Club: the equity curve is always gold (brand), regardless of sign.
+  // Sign is still communicated by the headline figure's win/loss color.
+  const color = 'hsl(var(--gold))';
   const sig = `${n}-${series[0].t}-${series[n - 1].t}`; // remounts SVG → replays reveal on data change
 
   const resolve = () => {

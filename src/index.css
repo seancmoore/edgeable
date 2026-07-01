@@ -1,84 +1,104 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&family=Mulish:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Edge Club palette. Light is the default (:root); .dark overrides.
+     Semantic shadcn names are remapped to the Edge Club tokens so all
+     existing components reskin automatically. Raw --gold/--surface-2/
+     --hairline/--dim are exposed for direct use. */
   :root {
-    --background: 48 14% 98%;
-    --foreground: 222 47% 11%;
+    --background: 39 44% 94%;        /* --bg     #f6f1e8 */
+    --foreground: 33 19% 9%;         /* --text   #1c1813 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 43 100% 99%;             /* --surface #fffdf8 */
+    --card-foreground: 33 19% 9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 43 100% 99%;
+    --popover-foreground: 33 19% 9%;
 
-    --primary: 215 50% 49%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 39 50% 47%;           /* --gold (light) #b58a3c */
+    --primary-foreground: 43 100% 99%; /* --gold-ink (light) #fffdf8 */
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 18%;
+    --secondary: 39 45% 86%;         /* --border #ece1cd */
+    --secondary-foreground: 33 19% 9%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 40 37% 84%;             /* --hairline #e6dcc8 */
+    --muted-foreground: 33 10% 44%;  /* --muted #7a7064 */
 
-    --accent: 215 50% 95%;
-    --accent-foreground: 215 50% 25%;
+    --accent: 40 54% 88%;            /* warm gold tint #f1e6d0 */
+    --accent-foreground: 39 50% 47%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 59% 45%;       /* --loss #b4452f */
+    --destructive-foreground: 43 100% 99%;
 
-    --success: 152 56% 38%;
+    --success: 148 45% 34%;          /* --win #2f7d54 */
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 11%;
+    --warning: 39 50% 47%;           /* gold doubles as warning */
+    --warning-foreground: 33 19% 9%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 88%;
-    --ring: 215 50% 53%;
+    --border: 39 45% 86%;            /* #ece1cd */
+    --input: 40 32% 78%;             /* field border #d9cdb5 */
+    --ring: 39 50% 47%;
 
-    --radius: 0.625rem;
+    /* raw Edge Club tokens */
+    --gold: 39 50% 47%;
+    --gold-ink: 43 100% 99%;
+    --brass: 38 52% 40%;
+    --surface-2: 43 58% 95%;         /* inset wells #faf6ec */
+    --hairline: 40 37% 84%;
+    --dim: 31 12% 59%;               /* placeholder #a3978a */
+
+    --radius: 0.6875rem;             /* 11px fields */
 
     color-scheme: light;
   }
 
   .dark {
-    --background: 220 45% 7%;
-    --foreground: 214 32% 91%;
+    --background: 34 21% 6%;         /* --bg     #14110d */
+    --foreground: 35 36% 91%;        /* --text   #f0e9df */
 
-    --card: 220 35% 11%;
-    --card-foreground: 214 32% 91%;
+    --card: 33 22% 10%;              /* --surface #1f1a14 */
+    --card-foreground: 35 36% 91%;
 
-    --popover: 220 35% 11%;
-    --popover-foreground: 214 32% 91%;
+    --popover: 33 22% 10%;
+    --popover-foreground: 35 36% 91%;
 
-    --primary: 215 65% 62%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 40 56% 65%;           /* --gold #d8b773 */
+    --primary-foreground: 35 51% 7%; /* --gold-ink #1c1409 */
 
-    --secondary: 220 25% 16%;
-    --secondary-foreground: 214 32% 91%;
+    --secondary: 33 22% 16%;         /* --border #322a20 */
+    --secondary-foreground: 35 36% 91%;
 
-    --muted: 220 25% 14%;
-    --muted-foreground: 220 10% 64%;
+    --muted: 34 24% 11%;             /* --hairline #241e16 */
+    --muted-foreground: 36 12% 55%;  /* --muted #9a8f7f */
 
-    --accent: 215 50% 18%;
-    --accent-foreground: 215 60% 80%;
+    --accent: 37 38% 12%;            /* warm gold tint #2a2113 */
+    --accent-foreground: 40 56% 65%;
 
-    --destructive: 0 65% 55%;
+    --destructive: 9 45% 55%;        /* --loss #c06a5a */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 56% 48%;
-    --success-foreground: 0 0% 100%;
+    --success: 132 29% 61%;          /* --win #7fb88a */
+    --success-foreground: 35 51% 7%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 222 47% 11%;
+    --warning: 40 56% 65%;
+    --warning-foreground: 35 51% 7%;
 
-    --border: 220 25% 18%;
-    --input: 220 25% 20%;
-    --ring: 215 65% 62%;
+    --border: 33 22% 16%;            /* #322a20 */
+    --input: 34 25% 18%;             /* field border #3a3023 */
+    --ring: 40 56% 65%;
+
+    /* raw Edge Club tokens */
+    --gold: 40 56% 65%;
+    --gold-ink: 35 51% 7%;
+    --brass: 39 50% 47%;
+    --surface-2: 34 21% 6%;
+    --hairline: 34 24% 11%;
+    --dim: 35 12% 39%;
 
     color-scheme: dark;
   }
@@ -135,7 +155,14 @@
     box-shadow:
       0 1px 0 hsl(var(--border)) inset,
       0 1px 2px 0 rgb(0 0 0 / 0.4),
-      0 12px 32px -16px rgb(0 0 0 / 0.6);
+      0 24px 56px -22px rgb(0 0 0 / 0.5);
+  }
+
+  /* Eyebrow label — Mulish 600, 10px, .2em, uppercase, muted */
+  .eyebrow {
+    @apply font-sans font-semibold uppercase text-muted-foreground;
+    font-size: 10px;
+    letter-spacing: 0.2em;
   }
 
   /* Left-to-right reveal for the performance chart line */
