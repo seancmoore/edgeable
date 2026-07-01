@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, AlertCircle } from 'lucide-react';
 import { useAuth } from '../AuthContext.jsx';
+import { useTheme } from '../ThemeContext.jsx';
 import AuthLayout from '../components/AuthLayout.jsx';
+import EdgeableLogo from '../components/EdgeableLogo.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { Card, CardContent } from '../components/ui/card.jsx';
 import { Input } from '../components/ui/input.jsx';
@@ -10,6 +12,7 @@ import { Label } from '../components/ui/label.jsx';
 
 export default function Login() {
   const { login, currentUser, role, loading } = useAuth();
+  const { resolvedTheme } = useTheme();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +46,14 @@ export default function Login() {
         </div>
       }
     >
-      <Card>
+      <div className="mb-6 flex flex-col items-center text-center">
+        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-card card-glow">
+          <EdgeableLogo variant="icon" mode={resolvedTheme === 'dark' ? 'dark' : 'light'} height={34} />
+        </div>
+        <div className="eyebrow">Members only</div>
+      </div>
+
+      <Card className="rounded-2xl">
         <CardContent className="p-6 sm:p-8">
           <div className="mb-6">
             <h1 className="font-display text-2xl font-semibold tracking-tight">Welcome back</h1>
