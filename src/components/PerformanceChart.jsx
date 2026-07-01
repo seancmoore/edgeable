@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+
+const fmtUnits = (v) => `${v >= 0 ? '+' : ''}${(Number(v) || 0).toFixed(1)}u`;
+const fmtDate = (d) => (d instanceof Date ? d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '');
 
 // Monotone-cubic spline (Fritsch–Carlson) → smooth, non-overshooting curve.
 // Returns an SVG path string of cubic bezier segments through the points.
@@ -41,6 +44,8 @@ export default function PerformanceChart({ series, height = 120, onScrub }) {
   const rafRef = useRef(0);
   const pendingX = useRef(null);
   const lastIdx = useRef(-1);
+  const shownIdx = useRef(0); // last active point, kept so the marker fades out in place
+  const uid = useId().replace(/:/g, '');
   const [active, setActive] = useState(null);
 
   const n = series?.length || 0;
@@ -96,8 +101,15 @@ export default function PerformanceChart({ series, height = 120, onScrub }) {
     onScrub?.(null);
   };
 
-  const leftPct = active != null ? (active / (n - 1)) * 100 : 0;
-  const topPct = active != null ? (geom.ys[active] / H) * 100 : 0;
+  // Keep the last hovered index so the marker + tooltip ease out in place
+  // instead of snapping to the origin when the pointer leaves.
+  if (active != null) shownIdx.current = active;
+  const posIdx = Math.min(shownIdx.current, n - 1);
+  const point = series[posIdx];
+  const shown = active != null;
+  const leftPct = n > 1 ? (posIdx / (n - 1)) * 100 : 0;
+  const topPct = (geom.ys[posIdx] / H) * 100;
+  const tipLeft = Math.max(15, Math.min(85, leftPct)); // keep the bubble inside the frame
 
   return (
     <div
@@ -106,6 +118,7 @@ export default function PerformanceChart({ series, height = 120, onScrub }) {
       style={{ height: `${H}px`, touchAction: 'none' }}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture?.(e.pointerId); move(e.clientX); }}
       onPointerMove={(e) => { if (e.pressure > 0 || e.pointerType === 'mouse') move(e.clientX); }}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') move(e.clientX); }}
       onPointerUp={end}
       onPointerLeave={end}
       onPointerCancel={end}
@@ -117,24 +130,42 @@ export default function PerformanceChart({ series, height = 120, onScrub }) {
         className="animate-chart-reveal block h-full w-full"
         aria-hidden="true"
       >
+        <defs>
+          <linearGradient id={`cg-${uid}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.34" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
         <line
           x1="0" y1={geom.zeroY} x2={W} y2={geom.zeroY}
           stroke="hsl(var(--border))" strokeDasharray="2,3" strokeWidth="0.5"
           vectorEffect="non-scaling-stroke"
         />
-        <path d={geom.fill} fill={color} fillOpacity="0.14" />
+        <path d={geom.fill} fill={`url(#cg-${uid})`} />
         <path d={geom.line} fill="none" stroke={color} strokeWidth="1.75" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" />
       </svg>
 
-      {/* Gliding crosshair + dot (HTML overlay so they ease between points) */}
+      {/* Gliding crosshair + dot + value bubble (HTML overlay so they ease between points) */}
       <div
-        className="pointer-events-none absolute bottom-0 top-0 w-px bg-muted-foreground/40 transition-[left,opacity] duration-75 ease-out"
-        style={{ left: `${leftPct}%`, opacity: active != null ? 1 : 0 }}
+        className="pointer-events-none absolute bottom-0 top-0 w-px bg-gold/40 transition-[left,opacity] duration-150 ease-out"
+        style={{ left: `${leftPct}%`, opacity: shown ? 1 : 0 }}
       />
       <div
-        className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background shadow transition-[left,top,opacity] duration-75 ease-out"
-        style={{ left: `${leftPct}%`, top: `${topPct}%`, opacity: active != null ? 1 : 0, backgroundColor: color }}
-      />
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 transition-[left,top,opacity] duration-150 ease-out"
+        style={{ left: `${leftPct}%`, top: `${topPct}%`, opacity: shown ? 1 : 0 }}
+      >
+        <span
+          className="block h-3 w-3 rounded-full border-2 border-background"
+          style={{ backgroundColor: color, boxShadow: '0 0 0 5px hsl(var(--gold) / 0.18)' }}
+        />
+      </div>
+      <div
+        className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg border border-border bg-popover px-2.5 py-1 text-center shadow-lg transition-[left,top,opacity] duration-150 ease-out"
+        style={{ left: `${tipLeft}%`, top: `calc(${topPct}% - 12px)`, opacity: shown ? 1 : 0 }}
+      >
+        <div className="font-mono text-sm font-semibold tabular-nums text-gold">{fmtUnits(point?.cum)}</div>
+        <div className="text-[10px] text-muted-foreground">{fmtDate(point?.date)}</div>
+      </div>
     </div>
   );
 }

@@ -17,14 +17,26 @@ const SIZE_HEIGHTS = {
 
 export default function Wordmark({ size = 'md', className }) {
   const { resolvedTheme } = useTheme();
+  const mode = resolvedTheme === 'dark' ? 'dark' : 'light';
+  const h = SIZE_HEIGHTS[size] || SIZE_HEIGHTS.md;
   return (
-    <EdgeableLogo
-      variant="lockup"
-      mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
-      height={SIZE_HEIGHTS[size] || SIZE_HEIGHTS.md}
-      className={cn('shrink-0', className)}
-      aria-label="Edgeable"
-    />
+    <>
+      {/* Mobile: icon only. Desktop (sm+): full lockup. */}
+      <EdgeableLogo
+        variant="icon"
+        mode={mode}
+        height={h + 4}
+        className={cn('shrink-0 sm:hidden', className)}
+        aria-label="Edgeable"
+      />
+      <EdgeableLogo
+        variant="lockup"
+        mode={mode}
+        height={h}
+        className={cn('hidden shrink-0 sm:inline-flex', className)}
+        aria-label="Edgeable"
+      />
+    </>
   );
 }
 
