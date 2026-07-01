@@ -29,7 +29,7 @@ export default function Wordmark({ size = 'md', className }) {
         <EdgeableLogo variant="icon" mode={mode} height={h + 4} aria-label="Edgeable" />
       </span>
       <span className={cn('hidden shrink-0 sm:block', className)}>
-        <EdgeableLogo variant="wordmark" mode={mode} height={h + 8} aria-label="Edgeable" />
+        <EdgeableLogo variant="wordmark" mode={mode} height={h + 16} aria-label="Edgeable" />
       </span>
     </>
   );
