@@ -165,6 +165,35 @@
     letter-spacing: 0.2em;
   }
 
+  /* Edgeable logo loader — the gold blade repeatedly "cuts" across the E while
+     the top slice slides, over a pulsing gold glow. Used on sign-in. */
+  @keyframes ec-blade-cut {
+    0%   { stroke-dashoffset: 100; opacity: 0; }
+    18%  { opacity: 1; }
+    58%  { stroke-dashoffset: 0; opacity: 1; }
+    82%  { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  @keyframes ec-slice-slide {
+    0%, 100% { transform: translate(-17px, 4.7px); }
+    55%      { transform: translate(-27px, 4.7px); }
+  }
+  @keyframes ec-glow-pulse {
+    0%, 100% { opacity: 0.18; transform: scale(0.82); }
+    50%      { opacity: 0.5; transform: scale(1.12); }
+  }
+  .ec-blade { stroke-dasharray: 100; animation: ec-blade-cut 1.5s ease-in-out infinite; }
+  .ec-slice { animation: ec-slice-slide 1.5s ease-in-out infinite; }
+  .ec-glow {
+    background: radial-gradient(circle, hsl(var(--gold) / 0.55), transparent 68%);
+    filter: blur(6px);
+    animation: ec-glow-pulse 1.5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ec-blade, .ec-slice, .ec-glow { animation: none; }
+    .ec-slice { transform: translate(-17px, 4.7px); }
+  }
+
   /* Left-to-right reveal for the performance chart line */
   @keyframes chart-reveal {
     from { clip-path: inset(0 100% 0 0); }

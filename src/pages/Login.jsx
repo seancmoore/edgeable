@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext.jsx';
 import { useTheme } from '../ThemeContext.jsx';
 import AuthLayout from '../components/AuthLayout.jsx';
 import EdgeableLogo from '../components/EdgeableLogo.jsx';
+import EdgeableLoader from '../components/EdgeableLoader.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { Card, CardContent } from '../components/ui/card.jsx';
 import { Input } from '../components/ui/input.jsx';
@@ -48,9 +49,13 @@ export default function Login() {
     >
       <div className="mb-6 flex flex-col items-center text-center">
         <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-card card-glow">
-          <EdgeableLogo variant="icon" mode={resolvedTheme === 'dark' ? 'dark' : 'light'} height={34} />
+          {submitting ? (
+            <EdgeableLoader height={38} label="Signing in" />
+          ) : (
+            <EdgeableLogo variant="icon" mode={resolvedTheme === 'dark' ? 'dark' : 'light'} height={34} />
+          )}
         </div>
-        <div className="eyebrow">Members only</div>
+        <div className="eyebrow">{submitting ? 'Signing in…' : 'Members only'}</div>
       </div>
 
       <Card className="rounded-2xl">
