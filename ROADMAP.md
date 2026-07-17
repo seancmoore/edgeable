@@ -13,6 +13,13 @@ tamper-evident. Every feature decision defers to this.
 - [x] Phase 0 architecture report reviewed and approved by Sean (2026-07-17; note: rules were deployed before this gate existed — Sean ratified)
 - [x] Firestore schema + security rules proposed and approved by Sean (2026-07-17; "external review" satisfied by an independent fresh-context adversarial review — no exploitable findings; tell Claude to uncheck if a human external review is wanted)
 - [x] Data layer + security rules implemented (2026-07-17; verified live by scripts/verify-picks-rules.mjs — 12/12 denial tests pass; edit-after-post tests deferred until the first real pick exists, then rerun with its id)
+- [ ] Tiered pre-game access (per Phase 5 decision): architecture + rules changes proposed and
+      approved by Sean
+- [ ] Tiered pre-game access implemented + verified (time-unlock, locked public stubs, free
+      pick of the day, active-subscriber gate; extend scripts/verify-picks-rules.mjs to cover
+      the new read matrix)
+- [ ] Public /card UI handles all three viewer tiers (locked entries, free-pick state,
+      subscriber full view)
 - [ ] Admin: manual pick entry form
 - [ ] Admin: screenshot import via Cloud Function → Anthropic API → review screen (never auto-post)
 - [ ] Admin: one-click grading (win/loss/push/void)
@@ -48,11 +55,15 @@ tamper-evident. Every feature decision defers to this.
 
 ## Phase 5 — BLOCKING BUSINESS DECISION (unresolved — nothing in Phase 6 starts until this is answered)
 
-- [ ] Decide what is free vs paid: if the full daily card is public on the site, what exactly do
-      Telegram subscribers pay for? Options to evaluate: (a) site shows record + graded history
-      only, picks go public after games start, subscribers get them live; (b) site shows a
-      partial/teaser card; (c) site is fully free and monetization moves elsewhere. Pick one,
-      write it down here.
+- [x] Decide what is free vs paid (DECIDED 2026-07-17 by Sean — tiered pre-game access):
+      - Subscribers (active, paying): see full pending picks live
+      - Free logged-in users: see one admin-designated "free pick of the day" live; other
+        pending picks locked
+      - Public/logged out: pending picks appear as locked entries (existence + postedAt
+        timestamp visible, details hidden); ALL picks unlock publicly at gameStartTime and
+        stay public forever
+      - The graded archive and record header remain 100% public and complete — no pick is
+        ever hidden after its game starts. Non-negotiable.
 - [ ] Pricing and payment flow documented (what a new subscriber does, step by step, from
       Instagram → site → paid Telegram)
 
