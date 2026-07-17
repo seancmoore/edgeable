@@ -35,13 +35,20 @@ export function addWeeks(date, n) {
   return d;
 }
 
-// Apply a {years, months, weeks} length to a date in that order.
+export function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+// Apply a {years, months, weeks, days} length to a date in that order.
 // Years first preserves "1 year + 6 months" intent (e.g. May 5, 2026 -> May 5, 2027 -> Nov 5, 2027).
 export function applyLength(from, length) {
   let d = new Date(from);
   if (length.years)  d = addYears(d, length.years);
   if (length.months) d = addMonths(d, length.months);
   if (length.weeks)  d = addWeeks(d, length.weeks);
+  if (length.days)   d = addDays(d, length.days);
   return d;
 }
 
@@ -50,5 +57,6 @@ export function formatLength(length) {
   if (length.years)  parts.push(`${length.years} year${length.years === 1 ? '' : 's'}`);
   if (length.months) parts.push(`${length.months} month${length.months === 1 ? '' : 's'}`);
   if (length.weeks)  parts.push(`${length.weeks} week${length.weeks === 1 ? '' : 's'}`);
+  if (length.days)   parts.push(`${length.days} day${length.days === 1 ? '' : 's'}`);
   return parts.length ? parts.join(', ') : '—';
 }

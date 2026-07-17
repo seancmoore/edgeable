@@ -30,7 +30,7 @@ export async function createTransactionRequest({
   length, declaredPrice, paymentMethod, paymentReference, notes, imageFile,
 }) {
   if (!imageFile) throw new Error('Proof image is required.');
-  if (!length || (length.years === 0 && length.months === 0 && length.weeks === 0)) {
+  if (!length || (!Number(length.years || 0) && !Number(length.months || 0) && !Number(length.weeks || 0) && !Number(length.days || 0))) {
     throw new Error('Please specify a length.');
   }
   if (declaredPrice == null || isNaN(Number(declaredPrice)) || Number(declaredPrice) < 0) {
@@ -56,6 +56,7 @@ export async function createTransactionRequest({
         years: Number(length.years || 0),
         months: Number(length.months || 0),
         weeks: Number(length.weeks || 0),
+        days: Number(length.days || 0),
       },
       declaredPrice: Number(declaredPrice),
       paymentMethod,
@@ -97,7 +98,7 @@ export async function getPendingTransactionRequests() {
 // auto-activates them) and mark the request approved.
 //
 // `overrides` may include:
-//   length:     final length to credit (years/months/weeks). Defaults to req.length.
+//   length:     final length to credit (years/months/weeks/days). Defaults to req.length.
 //   price:      final price to record. Defaults to req.declaredPrice.
 //   adminNotes: optional explanation shown to the subscriber.
 export async function approveTransactionRequest(requestId, admin, overrides = {}) {
@@ -112,10 +113,11 @@ export async function approveTransactionRequest(requestId, admin, overrides = {}
         years:  Number(overrides.length.years || 0),
         months: Number(overrides.length.months || 0),
         weeks:  Number(overrides.length.weeks || 0),
+        days:   Number(overrides.length.days || 0),
       }
     : req.length;
-  if (finalLength.years === 0 && finalLength.months === 0 && finalLength.weeks === 0) {
-    throw new Error('Length must include at least one of years, months, or weeks.');
+  if (!Number(finalLength.years || 0) && !Number(finalLength.months || 0) && !Number(finalLength.weeks || 0) && !Number(finalLength.days || 0)) {
+    throw new Error('Length must include at least one of years, months, weeks, or days.');
   }
   const finalPrice = overrides.price != null ? Number(overrides.price) : Number(req.declaredPrice);
   if (isNaN(finalPrice) || finalPrice < 0) {

@@ -19,7 +19,7 @@ export default function TransactionForm({
   onCancel,
 }) {
   const [subscriberUid, setSubscriberUid] = useState(initial?.subscriberUid || null);
-  const [length, setLength] = useState(initial?.length || { years: 0, months: 1, weeks: 0 });
+  const [length, setLength] = useState(initial?.length || { years: 0, months: 1, weeks: 0, days: 0 });
   const [price, setPrice] = useState(initial?.price ?? '');
   const [notes, setNotes] = useState(initial?.notes || '');
   const [imageFile, setImageFile] = useState(null);
@@ -58,8 +58,8 @@ export default function TransactionForm({
     e.preventDefault();
     setError('');
     if (!subscriberUid) { setError('Please select a subscriber.'); return; }
-    if (length.years === 0 && length.months === 0 && length.weeks === 0) {
-      setError('Please specify a length (at least one of years, months, or weeks).');
+    if (!Number(length.years || 0) && !Number(length.months || 0) && !Number(length.weeks || 0) && !Number(length.days || 0)) {
+      setError('Please specify a length (at least one of years, months, weeks, or days).');
       return;
     }
     if (price === '' || isNaN(Number(price)) || Number(price) < 0) {

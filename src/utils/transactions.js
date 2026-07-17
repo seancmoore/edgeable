@@ -31,10 +31,11 @@ function ensurePositiveLength(length) {
   const y = Number(length?.years || 0);
   const m = Number(length?.months || 0);
   const w = Number(length?.weeks || 0);
-  if (y === 0 && m === 0 && w === 0) {
-    throw new Error('Length must include at least one of years, months, or weeks.');
+  const d = Number(length?.days || 0);
+  if (y === 0 && m === 0 && w === 0 && d === 0) {
+    throw new Error('Length must include at least one of years, months, weeks, or days.');
   }
-  return { years: y, months: m, weeks: w };
+  return { years: y, months: m, weeks: w, days: d };
 }
 
 function fileExtension(file) {

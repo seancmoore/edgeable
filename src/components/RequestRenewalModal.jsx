@@ -22,7 +22,7 @@ export default function RequestRenewalModal({ uid, userDoc, onClose, onSubmitted
   const [verifyMsg, setVerifyMsg] = useState('');
   const [verifyBusy, setVerifyBusy] = useState(false);
 
-  const [length, setLength] = useState({ years: 0, months: 1, weeks: 0 });
+  const [length, setLength] = useState({ years: 0, months: 1, weeks: 0, days: 0 });
   const [paymentMethod, setPaymentMethod] = useState('cashapp');
   const [declaredPrice, setDeclaredPrice] = useState('');
   const [paymentReference, setPaymentReference] = useState('');
@@ -89,7 +89,7 @@ export default function RequestRenewalModal({ uid, userDoc, onClose, onSubmitted
       setDeclaredPrice(suggestedPrice.toFixed(2));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [length.years, length.months, length.weeks, loaded]);
+  }, [length.years, length.months, length.weeks, length.days, loaded]);
 
   const recipient = paymentInfo?.[paymentMethod]?.recipient || '';
   const paymentEnabled = paymentInfo?.[paymentMethod]?.enabled !== false;

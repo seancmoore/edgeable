@@ -118,7 +118,8 @@ function sameLength(a, b) {
   if (!a || !b) return false;
   return Number(a.years || 0) === Number(b.years || 0)
     && Number(a.months || 0) === Number(b.months || 0)
-    && Number(a.weeks || 0) === Number(b.weeks || 0);
+    && Number(a.weeks || 0) === Number(b.weeks || 0)
+    && Number(a.days || 0) === Number(b.days || 0);
 }
 
 function renderProfile(r) {

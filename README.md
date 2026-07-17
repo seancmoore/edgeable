@@ -39,7 +39,7 @@ A Firebase‑hosted **subscription portal** for a sports‑picks service. Subscr
 ## Architecture highlights
 
 - **Identity model** — Firebase Auth uses email/password under the hood; subscribers may identify by email, Telegram handle, or phone. Lookup collections (`usernames/`, `phones/`) map an identifier → the account's auth email.
-- **Subscription engine** — transactions store length in human units (years / months / weeks, not collapsed to days). `replaySubscriberChain()` re‑applies a subscriber's transactions in order to recompute `subscriptionEnd` after any edit or deletion.
+- **Subscription engine** — transactions store length in human units (years / months / weeks / days, not collapsed to a day count). `replaySubscriberChain()` re‑applies a subscriber's transactions in order to recompute `subscriptionEnd` after any edit or deletion.
 - **Performance tracking** — daily P&L is recorded in **units**; a subscriber's personal number counts only days inside their active subscription window, while the all‑time record is shown as a separate track record.
 - **Security** — Firestore and Storage rules enforce per‑user access and field/length limits. Operations that change a login identifier (email / Telegram) or delete an account run through **admin‑only Cloud Functions** (verified server‑side), since they require Admin‑SDK privileges.
 

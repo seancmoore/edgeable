@@ -46,7 +46,9 @@ export default function ApproveTransactionRequestModal({ request, admin, onClose
 
   const pendingReferral = !!(subscriberDoc?.referredByUid && !subscriberDoc.referralBonusApplied);
 
-  const lengthChanged = JSON.stringify(length) !== JSON.stringify(request.length);
+  // Field-wise compare (not JSON) so a missing `days` on old requests reads as 0.
+  const lengthChanged = ['years', 'months', 'weeks', 'days']
+    .some((k) => Number(length?.[k] || 0) !== Number(request.length?.[k] || 0));
   const priceChanged = Number(price) !== Number(request.declaredPrice);
   const willModify = lengthChanged || priceChanged;
 
@@ -62,8 +64,8 @@ export default function ApproveTransactionRequestModal({ request, admin, onClose
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (length.years === 0 && length.months === 0 && length.weeks === 0) {
-      return setError('Length must include at least one of years, months, or weeks.');
+    if (!Number(length.years || 0) && !Number(length.months || 0) && !Number(length.weeks || 0) && !Number(length.days || 0)) {
+      return setError('Length must include at least one of years, months, weeks, or days.');
     }
     if (price === '' || isNaN(Number(price)) || Number(price) < 0) {
       return setError('Please enter a valid price.');

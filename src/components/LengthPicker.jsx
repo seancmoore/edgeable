@@ -11,7 +11,8 @@ const PRESETS = [
 ];
 
 export default function LengthPicker({ value, onChange }) {
-  const length = value || { years: 0, months: 0, weeks: 0 };
+  // Spread over defaults so lengths saved before `days` existed still render 0.
+  const length = { years: 0, months: 0, weeks: 0, days: 0, ...(value || {}) };
 
   const setField = (field) => (e) => {
     const n = Math.max(0, parseInt(e.target.value || '0', 10) || 0);
@@ -32,8 +33,8 @@ export default function LengthPicker({ value, onChange }) {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-2">
-        {['years', 'months', 'weeks'].map((field) => (
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {['years', 'months', 'weeks', 'days'].map((field) => (
           <div key={field} className="min-w-0 space-y-1.5">
             <Label htmlFor={`len-${field}`} className="capitalize">{field}</Label>
             <Input

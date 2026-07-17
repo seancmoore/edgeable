@@ -5,14 +5,15 @@ export const DISCOUNT_RATE_MONTHLY = 10;
 export const STANDARD_RATE_MONTHLY = 30;
 export const DISCOUNT_MONTHS_TOTAL = 6;
 
-// Convert {years, months, weeks} into months-equivalent (for pricing math).
-// 1 year = 12 months, 1 week = 0.25 months (4 weeks ≈ 1 month).
+// Convert {years, months, weeks, days} into months-equivalent (for pricing math).
+// 1 year = 12 months, 1 week = 0.25 months (4 weeks ≈ 1 month), 1 day = 1/7 week.
 export function lengthInMonthsApprox(length) {
   if (!length) return 0;
   const y = Number(length.years || 0);
   const m = Number(length.months || 0);
   const w = Number(length.weeks || 0);
-  return y * 12 + m + w * 0.25;
+  const d = Number(length.days || 0);
+  return y * 12 + m + (w + d / 7) * 0.25;
 }
 
 // Sum the months-equivalent of a subscriber's existing transactions.
