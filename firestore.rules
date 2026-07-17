@@ -224,25 +224,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // World-readable stub: the full pick minus description/access. Proves a
-    // pick's existence, posted-at time, stake, odds, and result to everyone —
-    // the public record header + archive are computed from these.
+    // World-readable stub: existence, timestamps, and result ONLY (Sean's
+    // call, 2026-07-17: no sport/odds/stake indication per pick in public).
+    // Proves the pick count, posted-before-game timing, and W-L record to
+    // everyone; units/ROI are computable only by subscribers from full picks.
     match /picksPublic/{pickId} {
       allow get, list: if true;
 
       allow create: if isOwner()
         && request.resource.data.keys().hasOnly(
-             ['sport', 'odds', 'stakeUnits',
-              'gameStartTime', 'postedAt', 'status', 'gradedAt'])
+             ['gameStartTime', 'postedAt', 'status', 'gradedAt'])
         && request.resource.data.postedAt == request.time
         && request.resource.data.status == 'pending'
         && request.resource.data.gradedAt == null
         // must mirror the full pick created in the same batch (types/bounds
         // are already enforced by the pick's own create rule)
         && getAfter(/databases/$(database)/documents/picks/$(pickId)).data.postedAt == request.time
-        && getAfter(/databases/$(database)/documents/picks/$(pickId)).data.sport == request.resource.data.sport
-        && getAfter(/databases/$(database)/documents/picks/$(pickId)).data.odds == request.resource.data.odds
-        && getAfter(/databases/$(database)/documents/picks/$(pickId)).data.stakeUnits == request.resource.data.stakeUnits
         && getAfter(/databases/$(database)/documents/picks/$(pickId)).data.gameStartTime == request.resource.data.gameStartTime;
 
       allow update: if isOwner()

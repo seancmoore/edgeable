@@ -26,22 +26,26 @@ const STATUS_STYLES = {
 
 // Every row shows the fully public facts: sport, odds, stake, timestamps,
 // result. Locked rows hide only the pick itself (the description).
+// Locked rows expose ONLY existence, timestamps, and result — no sport, odds,
+// or stake (those aren't even in the public stub data).
 function PickRow({ pick, withDate, signedIn }) {
   return (
     <li className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3.5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            {pick.sport}
-            {pick.access === 'public' && !pick.locked && (
-              <span className="inline-flex items-center gap-0.5 text-primary"><Gift className="h-3 w-3" /> free pick</span>
-            )}
-          </div>
+          {!pick.locked && (
+            <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              {pick.sport}
+              {pick.access === 'public' && (
+                <span className="inline-flex items-center gap-0.5 text-primary"><Gift className="h-3 w-3" /> free pick</span>
+              )}
+            </div>
+          )}
           {pick.locked ? (
-            <div className="mt-0.5 flex items-center gap-1.5 text-sm font-medium leading-snug text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-sm font-medium leading-snug text-muted-foreground">
               <Lock className="h-3.5 w-3.5 shrink-0" />
               <span>
-                Subscriber pick <span className="font-normal">@ {formatOdds(pick.odds)}</span>
+                Subscriber pick
                 {' · '}
                 <Link to={signedIn ? '/dashboard' : '/signup'} className="text-primary hover:underline">
                   {signedIn ? 'subscribe to unlock' : 'join to unlock'}
@@ -63,7 +67,7 @@ function PickRow({ pick, withDate, signedIn }) {
           <Clock className="h-3.5 w-3.5" />
           posted {formatPostedAt(pick.postedAt, { withDate })} ET
         </span>
-        <span>{formatStake(pick.stakeUnits)}</span>
+        {!pick.locked && <span>{formatStake(pick.stakeUnits)}</span>}
       </div>
     </li>
   );
@@ -101,6 +105,9 @@ export default function PublicCard() {
   const today = rows.filter(isPostedToday);
   const archive = rows.filter((p) => !isPostedToday(p));
   const signedIn = !!currentUser;
+  // Units/ROI need odds+stake, which locked rows don't carry — only show the
+  // financial numbers when the viewer can read every pick behind them.
+  const showFinancials = rows.length > 0 && !rows.some((p) => p.locked);
 
   return (
     <div className="relative min-h-screen flex flex-col bg-background">
@@ -118,9 +125,9 @@ export default function PublicCard() {
           <h1 className="font-display text-3xl font-semibold tracking-tight">Daily Card</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Every pick is posted before tip-off with a server-set timestamp, then graded in
-            public — stakes, odds, and results can never be edited, backdated, or deleted.
-            The losses stay up with the wins. Pick details are for subscribers;
-            members get a free pick of the day.
+            public — nothing can be edited, backdated, or deleted, and the losses stay up
+            with the wins. Pick details are for subscribers; members get a free pick of
+            the day.
           </p>
 
           {/* Record header — computed from the world-readable stubs, so these
@@ -135,19 +142,36 @@ export default function PublicCard() {
               </div>
               <div>
                 <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Net units</div>
-                <div className={cn('mt-1 font-display text-xl font-bold sm:text-2xl', unitsColor(record.netUnits))}>
-                  {formatUnits(record.netUnits)}
-                </div>
+                {showFinancials ? (
+                  <div className={cn('mt-1 font-display text-xl font-bold sm:text-2xl', unitsColor(record.netUnits))}>
+                    {formatUnits(record.netUnits)}
+                  </div>
+                ) : (
+                  <div className="mt-1 flex items-center gap-1 font-display text-xl font-bold text-muted-foreground sm:text-2xl">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                )}
               </div>
               <div>
                 <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">ROI</div>
-                <div className={cn('mt-1 font-display text-xl font-bold sm:text-2xl', unitsColor(record.roi))}>
-                  {(record.roi * 100).toFixed(1)}%
-                </div>
+                {showFinancials ? (
+                  <div className={cn('mt-1 font-display text-xl font-bold sm:text-2xl', unitsColor(record.roi))}>
+                    {(record.roi * 100).toFixed(1)}%
+                  </div>
+                ) : (
+                  <div className="mt-1 flex items-center gap-1 font-display text-xl font-bold text-muted-foreground sm:text-2xl">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                )}
               </div>
               <div className="col-span-3 border-t border-border pt-3 text-xs text-muted-foreground">
-                Across {record.graded} graded pick{record.graded === 1 ? '' : 's'} · pending picks excluded ·
-                voids excluded from ROI · pushes count at zero units
+                {showFinancials ? (
+                  <>Across {record.graded} graded pick{record.graded === 1 ? '' : 's'} · pending picks excluded ·
+                  voids excluded from ROI · pushes count at zero units</>
+                ) : (
+                  <>Across {record.graded} graded pick{record.graded === 1 ? '' : 's'} · every pick is
+                  timestamped below · units &amp; ROI are visible to subscribers</>
+                )}
               </div>
             </CardContent>
           </Card>

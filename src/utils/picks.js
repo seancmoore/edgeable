@@ -7,8 +7,10 @@ import { db } from '../firebase.js';
 // Tamper-evident pick record with tiered access (Phase 5 decision):
 //  * picks/{id}        — full details; readable by active subscribers only
 //                        (access=='public' picks: any signed-in user)
-//  * picksPublic/{id}  — world-readable stub (everything but the description);
-//                        the public record header/archive compute from these
+//  * picksPublic/{id}  — world-readable stub: timestamps + result ONLY, no
+//                        sport/odds/stake. Public gets a countable W-L record
+//                        with posted-before-game proof; units/ROI are
+//                        computable only from full picks (subscriber view)
 // Every write must survive the security rules: postedAt MUST be
 // serverTimestamp(), pick+stub are created/graded together in one batch
 // (rules enforce the pairing via getAfter), picks are immutable after create
@@ -33,9 +35,6 @@ export async function createPick({ sport, description, odds, stakeUnits, gameSta
   if (!ACCESS_LEVELS.includes(access)) throw new Error('Access must be subscribers or public.');
 
   const shared = {
-    sport: String(sport).trim().toUpperCase().slice(0, 20),
-    odds: o,
-    stakeUnits: u,
     gameStartTime: Timestamp.fromDate(start),
     postedAt: serverTimestamp(),
     status: 'pending',
@@ -45,7 +44,10 @@ export async function createPick({ sport, description, odds, stakeUnits, gameSta
   const batch = writeBatch(db);
   batch.set(pickRef, {
     ...shared,
+    sport: String(sport).trim().toUpperCase().slice(0, 20),
     description: String(description).trim().slice(0, 200),
+    odds: o,
+    stakeUnits: u,
     access,
   });
   batch.set(doc(db, 'picksPublic', pickRef.id), shared);

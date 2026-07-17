@@ -78,18 +78,19 @@ const future = () => new Date(Date.now() + 6 * 3600 * 1000);
 const past = () => new Date(Date.now() - 6 * 3600 * 1000);
 const randId = () => Array.from({ length: 20 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
 
-// Shared (stub) fields WITHOUT postedAt — added per-test as transform or concrete
+// Stub = timestamps + result ONLY (no sport/odds/stake in public data).
+// postedAt omitted — added per-test as transform or concrete value.
 const stubFields = () => ({
-  sport: S('TEST'),
-  odds: I(-110),
-  stakeUnits: D(1),
   gameStartTime: T(future()),
   status: S('pending'),
   gradedAt: NUL,
 });
 const pickFields = () => ({
   ...stubFields(),
+  sport: S('TEST'),
   description: S('Integrity probe — should never exist'),
+  odds: I(-110),
+  stakeUnits: D(1),
   access: S('subscribers'),
 });
 
@@ -156,7 +157,10 @@ const adminToken = await signIn('edgeable.administration@gmail.com', adminPw);
 await expectAllowed('list full picks (owner)', req('GET', `${FS}/picks?pageSize=5&key=${KEY}`, null, adminToken));
 await expectDenied('create pick WITHOUT its public stub', commit([createWrite(`picks/${randId()}`, pickFields())], adminToken));
 await expectDenied('create stub WITHOUT its pick', commit([createWrite(`picksPublic/${randId()}`, stubFields())], adminToken));
-await expectDenied('paired create, stub odds mismatch', commit(pairedWrites(randId(), {}, { odds: I(-200) }), adminToken));
+await expectDenied('paired create, stub gameStartTime mismatch', commit(pairedWrites(randId(), {}, { gameStartTime: T(new Date(Date.now() + 12 * 3600 * 1000)) }), adminToken));
+await expectDenied('paired create, odds leaked onto public stub', commit(pairedWrites(randId(), {}, { odds: I(-110) }), adminToken));
+await expectDenied('paired create, stake leaked onto public stub', commit(pairedWrites(randId(), {}, { stakeUnits: D(1) }), adminToken));
+await expectDenied('paired create, sport leaked onto public stub', commit(pairedWrites(randId(), {}, { sport: S('NBA') }), adminToken));
 await expectDenied('paired create, client-supplied postedAt', commit(pairedWrites(randId(), { postedAt: T(new Date()) }, { postedAt: T(new Date()) }), adminToken));
 await expectDenied('paired create, backdated gameStartTime', commit(pairedWrites(randId(), { gameStartTime: T(past()) }, { gameStartTime: T(past()) }), adminToken));
 await expectDenied('paired create, pre-graded (status win)', commit(pairedWrites(randId(), { status: S('win'), gradedAt: T(new Date()) }, { status: S('win'), gradedAt: T(new Date()) }), adminToken));

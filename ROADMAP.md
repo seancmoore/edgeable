@@ -16,9 +16,10 @@ tamper-evident. Every feature decision defers to this.
 - [x] Tiered access (per Phase 5 decision): architecture + rules changes proposed and
       approved by Sean (2026-07-17)
 - [x] Tiered access implemented + verified (2026-07-17: picks + picksPublic stubs with
-      batch-pairing enforced via getAfter; rules deployed; verify-picks-rules.mjs 23/23 —
-      signed-out sees stubs only, inactive user denied, active sub reads full picks,
-      unpaired/tampered/backdated writes all rejected)
+      batch-pairing enforced via getAfter; stubs slimmed to timestamps+result only same day;
+      rules deployed; verify-picks-rules.mjs 26/26 — signed-out sees stubs only, inactive
+      user denied, active sub reads full picks, unpaired/tampered/backdated writes and any
+      sport/odds/stake/description leak onto the public stub all rejected)
 - [ ] Public /card UI handles all viewer tiers (built + deployed + bundle-verified
       2026-07-17; check off after visual confirmation with the first real card)
 - [ ] Admin: manual pick entry form
@@ -62,9 +63,10 @@ tamper-evident. Every feature decision defers to this.
         never unlock publicly, not even after grading
       - Separate daily public pick(s) (~one per day): details visible to any LOGGED-IN user
       - Everyone else sees subscriber picks as locked entries (stubs): existence, timestamps,
-        sport, odds, stake, and grading result public; the pick description is the paid product
-      - Public record header (W-L-P, net units, ROI) stays complete and publicly verifiable,
-        computed from the world-readable stubs — losses can never be hidden
+        and grading result ONLY — no sport, odds, or per-pick units (Sean, 2026-07-17)
+      - Public record header shows W-L-P (countable against the rows, losses can never be
+        hidden); net units + ROI are subscriber-only since they need odds/stakes — public
+        ROI claims route through the Action Network verification link (raises Phase 4 stakes)
 - [ ] Pricing and payment flow documented (what a new subscriber does, step by step, from
       Instagram → site → paid Telegram)
 
