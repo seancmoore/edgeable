@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, ExternalLink } from 'lucide-react';
+import { Clock, ExternalLink, Lock, Gift } from 'lucide-react';
 import Wordmark from '../components/Wordmark.jsx';
 import ThemeToggle from '../components/ThemeToggle.jsx';
 import { Card, CardContent } from '../components/ui/card.jsx';
 import { Badge } from '../components/ui/badge.jsx';
+import { useAuth } from '../AuthContext.jsx';
 import {
-  getAllPicks, computeRecord, isPostedToday,
-  formatOdds, formatStake, formatPostedAt,
+  getPublicStubs, getReadableFullPicks, mergePicks, computeRecord,
+  isPostedToday, formatOdds, formatStake, formatPostedAt,
 } from '../utils/picks.js';
 import { unitsColor, formatUnits } from '../utils/pnl.js';
 import { cn } from '../lib/utils.js';
@@ -23,15 +24,35 @@ const STATUS_STYLES = {
   void: 'bg-muted text-muted-foreground line-through',
 };
 
-function PickRow({ pick, withDate }) {
+// Every row shows the fully public facts: sport, odds, stake, timestamps,
+// result. Locked rows hide only the pick itself (the description).
+function PickRow({ pick, withDate, signedIn }) {
   return (
     <li className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3.5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{pick.sport}</div>
-          <div className="mt-0.5 text-sm font-semibold leading-snug">
-            {pick.description} <span className="font-normal text-muted-foreground">@ {formatOdds(pick.odds)}</span>
+          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            {pick.sport}
+            {pick.access === 'public' && !pick.locked && (
+              <span className="inline-flex items-center gap-0.5 text-primary"><Gift className="h-3 w-3" /> free pick</span>
+            )}
           </div>
+          {pick.locked ? (
+            <div className="mt-0.5 flex items-center gap-1.5 text-sm font-medium leading-snug text-muted-foreground">
+              <Lock className="h-3.5 w-3.5 shrink-0" />
+              <span>
+                Subscriber pick <span className="font-normal">@ {formatOdds(pick.odds)}</span>
+                {' · '}
+                <Link to={signedIn ? '/dashboard' : '/signup'} className="text-primary hover:underline">
+                  {signedIn ? 'subscribe to unlock' : 'join to unlock'}
+                </Link>
+              </span>
+            </div>
+          ) : (
+            <div className="mt-0.5 text-sm font-semibold leading-snug">
+              {pick.description} <span className="font-normal text-muted-foreground">@ {formatOdds(pick.odds)}</span>
+            </div>
+          )}
         </div>
         <Badge className={cn('shrink-0 uppercase', STATUS_STYLES[pick.status] || '')}>
           {pick.status}
@@ -49,20 +70,37 @@ function PickRow({ pick, withDate }) {
 }
 
 export default function PublicCard() {
-  const [picks, setPicks] = useState([]);
+  const { currentUser, userDoc, loading: authLoading } = useAuth();
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getAllPicks(2000)
-      .then(setPicks)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+    if (authLoading) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        // Stubs are the complete record (world-readable); full picks overlay
+        // descriptions for whatever tier the viewer is in.
+        const [stubs, fullPicks] = await Promise.all([
+          getPublicStubs(2000),
+          getReadableFullPicks({ userDoc }),
+        ]);
+        if (!cancelled) setRows(mergePicks(stubs, fullPicks));
+      } catch (e) {
+        if (!cancelled) setError(e.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [authLoading, userDoc]);
 
-  const record = computeRecord(picks);
-  const today = picks.filter(isPostedToday);
-  const archive = picks.filter((p) => !isPostedToday(p));
+  const record = computeRecord(rows);
+  const today = rows.filter(isPostedToday);
+  const archive = rows.filter((p) => !isPostedToday(p));
+  const signedIn = !!currentUser;
 
   return (
     <div className="relative min-h-screen flex flex-col bg-background">
@@ -79,11 +117,14 @@ export default function PublicCard() {
         <div className="mx-auto w-full max-w-xl animate-fade-in">
           <h1 className="font-display text-3xl font-semibold tracking-tight">Daily Card</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Every pick is posted here before tip-off with a server-set timestamp.
-            Picks can never be edited, backdated, or deleted — the losses stay up with the wins.
+            Every pick is posted before tip-off with a server-set timestamp, then graded in
+            public — stakes, odds, and results can never be edited, backdated, or deleted.
+            The losses stay up with the wins. Pick details are for subscribers;
+            members get a free pick of the day.
           </p>
 
-          {/* Record header */}
+          {/* Record header — computed from the world-readable stubs, so these
+              numbers are identical for every viewer */}
           <Card className="mt-5">
             <CardContent className="grid grid-cols-3 gap-4 p-5">
               <div>
@@ -134,8 +175,14 @@ export default function PublicCard() {
                 <p className="mt-2 text-sm text-muted-foreground">No picks posted yet today. Check back later.</p>
               ) : (
                 <ul className="mt-3 flex list-none flex-col gap-2 p-0">
-                  {today.map((p) => <PickRow key={p.id} pick={p} />)}
+                  {today.map((p) => <PickRow key={p.id} pick={p} signedIn={signedIn} />)}
                 </ul>
+              )}
+              {!signedIn && today.some((p) => p.locked) && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  <Link to="/signup" className="text-primary hover:underline">Create a free account</Link>
+                  {' '}to see the free pick of the day.
+                </p>
               )}
             </section>
           )}
@@ -146,7 +193,7 @@ export default function PublicCard() {
               <h2 className="font-display text-xl font-semibold tracking-tight">Archive</h2>
               <p className="mt-1 text-xs text-muted-foreground">All {archive.length} past picks, newest first.</p>
               <ul className="mt-3 flex list-none flex-col gap-2 p-0">
-                {archive.map((p) => <PickRow key={p.id} pick={p} withDate />)}
+                {archive.map((p) => <PickRow key={p.id} pick={p} withDate signedIn={signedIn} />)}
               </ul>
             </section>
           )}

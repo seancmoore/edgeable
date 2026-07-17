@@ -13,13 +13,14 @@ tamper-evident. Every feature decision defers to this.
 - [x] Phase 0 architecture report reviewed and approved by Sean (2026-07-17; note: rules were deployed before this gate existed — Sean ratified)
 - [x] Firestore schema + security rules proposed and approved by Sean (2026-07-17; "external review" satisfied by an independent fresh-context adversarial review — no exploitable findings; tell Claude to uncheck if a human external review is wanted)
 - [x] Data layer + security rules implemented (2026-07-17; verified live by scripts/verify-picks-rules.mjs — 12/12 denial tests pass; edit-after-post tests deferred until the first real pick exists, then rerun with its id)
-- [ ] Tiered access (per Phase 5 decision): architecture + rules changes proposed and
-      approved by Sean
-- [ ] Tiered access implemented + verified (subscriber-only pick details, world-readable
-      stubs incl. grading results, logged-in daily public pick, active-subscriber gate;
-      extend scripts/verify-picks-rules.mjs to cover the new read matrix)
-- [ ] Public /card UI handles all viewer tiers (locked entries with results, public-pick
-      state for logged-in users, subscriber full view)
+- [x] Tiered access (per Phase 5 decision): architecture + rules changes proposed and
+      approved by Sean (2026-07-17)
+- [x] Tiered access implemented + verified (2026-07-17: picks + picksPublic stubs with
+      batch-pairing enforced via getAfter; rules deployed; verify-picks-rules.mjs 23/23 —
+      signed-out sees stubs only, inactive user denied, active sub reads full picks,
+      unpaired/tampered/backdated writes all rejected)
+- [ ] Public /card UI handles all viewer tiers (built + deployed + bundle-verified
+      2026-07-17; check off after visual confirmation with the first real card)
 - [ ] Admin: manual pick entry form
 - [ ] Admin: screenshot import via Cloud Function → Anthropic API → review screen (never auto-post)
 - [ ] Admin: one-click grading (win/loss/push/void)

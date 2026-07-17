@@ -13,7 +13,7 @@ import { Button } from '../../components/ui/button.jsx';
 import { Input } from '../../components/ui/input.jsx';
 import { cn } from '../../lib/utils.js';
 
-const EMPTY_FORM = { sport: '', description: '', odds: '', stakeUnits: '1', gameStartTime: '' };
+const EMPTY_FORM = { sport: '', description: '', odds: '', stakeUnits: '1', gameStartTime: '', access: 'subscribers' };
 
 // datetime-local wants "YYYY-MM-DDTHH:MM" in local time.
 function toLocalInputValue(iso) {
@@ -57,15 +57,34 @@ function GradeButtons({ pick, onGraded }) {
 
 function PickFields({ value, onChange }) {
   const set = (k, v) => onChange({ ...value, [k]: v });
+  const access = value.access || 'subscribers';
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
       <Input placeholder="League (NBA)" value={value.sport} onChange={(e) => set('sport', e.target.value)} />
       <Input className="col-span-2 sm:col-span-2" placeholder="Pick (Yankees ML)" value={value.description} onChange={(e) => set('description', e.target.value)} />
       <Input placeholder="Odds (-110)" inputMode="numeric" value={value.odds} onChange={(e) => set('odds', e.target.value)} />
       <Input placeholder="Units" inputMode="decimal" value={value.stakeUnits} onChange={(e) => set('stakeUnits', e.target.value)} />
-      <div className="col-span-2 sm:col-span-5">
+      <div className="col-span-2 sm:col-span-3">
         <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Game start</label>
         <Input type="datetime-local" value={value.gameStartTime} onChange={(e) => set('gameStartTime', e.target.value)} />
+      </div>
+      <div className="col-span-2 sm:col-span-2">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Who sees it (permanent)</label>
+        <div className="mt-0.5 grid grid-cols-2 overflow-hidden rounded-md border border-border">
+          {['subscribers', 'public'].map((a) => (
+            <button
+              key={a}
+              type="button"
+              onClick={() => set('access', a)}
+              className={cn(
+                'px-2 py-2 text-xs font-medium capitalize transition-colors',
+                access === a ? 'bg-primary text-primary-foreground' : 'bg-card hover:bg-secondary'
+              )}
+            >
+              {a === 'public' ? 'Free pick' : 'Subscribers'}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -129,6 +148,7 @@ export default function CardManager() {
         odds: p.odds != null ? String(p.odds) : '',
         stakeUnits: p.stakeUnits != null ? String(p.stakeUnits) : '1',
         gameStartTime: toLocalInputValue(p.gameStartTime),
+        access: 'subscribers',
       })));
       if ((data.picks || []).length === 0) setError('No picks found in that screenshot.');
     } catch (e) {
@@ -139,7 +159,21 @@ export default function CardManager() {
     }
   };
 
+  // The free-pick designation is immutable by design (rules), so warn before
+  // posting a second public pick on the same day.
+  const warnDuplicateFreePick = (newRows) => {
+    const existing = today.filter((p) => p.access === 'public').length;
+    const incoming = newRows.filter((r) => r.access === 'public').length;
+    if (existing + incoming > 1) {
+      return window.confirm(
+        `This would make ${existing + incoming} free picks today (designation is permanent). Post anyway?`
+      );
+    }
+    return true;
+  };
+
   const confirmImport = async () => {
+    if (!warnDuplicateFreePick(reviewRows)) return;
     setPosting(true);
     setError('');
     try {
@@ -162,6 +196,7 @@ export default function CardManager() {
   // ── manual entry ───────────────────────────────────────────
   const submitManual = async (e) => {
     e.preventDefault();
+    if (!warnDuplicateFreePick([manual])) return;
     setManualBusy(true);
     setError('');
     try {
@@ -318,7 +353,10 @@ export default function CardManager() {
           <ul className="mt-3 flex list-none flex-col gap-2 p-0">
             {today.map((p) => (
               <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm">
-                <span>{p.sport} · {p.description} @ {formatOdds(p.odds)} · {formatStake(p.stakeUnits)}</span>
+                <span>
+                  {p.sport} · {p.description} @ {formatOdds(p.odds)} · {formatStake(p.stakeUnits)}
+                  {p.access === 'public' && <span className="ml-1.5 text-xs font-medium text-primary">FREE PICK</span>}
+                </span>
                 <span className="text-xs uppercase text-muted-foreground">{p.status}</span>
               </li>
             ))}

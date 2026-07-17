@@ -49,6 +49,14 @@
       ]
     },
     {
+      "collectionGroup": "picks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "access", "order": "ASCENDING" },
+        { "fieldPath": "postedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "accountEvents",
       "queryScope": "COLLECTION",
       "fields": [

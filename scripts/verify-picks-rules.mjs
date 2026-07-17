@@ -1,25 +1,28 @@
-// Live integrity-rule verification for the public `picks` collection.
-// Runs DENIAL tests against production Firestore with client credentials —
-// every write here is expected to FAIL with PERMISSION_DENIED, so a passing
-// run writes nothing and leaves no trace on the public record.
+// Live integrity + access-tier verification for the pick record
+// (`picks` + `picksPublic`). Runs against production Firestore with client
+// credentials. Every write is expected to FAIL, so a passing run writes
+// nothing and leaves no trace on the public record. The only allowed
+// operations are reads that prove each tier sees exactly what it should.
 //
 // Pure REST (no firebase SDK): the web API key is HTTP-referrer restricted and
 // fetch() strips the Referer header (forbidden per spec), so we use https
-// requests with an explicit Referer — same approach as the CLAUDE.md runbook.
+// requests with an explicit Referer. App Check is enforced on Auth, so a
+// legitimate App Check token is minted via the Admin SDK (service-account.json).
 //
-// Usage: node scripts/verify-picks-rules.mjs <admin-password> <nonadmin-password> [pickIdForEditTests]
-//   admin account:    edgeable.administration@gmail.com (the pinned owner UID)
-//   nonadmin account: test@gmail.com (Tester2)
-//   pickIdForEditTests: optional id of a REAL posted pick; edit/delete attempts
-//     against it are expected to be denied and leave it untouched.
+// Usage: node scripts/verify-picks-rules.mjs <admin-pw> <inactive-user-pw> <active-sub-pw> [pickIdForEditTests]
+//   admin:        edgeable.administration@gmail.com (the pinned owner UID)
+//   inactive:     test@gmail.com (Tester2, status inactive)
+//   active sub:   tg_tester@edgeable.local (tester, status active, end 2028)
+//   pickIdForEditTests: optional id of a REAL posted pick; edit/grade/delete
+//     attempts against it (and its stub) are expected to be denied.
 
 import https from 'node:https';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
-const [adminPw, userPw, pickId] = process.argv.slice(2);
-if (!adminPw || !userPw) {
-  console.error('Usage: node scripts/verify-picks-rules.mjs <admin-password> <nonadmin-password> [pickId]');
+const [adminPw, inactivePw, activePw, pickId] = process.argv.slice(2);
+if (!adminPw || !inactivePw || !activePw) {
+  console.error('Usage: node scripts/verify-picks-rules.mjs <admin-pw> <inactive-user-pw> <active-sub-pw> [pickId]');
   process.exit(2);
 }
 
@@ -27,10 +30,8 @@ const KEY = 'AIzaSyDD48IX4lTVr_6NjcnD-Aj_GY6ewqAdU_k';
 const REFERER = 'https://edgeabled.web.app/';
 const DB = 'projects/edgeabled/databases/(default)';
 const FS = `https://firestore.googleapis.com/v1/${DB}/documents`;
+const COMMIT = `https://firestore.googleapis.com/v1/${DB}/documents:commit?key=${KEY}`;
 
-// App Check is ENFORCED on Auth (and healthy — the real app validates), so a
-// bare REST sign-in gets 401. Mint a legitimate App Check token via the Admin
-// SDK (needs service-account.json) and attach it to Auth calls.
 let appCheckToken = '';
 async function mintAppCheckToken() {
   const { initializeApp, cert } = require('firebase-admin/app');
@@ -77,31 +78,40 @@ const future = () => new Date(Date.now() + 6 * 3600 * 1000);
 const past = () => new Date(Date.now() - 6 * 3600 * 1000);
 const randId = () => Array.from({ length: 20 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
 
-// Base pick fields WITHOUT postedAt (added per-test: concrete vs serverTimestamp)
-const baseFields = () => ({
+// Shared (stub) fields WITHOUT postedAt — added per-test as transform or concrete
+const stubFields = () => ({
   sport: S('TEST'),
-  description: S('Integrity probe — should never exist'),
   odds: I(-110),
   stakeUnits: D(1),
   gameStartTime: T(future()),
   status: S('pending'),
   gradedAt: NUL,
 });
+const pickFields = () => ({
+  ...stubFields(),
+  description: S('Integrity probe — should never exist'),
+  access: S('subscribers'),
+});
 
-// Create via commit so postedAt can be a true server transform (REQUEST_TIME).
-function commitCreate(fields, extraTransforms, token) {
-  return req('POST', `https://firestore.googleapis.com/v1/${DB}/documents:commit?key=${KEY}`, {
-    writes: [{
-      update: { name: `${DB}/documents/picks/${randId()}`, fields },
-      updateTransforms: [{ fieldPath: 'postedAt', setToServerValue: 'REQUEST_TIME' }, ...(extraTransforms || [])],
-      currentDocument: { exists: false },
-    }],
-  }, token);
+// A single create write; server postedAt via transform unless a concrete
+// postedAt is already present in fields.
+function createWrite(path, fields) {
+  const w = { update: { name: `${DB}/documents/${path}`, fields }, currentDocument: { exists: false } };
+  if (!fields.postedAt) w.updateTransforms = [{ fieldPath: 'postedAt', setToServerValue: 'REQUEST_TIME' }];
+  return w;
 }
+// Paired pick+stub batch (the legitimate shape, mutated per-test)
+function pairedWrites(id, pickMut = {}, stubMut = {}) {
+  return [
+    createWrite(`picks/${id}`, { ...pickFields(), ...pickMut }),
+    createWrite(`picksPublic/${id}`, { ...stubFields(), ...stubMut }),
+  ];
+}
+const commit = (writes, token) => req('POST', COMMIT, { writes }, token);
 
-function patch(id, fields, token) {
+function patch(collectionId, id, fields, token) {
   const mask = Object.keys(fields).map((f) => `updateMask.fieldPaths=${f}`).join('&');
-  return req('PATCH', `${FS}/picks/${id}?${mask}&key=${KEY}`, { fields }, token);
+  return req('PATCH', `${FS}/${collectionId}/${id}?${mask}&key=${KEY}`, { fields }, token);
 }
 
 let pass = 0, fail = 0;
@@ -123,29 +133,43 @@ await mintAppCheckToken();
 const probeId = pickId || 'nonexistent-probe';
 
 console.log('\n[signed out]');
-await expectAllowed('public read of picks', req('GET', `${FS}/picks?pageSize=1&key=${KEY}`));
-await expectDenied('create pick', req('POST', `${FS}/picks?key=${KEY}`, { fields: { ...baseFields(), postedAt: T(new Date()) } }));
+await expectAllowed('read public stubs (the record)', req('GET', `${FS}/picksPublic?pageSize=5&key=${KEY}`));
+await expectDenied('list full picks (details are gated)', req('GET', `${FS}/picks?pageSize=5&key=${KEY}`));
+await expectDenied('create paired pick+stub', commit(pairedWrites(randId())));
 await expectDenied('delete pick', req('DELETE', `${FS}/picks/${probeId}?key=${KEY}`));
 
-console.log('\n[non-admin: test@gmail.com]');
-const userToken = await signIn('test@gmail.com', userPw);
-await expectDenied('create pick', req('POST', `${FS}/picks?key=${KEY}`, { fields: { ...baseFields(), postedAt: T(new Date()) } }, userToken));
-await expectDenied('create pick (server postedAt)', commitCreate(baseFields(), null, userToken));
-await expectDenied('grade pick', patch(probeId, { status: S('win'), gradedAt: T(new Date()) }, userToken));
-await expectDenied('delete pick', req('DELETE', `${FS}/picks/${probeId}?key=${KEY}`, null, userToken));
+console.log('\n[inactive user: test@gmail.com]');
+const inactiveToken = await signIn('test@gmail.com', inactivePw);
+await expectDenied('list full picks (not an active sub)', req('GET', `${FS}/picks?pageSize=5&key=${KEY}`, null, inactiveToken));
+await expectDenied('create paired pick+stub', commit(pairedWrites(randId()), inactiveToken));
+await expectDenied('grade pick', patch('picks', probeId, { status: S('win'), gradedAt: T(new Date()) }, inactiveToken));
+await expectDenied('delete pick', req('DELETE', `${FS}/picks/${probeId}?key=${KEY}`, null, inactiveToken));
+
+console.log('\n[active subscriber: tester]');
+const activeToken = await signIn('tg_tester@edgeable.local', activePw);
+await expectAllowed('list full picks (subscriber gate opens)', req('GET', `${FS}/picks?pageSize=5&key=${KEY}`, null, activeToken));
+await expectDenied('create paired pick+stub (read-only tier)', commit(pairedWrites(randId()), activeToken));
+await expectDenied('delete pick', req('DELETE', `${FS}/picks/${probeId}?key=${KEY}`, null, activeToken));
 
 console.log('\n[admin: edgeable.administration@gmail.com]');
 const adminToken = await signIn('edgeable.administration@gmail.com', adminPw);
-await expectDenied('create with client-supplied postedAt', req('POST', `${FS}/picks?key=${KEY}`, { fields: { ...baseFields(), postedAt: T(new Date()) } }, adminToken));
-await expectDenied('create with backdated gameStartTime', commitCreate({ ...baseFields(), gameStartTime: T(past()) }, null, adminToken));
-await expectDenied('create pre-graded (status win)', commitCreate({ ...baseFields(), status: S('win'), gradedAt: T(new Date()) }, null, adminToken));
-await expectDenied('create with extra field', commitCreate({ ...baseFields(), secretNote: S('x') }, null, adminToken));
+await expectAllowed('list full picks (owner)', req('GET', `${FS}/picks?pageSize=5&key=${KEY}`, null, adminToken));
+await expectDenied('create pick WITHOUT its public stub', commit([createWrite(`picks/${randId()}`, pickFields())], adminToken));
+await expectDenied('create stub WITHOUT its pick', commit([createWrite(`picksPublic/${randId()}`, stubFields())], adminToken));
+await expectDenied('paired create, stub odds mismatch', commit(pairedWrites(randId(), {}, { odds: I(-200) }), adminToken));
+await expectDenied('paired create, client-supplied postedAt', commit(pairedWrites(randId(), { postedAt: T(new Date()) }, { postedAt: T(new Date()) }), adminToken));
+await expectDenied('paired create, backdated gameStartTime', commit(pairedWrites(randId(), { gameStartTime: T(past()) }, { gameStartTime: T(past()) }), adminToken));
+await expectDenied('paired create, pre-graded (status win)', commit(pairedWrites(randId(), { status: S('win'), gradedAt: T(new Date()) }, { status: S('win'), gradedAt: T(new Date()) }), adminToken));
+await expectDenied('paired create, extra field on pick', commit(pairedWrites(randId(), { secretNote: S('x') }), adminToken));
+await expectDenied('paired create, invalid access value', commit(pairedWrites(randId(), { access: S('vip') }), adminToken));
+await expectDenied('paired create, description on public stub', commit(pairedWrites(randId(), {}, { description: S('leak') }), adminToken));
 await expectDenied('delete pick (even as admin)', req('DELETE', `${FS}/picks/${probeId}?key=${KEY}`, null, adminToken));
+await expectDenied('delete stub (even as admin)', req('DELETE', `${FS}/picksPublic/${probeId}?key=${KEY}`, null, adminToken));
 if (pickId) {
-  await expectDenied('edit description of posted pick', patch(pickId, { description: S('tampered') }, adminToken));
-  await expectDenied('edit odds of posted pick', patch(pickId, { odds: I(500) }, adminToken));
-  await expectDenied('backdate postedAt of posted pick', patch(pickId, { postedAt: T(past()) }, adminToken));
-  await expectDenied('grade with client-supplied gradedAt', patch(pickId, { status: S('win'), gradedAt: T(past()) }, adminToken));
+  await expectDenied('edit description of posted pick', patch('picks', pickId, { description: S('tampered') }, adminToken));
+  await expectDenied('edit odds of posted stub', patch('picksPublic', pickId, { odds: I(500) }, adminToken));
+  await expectDenied('backdate postedAt of posted pick', patch('picks', pickId, { postedAt: T(past()) }, adminToken));
+  await expectDenied('grade pick without grading its stub', patch('picks', pickId, { status: S('win'), gradedAt: T(new Date()) }, adminToken));
 } else {
   console.log('  … no pickId supplied — edit-after-post tests deferred until a real pick exists.');
 }
