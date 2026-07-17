@@ -153,6 +153,47 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── picks (public verifiable record) ─────────────────────
+    // Tamper-evidence contract:
+    //  * world-readable, writes pinned to the owner's UID + admin role
+    //  * immutable after create except status+gradedAt (grading)
+    //  * postedAt is always the server clock; grading is one-way; no deletes
+    // NOTE: the Admin SDK (service-account key) bypasses rules — this contract
+    // binds the app and anyone talking to Firestore with client credentials.
+    function isOwner() {
+      return isAdmin() && request.auth.uid == '1lBW1ipOh3XHhGiKoJs6uKvbAAI2';
+    }
+    match /picks/{pickId} {
+      allow get, list: if true;
+
+      allow create: if isOwner()
+        && request.resource.data.keys().hasOnly(
+             ['sport', 'description', 'odds', 'stakeUnits',
+              'gameStartTime', 'postedAt', 'status', 'gradedAt'])
+        && reqStr(request.resource.data.sport, 2, 20)
+        && reqStr(request.resource.data.description, 3, 200)
+        && request.resource.data.odds is int
+        && (request.resource.data.odds >= 100 || request.resource.data.odds <= -100)
+        && request.resource.data.stakeUnits is number
+        && request.resource.data.stakeUnits > 0
+        && request.resource.data.stakeUnits <= 100
+        && request.resource.data.gameStartTime is timestamp
+        && request.resource.data.gameStartTime > request.time
+        && request.resource.data.postedAt == request.time
+        && request.resource.data.status == 'pending'
+        && request.resource.data.gradedAt == null;
+
+      // Grading: pending -> final, once. Nothing else may ever change.
+      allow update: if isOwner()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data)
+             .affectedKeys().hasOnly(['status', 'gradedAt'])
+        && request.resource.data.status in ['win', 'loss', 'push', 'void']
+        && request.resource.data.gradedAt == request.time;
+
+      allow delete: if false;
+    }
+
     // ── account events (audit log) ───────────────────────────
     match /accountEvents/{eventId} {
       allow read: if isAdmin()

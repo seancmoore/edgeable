@@ -13,6 +13,8 @@ import SubscriberDetail from './pages/admin/SubscriberDetail.jsx';
 import AllTransactions from './pages/admin/AllTransactions.jsx';
 import PendingRequests from './pages/admin/PendingRequests.jsx';
 import PnLManager from './pages/admin/PnLManager.jsx';
+import CardManager from './pages/admin/CardManager.jsx';
+import PublicCard from './pages/PublicCard.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 export default function App() {
@@ -24,6 +26,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
+      <Route path="/card" element={<PublicCard />} />
       <Route
         path="/dashboard"
         element={
@@ -93,6 +96,14 @@ export default function App() {
         element={
           <ProtectedRoute requiredRole="admin">
             <PnLManager />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/card"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <CardManager />
           </ProtectedRoute>
         }
       />
