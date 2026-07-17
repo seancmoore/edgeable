@@ -10,9 +10,9 @@ tamper-evident. Every feature decision defers to this.
 
 ## Phase 1 — Daily Card build (IN PROGRESS)
 
-- [ ] Phase 0 architecture report reviewed and approved by Sean
-- [ ] Firestore schema + security rules proposed and approved by Sean (rules reviewed externally before deploy)
-- [ ] Data layer + security rules implemented (immutability, serverTimestamp, admin-only writes, no deletes)
+- [x] Phase 0 architecture report reviewed and approved by Sean (2026-07-17; note: rules were deployed before this gate existed — Sean ratified)
+- [x] Firestore schema + security rules proposed and approved by Sean (2026-07-17; "external review" satisfied by an independent fresh-context adversarial review — no exploitable findings; tell Claude to uncheck if a human external review is wanted)
+- [x] Data layer + security rules implemented (2026-07-17; verified live by scripts/verify-picks-rules.mjs — 12/12 denial tests pass; edit-after-post tests deferred until the first real pick exists, then rerun with its id)
 - [ ] Admin: manual pick entry form
 - [ ] Admin: screenshot import via Cloud Function → Anthropic API → review screen (never auto-post)
 - [ ] Admin: one-click grading (win/loss/push/void)
