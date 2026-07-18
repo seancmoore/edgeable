@@ -24,6 +24,8 @@ tamper-evident. Every feature decision defers to this.
       2026-07-17; check off after visual confirmation with the first real card)
 - [ ] Admin: manual pick entry form
 - [ ] Admin: screenshot import via Cloud Function → Anthropic API → review screen (never auto-post)
+      (DEFERRED by Sean 2026-07-18 — didn't want separate API billing (~$5 one-time, ~1¢/screenshot);
+      manual entry is the workflow for now; code is written, only secret + function deploy remain)
 - [ ] Admin: one-click grading (win/loss/push/void)
 - [ ] Admin: "Copy today's card as text" button (Telegram post is generated FROM the site)
 - [ ] Public: today's card with visible posted-at timestamps
