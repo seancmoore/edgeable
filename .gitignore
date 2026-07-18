@@ -81,3 +81,4 @@ dist/
 # Claude Code project instructions (local only)
 CLAUDE.md
 .claude/
+.appcheck-debug-token

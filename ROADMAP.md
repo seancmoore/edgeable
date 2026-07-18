@@ -24,8 +24,12 @@ tamper-evident. Every feature decision defers to this.
       2026-07-17; check off after visual confirmation with the first real card)
 - [ ] Admin: manual pick entry form
 - [ ] Admin: screenshot import via Cloud Function → Anthropic API → review screen (never auto-post)
-      (DEFERRED by Sean 2026-07-18 — didn't want separate API billing (~$5 one-time, ~1¢/screenshot);
-      manual entry is the workflow for now; code is written, only secret + function deploy remain)
+      (DEFERRED by Sean 2026-07-18 — didn't want separate API billing. REPLACED by the
+      no-API-credit Claude flow: screenshot → Claude Code session (desktop or Remote Control
+      from the phone app) → human review in chat → scripts/post-card.mjs through the
+      rules-enforced path. Verified end-to-end 2026-07-18: posted, attacked (30/30 denials,
+      incl. edit-after-post + re-grade on a live doc), graded, test data removed. The
+      website import button + Cloud Function remain built-but-undeployed if ever wanted.)
 - [ ] Admin: one-click grading (win/loss/push/void)
 - [ ] Admin: "Copy today's card as text" button (Telegram post is generated FROM the site)
 - [ ] Public: today's card with visible posted-at timestamps

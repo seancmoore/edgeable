@@ -32,14 +32,8 @@ const DB = 'projects/edgeabled/databases/(default)';
 const FS = `https://firestore.googleapis.com/v1/${DB}/documents`;
 const COMMIT = `https://firestore.googleapis.com/v1/${DB}/documents:commit?key=${KEY}`;
 
+import { mintAppCheckToken } from './_appcheck.mjs';
 let appCheckToken = '';
-async function mintAppCheckToken() {
-  const { initializeApp, cert } = require('firebase-admin/app');
-  const { getAppCheck } = require('firebase-admin/app-check');
-  const app = initializeApp({ credential: cert(require('../service-account.json')) });
-  const { token } = await getAppCheck(app).createToken('1:395134187819:web:45bbe2c5710025d85f6d6e');
-  appCheckToken = token;
-}
 
 function req(method, url, body, token) {
   return new Promise((resolve, reject) => {
@@ -130,7 +124,7 @@ async function expectAllowed(name, p) {
   else { fail++; console.log(`  ✗ FAIL  ${name} — got ${status}: ${body.slice(0, 200)}`); }
 }
 
-await mintAppCheckToken();
+appCheckToken = await mintAppCheckToken();
 const probeId = pickId || 'nonexistent-probe';
 
 console.log('\n[signed out]');
