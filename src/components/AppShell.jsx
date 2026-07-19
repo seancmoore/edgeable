@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, KeyRound, ChevronDown, User as UserIcon, ShieldCheck, BookOpen } from 'lucide-react';
+import { LogOut, KeyRound, ChevronDown, User as UserIcon, ShieldCheck, BookOpen, ClipboardList } from 'lucide-react';
 import { useAuth } from '../AuthContext.jsx';
 import Wordmark from './Wordmark.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
@@ -85,6 +85,9 @@ export default function AppShell({ children, nav, onChangePassword, container = 
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => navigate('/card')}>
+                  <ClipboardList /> Daily Card
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => navigate('/guide')}>
                   <BookOpen /> How it works
                 </DropdownMenuItem>

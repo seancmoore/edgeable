@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Send, BookOpen, ChevronRight, MailWarning } from 'lucide-react';
+import { Send, BookOpen, ChevronRight, MailWarning, ClipboardList } from 'lucide-react';
 import { useAuth } from '../AuthContext.jsx';
 import AppShell, { PageHeader } from '../components/AppShell.jsx';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
@@ -94,6 +94,22 @@ export default function Dashboard() {
             <div className="font-display font-semibold tracking-tight">How to tail my picks</div>
             <p className="mt-0.5 text-sm text-muted-foreground">
               New here? Read the guide on reading the card, units, and bankroll strategy.
+            </p>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+        </Link>
+
+        <Link
+          to="/card"
+          className="group flex items-center gap-3 rounded-lg border border-border bg-card p-4 card-glow transition-colors hover:bg-secondary/40"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+            <ClipboardList className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="font-display font-semibold tracking-tight">Daily Card</div>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Today's picks and the full graded record, posted before tip-off.
             </p>
           </div>
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

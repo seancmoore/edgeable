@@ -5,6 +5,7 @@ import Wordmark from '../components/Wordmark.jsx';
 import ThemeToggle from '../components/ThemeToggle.jsx';
 import { Card, CardContent } from '../components/ui/card.jsx';
 import { Badge } from '../components/ui/badge.jsx';
+import { Button } from '../components/ui/button.jsx';
 import { useAuth } from '../AuthContext.jsx';
 import {
   getPublicStubs, getReadableFullPicks, mergePicks, computeRecord,
@@ -114,10 +115,26 @@ export default function PublicCard() {
       <div className="bg-grid absolute inset-0 pointer-events-none" aria-hidden />
 
       <header className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-4">
-        <Link to="/login" aria-label="Edgeable home">
+        <Link to="/card" aria-label="Edgeable home">
           <Wordmark size="md" />
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          {signedIn ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/dashboard">My account</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/signup">Join</Link>
+              </Button>
+            </>
+          )}
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 px-4 pb-12">

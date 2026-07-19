@@ -20,7 +20,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Public front door: the verifiable Daily Card, not a login wall. */}
+      <Route path="/" element={<Navigate to="/card" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
