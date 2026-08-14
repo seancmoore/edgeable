@@ -1,7 +1,7 @@
 # Plan: Edgeable /join landing page + "modern gold" identity refresh
 
 **Date:** 2026-08-14 · **Track:** Standard · **Entry stage:** Discover (no JOURNEY.md, no DESIGN.md)
-**Status:** in-progress · **Started:** 2026-08-14 12:30 · **Current Phase:** 3 · **Workspace:** feature/join-landing (branch)
+**Status:** complete · **Started:** 2026-08-14 12:30 · **Completed:** 2026-08-14 14:15 · **Duration:** ~1h45m · **Workspace:** feature/join-landing (branch)
 **Research doc:** `.design-foundations/research/2026-08-14-edgeable-join-landing.md` (confirmed)
 
 ## Context
@@ -117,6 +117,18 @@ Summary: JOURNEY.md created at repo root — job story, journey map, IA, flows i
 - [x] Committed
 Commit: 8dcbf69
 Summary: DESIGN.md "Gilt Ledger" LOCKED (Sean confirmed) — Archivo + Spline Sans Mono, dual warm-neutral themes seeded from brand gold with all AA pairs verified, −4.6° rising-edge motif spec, hard contrast rules, ink wordmark variants for light theme; Phase 3 composes copy + chart on these tokens.
+
+### Phase 3: Compose — words + data + ethics (Gate: Standard)
+- [x] BUILD: Discovery + design + production complete
+- [x] REVIEW: PASS (incl. em-dash copy law, truthful encoding vs picks.js, deceptive-patterns audit clean)
+- [x] Committed
+Commit: eab8e0a
+Summary: JOURNEY.md /join spec carries final visitor-facing copy for all six sections with edge/empty/error states, a truthful chart spec on dailyPnL daily granularity with the public-fields sign-off table, and a clean dark-patterns audit.
+
+### Final styled mock (post-phase artifact)
+- [x] BUILD: mocks/join.html re-rendered at full fidelity on locked tokens
+- [x] REVIEW: dual-blind PASS (detector exit 0; 1 Major usability fix + 3 mechanical fixes applied by orchestrator)
+Summary: Both-theme styled mock with the one −4.6° motif, honest chart, verbatim final copy; pixel screenshot still pending (no browser tool this session).
 
 ## Verification plan
 

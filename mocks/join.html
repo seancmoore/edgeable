@@ -1,37 +1,126 @@
 <!DOCTYPE html>
-<!-- No DESIGN.md found — wireframe mode: greyscale defaults. Run /design-for-ai to establish tokens. -->
-<!-- Throwaway-fidelity checkpoint mock for /join — structure + hierarchy only. -->
+<!-- /join — final styled mock (Gilt Ledger). Tokens verbatim from DESIGN.md (LOCKED). -->
+<!-- Copy verbatim from JOURNEY.md /join page spec sections 0–6 (Phase-3 final microcopy). -->
+<!-- No hard-coded hex outside the :root/.dark token blocks — every color via hsl(var(--token)). -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>/join — wireframe mock (Edgeable)</title>
+  <title>Edgeable: Every pick on record</title>
   <style>
-    /* === WIREFRAME TOKENS (greyscale defaults — DESIGN.md absent) === */
+    /* === FONTS (exact @import per DESIGN.md fonts adoption note) === */
+    @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@500;600&display=swap');
+
+    /* === DESIGN TOKENS — DESIGN.md app token block, verbatim (HSL triples) === */
     :root {
-      --background: #ffffff;
-      --surface: #f5f5f5;
-      --surface-hover: #ebebeb;
-      --border-subtle: #e0e0e0;
-      --border: #bdbdbd;
-      --border-strong: #9e9e9e;
-      --text-secondary: #616161;
-      --text: #212121;
-      --accent-solid: #424242;
-      --accent-on-solid: #ffffff;
-      --accent-text: #212121;
+        --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 — page */
+        --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
+        --card: 60 20% 99%;                  /* #fdfdfc  n1 — cards sit lighter */
+        --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
+        --popover: 60 20% 99%;               /* #fdfdfc */
+        --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
+        /* --primary is FILL-ONLY in light theme (hard rule 1). Gold TEXT uses --primary-text. */
+        --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) — fills only */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
+        --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links */
+        --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
+        --secondary-foreground: 48 5.6% 17.5%;
+        --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
+        --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 — 5.68:1 */
+        --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
+        --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold — 5.29:1 on --accent */
+        --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
+        --destructive-foreground: 0 0% 100%;
+        --success: 124 38.9% 32.7%;          /* #337437  success-11 */
+        --success-foreground: 0 0% 100%;
+        --warning: 41 43% 32.4%;
+        --warning-foreground: 0 0% 100%;
+        --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 — decorative hairlines */
+        --input: 42 5.2% 38%;                /* #66635c  n11 — field border ≥3:1 */
+        --ring: 41 43% 32.4%;                /* #76602f  focus */
+        /* raw Edge Club tokens */
+        --gold: 41 65% 59.6%;                /* #dbb155 */
+        --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+        --brass: 41 43% 32.4%;               /* #76602f */
+        --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
+        --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 */
+        --dim: 39 9.1% 63.3%;                /* #aaa499  n10 placeholder */
+        --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
+        --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
+        --radius: 0.5rem;                    /* 8px */
+        color-scheme: light;
+    }
+    .dark {
+        --background: 60 2.7% 7.3%;          /* #131312  n1 */
+        --foreground: 43 14.3% 90.4%;        /* #eae8e3  n12 */
+        --card: 30 4% 9.8%;                  /* #1a1918  n2 */
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;            /* #232220  n3 */
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;             /* #dbb155 */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04  9.63:1 */
+        --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text */
+        --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;              /* #232220  n3 */
+        --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 — 8.77:1 */
+        --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
+        --accent-foreground: 40 42.9% 65.7%; /* #cdb482  8.73:1 */
+        --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;          /* #5ad664 */
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;             /* #3e3b36  n6 */
+        --input: 41 7% 44.7%;                /* #7a756a */
+        --ring: 41 65% 59.6%;                /* #dbb155 */
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;             /* #cdb482 */
+        --surface-2: 60 2.7% 7.3%;           /* #131312  wells = page depth */
+        --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
+        --dim: 42 7% 36.7%;                  /* #646057 */
+        --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss */
+        --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win */
+        --radius: 0.5rem;
+        color-scheme: dark;
     }
 
+    /* === TYPE + SPACE TOKENS (DESIGN.md scale, ratio 1.25 from 16px) === */
+    :root {
+      --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+      --text-xs: 12px; --text-sm: 14px; --text-base: 16px; --text-lg: 20px;
+      --text-xl: 25px; --text-2xl: 31px; --text-3xl: 39px; --text-4xl: 49px;
+      --text-display: 61px; --text-stat: 76px;
+      --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+      --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
+      --edge-angle: -4.6deg;   /* the wordmark blade angle — the ONLY diagonal angle */
+    }
+
+    /* === BASE RESET === */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    html { scroll-behavior: smooth; }
     body {
-      font-family: system-ui, sans-serif;
-      background: var(--background);
-      color: var(--text);
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
       line-height: 1.5;
-      font-size: 16px;
     }
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 
+    /* === MOTION BUDGET — micro 120ms / standard 180ms / draw-in 650ms === */
+    a, button { transition: color 120ms cubic-bezier(0.2,0,0,1), background-color 120ms cubic-bezier(0.2,0,0,1), border-color 120ms cubic-bezier(0.2,0,0,1); }
+    @media (prefers-reduced-motion: no-preference) {
+      .rising-edge { transform-origin: left center; animation: edge-draw 650ms cubic-bezier(0.22,1,0.36,1) both; }
+      @keyframes edge-draw { from { transform: rotate(var(--edge-angle)) scaleX(0); } to { transform: rotate(var(--edge-angle)) scaleX(1); } }
+      .chart-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: chart-reveal 650ms cubic-bezier(0.22,1,0.36,1) 120ms forwards; }
+      @keyframes chart-reveal { to { stroke-dashoffset: 0; } }
+    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -40,320 +129,484 @@
       }
     }
 
-    /* Wireframe banner */
-    .wf-banner {
-      background: var(--text);
-      color: var(--background);
-      text-align: center;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.4rem 1rem;
+    /* === SHARED === */
+    .container { max-width: 1100px; margin: 0 auto; padding-left: var(--sp-5); padding-right: var(--sp-5); }
+    .col { max-width: 640px; }
+    section { padding-top: var(--sp-8); padding-bottom: var(--sp-8); }
+    @media (min-width: 768px) { section { padding-top: var(--sp-9); padding-bottom: var(--sp-9); } }
+    .eyebrow {
+      font-family: var(--font-display); font-weight: 600; font-size: 11px;
+      letter-spacing: 0.16em; text-transform: uppercase; color: hsl(var(--muted-foreground));
     }
+    .mono { font-family: var(--font-mono); }
+    .muted { color: hsl(var(--muted-foreground)); }
+    .hairline-top { border-top: 1px solid hsl(var(--hairline)); }
 
-    /* Mobile-first column */
-    .wrap {
-      max-width: 390px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
-
-    section {
-      padding: 2rem 0;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .label {
-      display: inline-block;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-secondary);
-      border: 1px dashed var(--border);
-      padding: 0.1rem 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    h1 { font-size: 1.75rem; line-height: 1.2; margin-bottom: 0.5rem; }
-    h2 { font-size: 1.25rem; margin-bottom: 1rem; }
-    .muted { color: var(--text-secondary); font-size: 0.9rem; }
-
-    /* Header */
+    /* === 0. SITE HEADER (static, not sticky) === */
     header.site {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 0;
+      border-bottom: 1px solid hsl(var(--hairline));
+      padding: var(--sp-4) 0;
     }
-    .logo-ph {
-      background: var(--border-subtle);
-      border: 2px solid var(--border);
-      padding: 0.4rem 1rem;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+    header.site .container { display: flex; align-items: center; justify-content: space-between; }
+    .wordmark img { height: 22px; display: block; }
+    .wordmark .wm-dark { display: none; }
+    .dark .wordmark .wm-light { display: none; }
+    .dark .wordmark .wm-dark { display: block; }
+    .header-right { display: flex; align-items: center; gap: var(--sp-4); }
+    .login-link {
+      font-weight: 500; font-size: var(--text-sm); text-decoration: none;
+      color: hsl(var(--foreground)); min-height: 44px; display: inline-flex; align-items: center; padding: 0 var(--sp-2);
     }
-    .login-link { font-size: 0.85rem; color: var(--accent-text); text-decoration: underline; }
+    .login-link:hover { color: hsl(var(--primary-text)); }
+    .theme-toggle {
+      /* demo-only theme toggle for the mock */
+      min-height: 44px; min-width: 44px; padding: 0 var(--sp-3);
+      background: hsl(var(--card)); color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--border)); border-radius: var(--radius);
+      font-size: var(--text-xs); font-weight: 600;
+    }
+    .theme-toggle:hover { background: hsl(var(--muted)); }
 
-    /* Hero record */
-    .stat-row {
-      display: flex;
-      gap: 0.75rem;
-      margin: 1rem 0;
+    /* === 1. RECORD HERO === */
+    .hero { padding-top: var(--sp-8); }
+    .hero-grid { display: grid; gap: var(--sp-7); }
+    @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.15fr 0.85fr; gap: var(--sp-8); align-items: start; } }
+    .hero h1 {
+      font-weight: 800; font-size: var(--text-3xl); line-height: 1.1;
+      letter-spacing: -0.01em; max-width: 15ch;
     }
-    .stat {
-      flex: 1;
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: 0.75rem 0.5rem;
-      text-align: center;
+    @media (min-width: 768px) { .hero h1 { font-size: var(--text-4xl); } }
+    .hero .subhead { margin-top: var(--sp-4); color: hsl(var(--muted-foreground)); max-width: 52ch; }
+    .pending-eyebrow { margin-top: var(--sp-6); }
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); margin-top: var(--sp-3); }
+    @media (min-width: 900px) { .stat-row { grid-template-columns: 1.2fr 1fr 0.9fr; gap: var(--sp-6); } }
+    .stat-num {
+      font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
+      font-size: clamp(31px, 7vw, var(--text-display));
+      letter-spacing: -0.02em;
     }
-    .stat .num { font-size: 1.5rem; font-weight: 700; }
-    .stat .cap { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
-
+    .stat-num.hero-record { font-size: clamp(39px, 8.5vw, var(--text-stat)); }
+    .stat-label { margin-top: var(--sp-2); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: hsl(var(--primary-text)); }
+    .stat-pos { color: hsl(var(--win)); }
+    /* THE rising edge — the page's one diagonal (−4.6°), 4px --gold, round caps */
+    .rising-edge {
+      height: 4px; width: min(100%, 560px); margin-top: var(--sp-6);
+      background: hsl(var(--gold)); border-radius: 2px;
+      transform: rotate(var(--edge-angle)); transform-origin: left center;
+    }
     .tamper {
-      background: var(--surface);
-      border-left: 4px solid var(--border-strong);
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+      background: hsl(var(--surface-2)); border: 1px solid hsl(var(--hairline));
+      border-radius: var(--radius); padding: var(--sp-5);
     }
+    .tamper p { margin-top: var(--sp-3); font-size: var(--text-sm); color: hsl(var(--foreground)); }
+    .tamper a { color: hsl(var(--primary-text)); font-weight: 600; }
+    .hero-anchor {
+      display: inline-block; margin-top: var(--sp-6);
+      color: hsl(var(--primary-text)); font-weight: 600; text-decoration: none;
+      border-bottom: 2px solid transparent; padding-bottom: 2px;
+    }
+    .hero-anchor:hover { border-bottom-color: hsl(var(--gold)); }
 
-    /* Chart */
-    .chart-ph {
-      background: var(--border-subtle);
-      border: 2px solid var(--border);
-      height: 200px;
-      position: relative;
-      margin-bottom: 0.75rem;
-      overflow: hidden;
+    /* === 2. PERFORMANCE CHART === */
+    .chart-head { margin-top: var(--sp-2); color: hsl(var(--muted-foreground)); }
+    .chart-stat { margin-top: var(--sp-5); font-family: var(--font-mono); font-weight: 600; font-size: clamp(31px, 6vw, var(--text-4xl)); line-height: 1.0; }
+    .chart-stat.pos { color: hsl(var(--win)); }
+    .chart-stat.neg { color: hsl(var(--loss)); }
+    .chart-date { margin-top: var(--sp-2); font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .chart-wrap { margin-top: var(--sp-5); }
+    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+    .chart-line { fill: none; stroke: hsl(var(--gold)); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-zero { stroke: hsl(var(--hairline)); stroke-width: 1; }
+    .chart-scrub-dot { fill: hsl(var(--gold)); stroke: hsl(var(--background)); stroke-width: 1.5; }
+    .chart-tick { font-family: var(--font-mono); font-size: 11px; fill: hsl(var(--muted-foreground)); }
+    .range-tabs { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+    .range-tabs [role="tab"] {
+      flex: 1; min-height: 44px; border-radius: 4px;
+      background: transparent; color: hsl(var(--muted-foreground));
+      border: 1px solid transparent; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm);
     }
-    .chart-ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .chart-ph .ph-label {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      font-size: 0.85rem;
+    .range-tabs [role="tab"]:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+    .range-tabs [role="tab"][aria-selected="true"] {
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring)); /* hard rule 3: ring border on gold fill */
     }
-    .range-tabs {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .range-tabs span {
-      flex: 1;
-      text-align: center;
-      border: 1px solid var(--border);
-      padding: 0.6rem 0;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-    .range-tabs span.active { background: var(--surface-hover); color: var(--text); font-weight: 600; }
+    @media (min-width: 768px) { .range-tabs { max-width: 400px; } }
 
-    /* Free pick samples */
+    /* === 3. FREE PICKS === */
+    .picks-note { margin-top: var(--sp-3); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); max-width: 62ch; }
+    .picks-grid { display: grid; gap: var(--sp-4); margin-top: var(--sp-5); }
+    @media (min-width: 768px) { .picks-grid { grid-template-columns: repeat(3, 1fr); } }
     .pick-card {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: 1rem;
-      margin-bottom: 0.75rem;
+      background: hsl(var(--card)); border: 1px solid hsl(var(--border));
+      border-radius: var(--radius); padding: var(--sp-4);
+      display: flex; flex-direction: column; gap: var(--sp-3);
     }
-    .pick-card .row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      margin-bottom: 0.35rem;
+    .pick-top { display: flex; justify-content: space-between; align-items: center; }
+    .free-badge {
+      display: inline-block; background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+      padding: var(--sp-1) var(--sp-2); border-radius: 4px;
     }
-    .badge {
-      display: inline-block;
-      background: var(--accent-solid);
-      color: var(--accent-on-solid);
-      font-size: 0.7rem;
-      padding: 0.15rem 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+    .result-badge { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm); }
+    .result-badge.w { color: hsl(var(--win)); }
+    .result-badge.l { color: hsl(var(--loss)); }
+    .pick-desc { font-weight: 600; }
+    .pick-times { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); display: grid; gap: var(--sp-1); }
+    .pick-times .posted { color: hsl(var(--foreground)); font-weight: 600; }
+    .picks-link { display: inline-block; margin-top: var(--sp-5); color: hsl(var(--primary-text)); font-weight: 600; }
 
-    /* 3-step */
-    .step {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-      align-items: flex-start;
+    /* === 4. HOW JOINING WORKS === */
+    .how h2 { font-weight: 700; font-size: var(--text-2xl); line-height: 1.1; }
+    .how .subhead { margin-top: var(--sp-3); color: hsl(var(--muted-foreground)); }
+    .steps { display: grid; gap: var(--sp-6); margin-top: var(--sp-6); }
+    @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); } }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-weight: 600;
     }
-    .step .n {
-      flex: none;
-      width: 44px;
-      height: 44px;
-      border: 2px solid var(--border-strong);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-    .step h3 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .step h3 { margin-top: var(--sp-3); font-size: var(--text-lg); font-weight: 700; line-height: 1.2; }
+    .step p { margin-top: var(--sp-2); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .step a { color: hsl(var(--primary-text)); font-weight: 600; font-size: var(--text-sm); }
+    .reassure { margin-top: var(--sp-6); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); max-width: 58ch; }
 
-    /* Price + CTA */
-    .price-box {
-      background: var(--surface);
-      border: 2px solid var(--border-strong);
-      padding: 1.5rem 1rem;
-      text-align: center;
+    /* === 5. PRICE + CTA — the gold band (all text --gold-ink, hard rule 2) === */
+    #join-cta { background: hsl(var(--gold)); color: hsl(var(--gold-ink)); }
+    .cta-inner { max-width: 480px; margin: 0 auto; text-align: center; }
+    .cta-inner .eyebrow { color: hsl(var(--gold-ink)); }
+    .price { margin-top: var(--sp-4); font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
+    .price .per { font-family: var(--font-display); font-weight: 500; font-size: var(--text-lg); }
+    .value-desc { margin-top: var(--sp-4); }
+    .cta-btn {
+      /* button face inverts on the band: ink fill, gold text — 9.63:1 both themes */
+      display: block; width: 100%; max-width: 400px; margin: var(--sp-6) auto 0;
+      min-height: 48px; border: 0; border-radius: var(--radius);
+      background: hsl(var(--gold-ink)); color: hsl(var(--gold));
+      font-weight: 700; font-size: var(--text-base); text-decoration: none;
+      display: flex; align-items: center; justify-content: center;
     }
-    .price { font-size: 2.5rem; font-weight: 800; }
-    .price small { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
-    .cta {
-      display: block;
-      width: 100%;
-      background: var(--accent-solid);
-      color: var(--accent-on-solid);
-      border: none;
-      padding: 0.9rem 1rem;
-      min-height: 48px;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-top: 1rem;
-      cursor: pointer;
-    }
+    .cta-btn:hover { color: hsl(var(--primary)); opacity: 0.92; }
+    #join-cta :focus-visible { outline-color: hsl(var(--gold-ink)); }
+    .cta-reassure { margin-top: var(--sp-4); font-size: var(--text-sm); }
 
-    /* Footer */
-    footer.site {
-      padding: 2rem 0 3rem;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-    footer.site a { color: var(--text-secondary); }
-    footer.site .links { margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* Desktop: widen column, two-up where cheap */
-    @media (min-width: 900px) {
-      .wrap { max-width: 960px; padding: 0 2rem; }
-      .hero-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        align-items: start;
-      }
-      .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-      .picks-grid .pick-card { margin-bottom: 0; }
-      .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-      .steps-grid .step { flex-direction: column; }
-      .price-box { max-width: 480px; margin: 0 auto; }
-    }
+    /* === 6. LEGAL FOOTER === */
+    footer.legal { border-top: 1px solid hsl(var(--hairline)); padding: var(--sp-8) 0; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); max-width: 68ch; }
+    footer.legal p + p { margin-top: var(--sp-3); }
+    .footer-links { margin-top: var(--sp-5); display: flex; flex-wrap: wrap; gap: var(--sp-4); font-size: var(--text-sm); }
+    .footer-links a { color: hsl(var(--foreground)); font-weight: 500; }
+    .footer-links a:hover { color: hsl(var(--primary-text)); }
+    .copyright { margin-top: var(--sp-5); font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
   </style>
 </head>
 <body>
-  <div class="wf-banner">Wireframe mock — greyscale defaults (no DESIGN.md) — throwaway fidelity</div>
 
-  <div class="wrap">
-    <header class="site">
-      <div class="logo-ph">[Edgeable wordmark]</div>
-      <a class="login-link" href="#">[Log in]</a>
-    </header>
+  <!-- 0. Site header (static per DESIGN.md Phase-2 decision) -->
+  <header class="site">
+    <div class="container">
+      <a class="wordmark" href="/" aria-label="Edgeable home">
+        <!-- per-theme wordmark assets, DESIGN.md hard rule 5 -->
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable" aria-hidden="true">
+      </a>
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Theme</button>
+        <a class="login-link" href="/">Log in</a>
+      </div>
+    </div>
+  </header>
 
-    <main>
-      <!-- 1. Record hero -->
-      <section aria-label="Record hero">
-        <span class="label">1 · Record hero</span>
-        <h1>[Hero headline — the record leads, proof-forward, no hype]</h1>
-        <p class="muted">[Subhead — 1–2 sentences: verifiable record, what this is]</p>
+  <main>
+    <!-- 1. Record hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>Every pick on record. Before the game starts.</h1>
+          <p class="subhead">Edgeable is a sports-picks subscription. Every pick is timestamped before game start by a server clock. Grading is one-way. Nothing is deleted. The record you see is the record that happened.</p>
 
-        <div class="stat-row">
-          <div class="stat"><div class="num">[W-L-P]</div><div class="cap">Record</div></div>
-          <div class="stat"><div class="num">[+XX.X]</div><div class="cap">Net units</div></div>
-          <div class="stat"><div class="num">[X.X%]</div><div class="cap">ROI</div></div>
+          <p class="eyebrow pending-eyebrow">Live record. 2 picks pending.</p>
+          <div class="stat-row">
+            <div>
+              <div class="stat-num hero-record mono">61-42-3</div>
+              <div class="stat-label">W-L-P</div>
+            </div>
+            <div>
+              <div class="stat-num stat-pos mono">+18.4</div>
+              <div class="stat-label">Net Units</div>
+            </div>
+            <div>
+              <div class="stat-num stat-pos mono">+8.9%</div>
+              <div class="stat-label">ROI</div>
+            </div>
+          </div>
+          <div class="rising-edge" aria-hidden="true"></div>
+
+          <a class="hero-anchor" href="#join-cta">Join for $30/mo. See how it works.</a>
         </div>
 
-        <p class="tamper">[Tamper-evidence line — every pick timestamped before game start, grading is one-way, no deletes. Link: verify it yourself on /card]</p>
-      </section>
+        <aside class="tamper" aria-labelledby="tamper-heading">
+          <h2 class="eyebrow" id="tamper-heading">How the record works</h2>
+          <p>Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public.</p>
+          <p><a href="/card">Verify the archive yourself</a></p>
+        </aside>
+      </div>
+    </section>
 
-      <!-- 2. Units performance chart -->
-      <section aria-label="Performance chart">
-        <span class="label">2 · Units performance chart</span>
-        <h2>[Net units over time]</h2>
-        <div class="chart-ph">
-          <svg viewBox="0 0 390 200" preserveAspectRatio="none" aria-hidden="true">
-            <polyline points="0,170 40,160 70,175 110,140 150,150 190,115 230,125 270,95 310,105 350,70 390,55"
-              fill="none" stroke="#9e9e9e" stroke-width="3"/>
+    <!-- 2. Units performance chart -->
+    <section class="hairline-top" aria-labelledby="perf-heading">
+      <div class="container col">
+        <h2 class="eyebrow" id="perf-heading">Performance</h2>
+        <p class="chart-head">Net units over time. Dips included.</p>
+
+        <div class="chart-stat pos mono" id="chartStat">+18.4 units</div>
+        <div class="chart-date" id="chartDate">All time</div>
+
+        <div class="chart-wrap">
+          <svg id="chart" viewBox="0 0 640 240" role="img" aria-label="Line chart of cumulative net units over time for the selected range. Zero baseline always shown.">
+            <line class="chart-zero" id="zeroLine" x1="0" x2="640" y1="0" y2="0"></line>
+            <path class="chart-line" id="chartPath" pathLength="1" d=""></path>
+            <circle class="chart-scrub-dot" id="scrubDot" r="4" style="display:none"></circle>
+            <g id="ticks"></g>
           </svg>
-          <div class="ph-label">[Robinhood-style equity curve — scrub to inspect]</div>
         </div>
-        <div class="range-tabs" aria-label="Range tabs">
-          <span>Week</span><span>Month</span><span>3M</span><span class="active">All</span>
-        </div>
-      </section>
 
-      <!-- 3. Free pick samples -->
-      <section aria-label="Free pick samples">
-        <span class="label">3 · Free-pick samples</span>
-        <h2>[Free picks — try before you buy]</h2>
-        <p class="muted">[Framing line — occasional free picks posted publicly; subscriber picks stay private so the strategy can't be copied]</p>
-        <div class="picks-grid" style="margin-top:1rem;">
+        <div class="range-tabs" role="tablist" aria-label="Chart range">
+          <button role="tab" aria-selected="false" tabindex="-1" data-range="7">1W</button>
+          <button role="tab" aria-selected="false" tabindex="-1" data-range="30">1M</button>
+          <button role="tab" aria-selected="false" tabindex="-1" data-range="90">3M</button>
+          <button role="tab" aria-selected="true" tabindex="0" data-range="all">All</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Free-pick samples -->
+    <section class="hairline-top" aria-labelledby="freepicks-heading">
+      <div class="container">
+        <h2 class="eyebrow" id="freepicks-heading">Free picks</h2>
+        <p class="chart-head">Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after.</p>
+        <p class="picks-note">Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses.</p>
+
+        <div class="picks-grid">
           <article class="pick-card">
-            <span class="badge">Free pick</span>
-            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
-            <div class="row muted"><span>[Posted timestamp — before game start]</span><span>[Result: W]</span></div>
+            <div class="pick-top">
+              <span class="free-badge">Free pick</span>
+              <span class="result-badge w">W · Win</span>
+            </div>
+            <p class="pick-desc">Guardians ML +112 vs. Twins</p>
+            <div class="pick-times">
+              <span class="posted">Posted 11:42 AM ET</span>
+              <span>Game: Aug 12, 7:10 PM ET</span>
+            </div>
           </article>
+
           <article class="pick-card">
-            <span class="badge">Free pick</span>
-            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
-            <div class="row muted"><span>[Posted timestamp]</span><span>[Result: W]</span></div>
+            <div class="pick-top">
+              <span class="free-badge">Free pick</span>
+              <span class="result-badge l">L · Loss</span>
+            </div>
+            <p class="pick-desc">Padres −1.5 (−138) at Giants</p>
+            <div class="pick-times">
+              <span class="posted">Posted 2:05 PM ET</span>
+              <span>Game: Aug 8, 9:45 PM ET</span>
+            </div>
           </article>
+
           <article class="pick-card">
-            <span class="badge">Free pick</span>
-            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
-            <div class="row muted"><span>[Posted timestamp]</span><span>[Result: L — shown honestly]</span></div>
+            <div class="pick-top">
+              <span class="free-badge">Free pick</span>
+              <span class="result-badge w">W · Win</span>
+            </div>
+            <p class="pick-desc">Under 8.5 (−105), Yankees at Orioles</p>
+            <div class="pick-times">
+              <span class="posted">Posted 10:58 AM ET</span>
+              <span>Game: Aug 3, 1:35 PM ET</span>
+            </div>
           </article>
         </div>
-      </section>
 
-      <!-- 4. How joining works -->
-      <section aria-label="How joining works">
-        <span class="label">4 · How joining works</span>
-        <h2>[How joining works — personal, not janky]</h2>
-        <div class="steps-grid">
+        <a class="picks-link" href="/card">See the complete record</a>
+      </div>
+    </section>
+
+    <!-- 4. How joining works -->
+    <section class="hairline-top how" aria-labelledby="how-heading">
+      <div class="container">
+        <h2 id="how-heading">How it works</h2>
+        <p class="subhead">Three steps. No checkout, no bot. Every member is personally reviewed.</p>
+
+        <div class="steps">
           <div class="step">
-            <div class="n">1</div>
-            <div><h3>[Create an account]</h3><p class="muted">[One line — free signup, email + password]</p></div>
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3>Create a free account</h3>
+            <p>Sign up with your email. Takes 30 seconds. No payment yet.</p>
+            <p><a href="/signup">Go to signup</a></p>
           </div>
           <div class="step">
-            <div class="n">2</div>
-            <div><h3>[Send $30 via CashApp or Zelle]</h3><p class="muted">[One line — attach proof screenshot in the app]</p></div>
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3>Send $30 via CashApp or Zelle</h3>
+            <p>Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman.</p>
           </div>
           <div class="step">
-            <div class="n">3</div>
-            <div><h3>[Approved same day]</h3><p class="muted">[One line — personally approved, full access unlocks]</p></div>
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3>You're in, same day</h3>
+            <p>Every request is personally reviewed. If your payment clears, you get full access the same day. You'll hear from us.</p>
           </div>
         </div>
-      </section>
 
-      <!-- 5. Price + CTA -->
-      <section aria-label="Pricing">
-        <span class="label">5 · Price + CTA</span>
-        <div class="price-box">
-          <div class="price">$30<small>/month</small></div>
-          <p class="muted">[One tier, everything included — every pick, full record, cancel anytime]</p>
-          <button class="cta">[Join Edgeable →]</button>
-          <p class="muted" style="margin-top:0.75rem;">[Reassurance microcopy — manual process disclosed pre-CTA]</p>
-        </div>
-      </section>
-    </main>
+        <p class="reassure">The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
+      </div>
+    </section>
+
+    <!-- 5. Price + CTA — the gold band -->
+    <section id="join-cta" aria-labelledby="cta-heading">
+      <div class="container cta-inner">
+        <p class="eyebrow" id="cta-heading">Edgeable Membership</p>
+        <p class="price mono">$30<span class="per">/month</span></p>
+        <p class="value-desc">Every pick. Full record. Live performance chart. You cancel when you want.</p>
+        <a class="cta-btn" href="/signup">Join Edgeable</a>
+        <p class="cta-reassure">Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots.</p>
+      </div>
+    </section>
 
     <!-- 6. Legal footer -->
-    <footer class="site" aria-label="Legal">
-      <span class="label">6 · Legal footer</span>
-      <p>[21+ only. Not a sportsbook. Opinions/analysis, not financial advice. Past performance does not guarantee future results.]</p>
-      <div class="links">
-        <a href="#">[Terms]</a>
-        <a href="#">[Privacy]</a>
-        <a href="#">[Verify the record → /card]</a>
+    <footer class="legal">
+      <div class="container">
+        <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>
+        <p>Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment.</p>
+        <p>Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss.</p>
+        <nav class="footer-links" aria-label="Legal">
+          <a href="/terms">Terms</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/card">Verify the record</a>
+        </nav>
+        <p class="copyright mono">Edgeable 2026</p>
       </div>
     </footer>
-  </div>
+  </main>
+
+  <script>
+    /* ===== Theme: system preference respected + demo toggle ===== */
+    (function () {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      var userSet = false;
+      function apply(dark) {
+        document.documentElement.classList.toggle('dark', dark);
+        document.getElementById('themeToggle').setAttribute('aria-pressed', String(dark));
+      }
+      apply(mq.matches);
+      mq.addEventListener('change', function (e) { if (!userSet) apply(e.matches); });
+      document.getElementById('themeToggle').addEventListener('click', function () {
+        userSet = true;
+        apply(!document.documentElement.classList.contains('dark'));
+      });
+    })();
+
+    /* ===== Chart: sample dailyPnL cumulative units, Jun 1 – Aug 14, 2026 =====
+       Honest curve: rises to +11.0, dips to +3.2 (mid-July losing stretch), recovers to +18.4.
+       Zero baseline always included; axis never truncated (Cairo rule, per spec). */
+    (function () {
+      var CUM = [
+        1.1,2.3,1.8,2.9,4.0,3.4,4.6,5.2,4.7,5.9,6.4,5.8,7.0,7.6,6.9,8.1,8.8,8.2,9.4,9.0,
+        10.2,9.6,10.4,11.0,10.2,9.5,10.6,10.1,9.3,8.6,                      /* June */
+        7.8,7.0,6.2,6.8,5.9,5.1,4.4,3.8,4.5,3.6,3.2,4.1,5.0,4.4,5.3,6.1,5.6,6.8,7.5,7.0,
+        8.2,9.0,8.4,9.6,10.3,9.8,11.0,11.8,11.2,12.4,13.0,                  /* July */
+        12.5,13.6,14.2,13.7,14.9,15.5,14.8,16.0,16.6,16.1,17.2,17.8,17.3,18.4 /* Aug 1–14 */
+      ];
+      var START = new Date(2026, 5, 1); /* Jun 1, 2026 */
+      var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var W = 640, H = 240, PAD_T = 12, PAD_B = 28, PAD_X = 4;
+      var svg = document.getElementById('chart');
+      var path = document.getElementById('chartPath');
+      var zero = document.getElementById('zeroLine');
+      var ticks = document.getElementById('ticks');
+      var dot = document.getElementById('scrubDot');
+      var statEl = document.getElementById('chartStat');
+      var dateEl = document.getElementById('chartDate');
+      var RANGE_LABEL = { '7': 'Last 7 days', '30': 'Last 30 days', '90': 'Last 90 days', 'all': 'All time' };
+      var cur = { vals: [], startIdx: 0, pts: [], label: 'All time' };
+
+      function dateOf(i) { var d = new Date(START); d.setDate(d.getDate() + i); return d; }
+      function fmt(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+      function fmtUnits(v) { return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + ' units'; }
+
+      function render(range) {
+        var startIdx = range === 'all' ? 0 : Math.max(0, CUM.length - parseInt(range, 10));
+        var base = startIdx === 0 ? 0 : CUM[startIdx - 1];
+        var vals = CUM.slice(startIdx).map(function (v) { return +(v - base).toFixed(1); });
+        var min = Math.min(0, Math.min.apply(null, vals));
+        var max = Math.max(0, Math.max.apply(null, vals));
+        var span = (max - min) || 1;
+        var innerH = H - PAD_T - PAD_B, innerW = W - PAD_X * 2;
+        function x(i) { return PAD_X + (vals.length === 1 ? innerW / 2 : i * innerW / (vals.length - 1)); }
+        function y(v) { return PAD_T + (max - v) / span * innerH; }
+        var pts = vals.map(function (v, i) { return [x(i), y(v)]; });
+        path.setAttribute('d', pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(''));
+        zero.setAttribute('y1', y(0).toFixed(1)); zero.setAttribute('y2', y(0).toFixed(1));
+        /* month/date ticks */
+        ticks.textContent = '';
+        var step = Math.max(1, Math.floor(vals.length / 4));
+        for (var i = 0; i < vals.length; i += step) {
+          var d = dateOf(startIdx + i);
+          var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t.setAttribute('class', 'chart-tick');
+          t.setAttribute('x', Math.min(x(i), W - 60).toFixed(1));
+          t.setAttribute('y', H - 8);
+          t.textContent = MONTHS[d.getMonth()] + ' ' + d.getDate();
+          ticks.appendChild(t);
+        }
+        cur = { vals: vals, startIdx: startIdx, pts: pts, label: RANGE_LABEL[range] };
+        rest();
+      }
+
+      function setStat(v) {
+        statEl.textContent = fmtUnits(v);
+        statEl.classList.toggle('pos', v > 0);
+        statEl.classList.toggle('neg', v < 0);
+      }
+      function rest() {
+        dot.style.display = 'none';
+        setStat(cur.vals[cur.vals.length - 1]);
+        dateEl.textContent = cur.label;
+      }
+
+      /* scrub (pointer + touch), instant feedback per motion spec */
+      svg.addEventListener('pointermove', function (e) {
+        var r = svg.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width * W;
+        var innerW = W - PAD_X * 2;
+        var i = Math.round((px - PAD_X) / innerW * (cur.vals.length - 1));
+        i = Math.max(0, Math.min(cur.vals.length - 1, i));
+        setStat(cur.vals[i]);
+        dateEl.textContent = fmt(dateOf(cur.startIdx + i));
+        dot.style.display = '';
+        dot.setAttribute('cx', cur.pts[i][0]); dot.setAttribute('cy', cur.pts[i][1]);
+      });
+      svg.addEventListener('pointerleave', rest);
+
+      /* range tabs: roving tabindex + arrow keys */
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.range-tabs [role="tab"]'));
+      function select(tab) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', String(on));
+          t.tabIndex = on ? 0 : -1;
+        });
+        render(tab.dataset.range);
+      }
+      tabs.forEach(function (t, i) {
+        t.addEventListener('click', function () { select(t); });
+        t.addEventListener('keydown', function (e) {
+          var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : null;
+          if (j === null) return;
+          e.preventDefault();
+          var n = tabs[(j + tabs.length) % tabs.length];
+          n.focus(); select(n);
+        });
+      });
+
+      render('all');
+    })();
+  </script>
 </body>
 </html>
