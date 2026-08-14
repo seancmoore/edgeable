@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 130" width="110" height="130">
+
+  <defs>
+    <clipPath id="iTopInk"><polygon points="-30,-30 140,-30 140,49.1 -30,90.9"></polygon></clipPath>
+    <clipPath id="iBotInk"><polygon points="-30,90.9 140,49.1 140,160 -30,160"></polygon></clipPath>
+  </defs>
+  <g clip-path="url(#iTopInk)" transform="translate(-17,4.7)">
+    <text x="55" y="116" text-anchor="middle" font-family="&#39;Bodoni Moda&#39;, serif" font-weight="600" font-size="132" fill="#2f2e2a">E</text>
+  </g>
+  <g clip-path="url(#iBotInk)">
+    <text x="55" y="116" text-anchor="middle" font-family="&#39;Bodoni Moda&#39;, serif" font-weight="600" font-size="132" fill="#2f2e2a">E</text>
+  </g>
+  <line x1="12" y1="82" x2="98" y2="58" stroke="#d8b773" stroke-width="5" stroke-linecap="round"></line>
+</svg>

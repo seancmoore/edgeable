@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "seed": "edgeable-join|2026-08-14|0|pin:hue=84.5",
+      "output": {
+        "seed": "edgeable-join|2026-08-14|0|pin:hue=84.5",
+        "project": "edgeable-join",
+        "date": "2026-08-14",
+        "reroll": 0,
+        "candidates": 1,
+        "pins": {
+          "hue": 84.5
+        },
+        "baseHue": 99.03,
+        "goldenAngle": 137.50776405003785,
+        "constraintTier": 1,
+        "cellSpace": {
+          "families": 12,
+          "disciplines": 9,
+          "cells": 108,
+          "banned": 6,
+          "excluded": 0,
+          "available": 102
+        },
+        "hands": [
+          {
+            "index": 1,
+            "family": {
+              "id": "art-deco-luxury",
+              "name": "Art Deco / Luxury"
+            },
+            "composition": {
+              "id": "editorial-spread",
+              "name": "Editorial Spread",
+              "variance": 7,
+              "scale": "oversized display type against modest body columns",
+              "density": "varied — columns, pull elements, deliberate gaps",
+              "symmetry": "magazine asymmetry; elements cross column boundaries",
+              "hierarchy": "display type first, decks and pulls second, body third",
+              "ground": "multi-column page the display type violates on purpose",
+              "dominantElement": "the display typography"
+            },
+            "hue": {
+              "deg": 84.5,
+              "name": "yellow",
+              "paletteCommand": "node scripts/palette.mjs --seed 84.5 --chroma balanced --harmony mono"
+            },
+            "signature": {
+              "id": "single-diagonal",
+              "text": "Exactly one diagonal element per view, always at the same angle"
+            }
+          }
+        ],
+        "contract": "The model justifies and executes this dealt hand — it does not re-choose. Rejected hand: re-deal with --reroll N+1; both deals stay recorded in used-dna.json. Pinned axes are user law — dealt around, never re-chosen."
+      }
+    }
+  ]
+}
