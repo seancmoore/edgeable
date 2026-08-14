@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<!-- No DESIGN.md found — wireframe mode: greyscale defaults. Run /design-for-ai to establish tokens. -->
+<!-- Throwaway-fidelity checkpoint mock for /join — structure + hierarchy only. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>/join — wireframe mock (Edgeable)</title>
+  <style>
+    /* === WIREFRAME TOKENS (greyscale defaults — DESIGN.md absent) === */
+    :root {
+      --background: #ffffff;
+      --surface: #f5f5f5;
+      --surface-hover: #ebebeb;
+      --border-subtle: #e0e0e0;
+      --border: #bdbdbd;
+      --border-strong: #9e9e9e;
+      --text-secondary: #616161;
+      --text: #212121;
+      --accent-solid: #424242;
+      --accent-on-solid: #ffffff;
+      --accent-text: #212121;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Wireframe banner */
+    .wf-banner {
+      background: var(--text);
+      color: var(--background);
+      text-align: center;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+    }
+
+    /* Mobile-first column */
+    .wrap {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    section {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      border: 1px dashed var(--border);
+      padding: 0.1rem 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 { font-size: 1.75rem; line-height: 1.2; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+    .muted { color: var(--text-secondary); font-size: 0.9rem; }
+
+    /* Header */
+    header.site {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    .logo-ph {
+      background: var(--border-subtle);
+      border: 2px solid var(--border);
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .login-link { font-size: 0.85rem; color: var(--accent-text); text-decoration: underline; }
+
+    /* Hero record */
+    .stat-row {
+      display: flex;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .stat {
+      flex: 1;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+    }
+    .stat .num { font-size: 1.5rem; font-weight: 700; }
+    .stat .cap { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+
+    .tamper {
+      background: var(--surface);
+      border-left: 4px solid var(--border-strong);
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Chart */
+    .chart-ph {
+      background: var(--border-subtle);
+      border: 2px solid var(--border);
+      height: 200px;
+      position: relative;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .chart-ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .chart-ph .ph-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    .range-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .range-tabs span {
+      flex: 1;
+      text-align: center;
+      border: 1px solid var(--border);
+      padding: 0.6rem 0;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .range-tabs span.active { background: var(--surface-hover); color: var(--text); font-weight: 600; }
+
+    /* Free pick samples */
+    .pick-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .pick-card .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.35rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-solid);
+      color: var(--accent-on-solid);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* 3-step */
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: flex-start;
+    }
+    .step .n {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border-strong);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .step h3 { font-size: 1rem; margin-bottom: 0.2rem; }
+
+    /* Price + CTA */
+    .price-box {
+      background: var(--surface);
+      border: 2px solid var(--border-strong);
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    .price { font-size: 2.5rem; font-weight: 800; }
+    .price small { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+    .cta {
+      display: block;
+      width: 100%;
+      background: var(--accent-solid);
+      color: var(--accent-on-solid);
+      border: none;
+      padding: 0.9rem 1rem;
+      min-height: 48px;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer.site {
+      padding: 2rem 0 3rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    footer.site a { color: var(--text-secondary); }
+    footer.site .links { margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    /* Desktop: widen column, two-up where cheap */
+    @media (min-width: 900px) {
+      .wrap { max-width: 960px; padding: 0 2rem; }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+      .picks-grid .pick-card { margin-bottom: 0; }
+      .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+      .steps-grid .step { flex-direction: column; }
+      .price-box { max-width: 480px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wf-banner">Wireframe mock — greyscale defaults (no DESIGN.md) — throwaway fidelity</div>
+
+  <div class="wrap">
+    <header class="site">
+      <div class="logo-ph">[Edgeable wordmark]</div>
+      <a class="login-link" href="#">[Log in]</a>
+    </header>
+
+    <main>
+      <!-- 1. Record hero -->
+      <section aria-label="Record hero">
+        <span class="label">1 · Record hero</span>
+        <h1>[Hero headline — the record leads, proof-forward, no hype]</h1>
+        <p class="muted">[Subhead — 1–2 sentences: verifiable record, what this is]</p>
+
+        <div class="stat-row">
+          <div class="stat"><div class="num">[W-L-P]</div><div class="cap">Record</div></div>
+          <div class="stat"><div class="num">[+XX.X]</div><div class="cap">Net units</div></div>
+          <div class="stat"><div class="num">[X.X%]</div><div class="cap">ROI</div></div>
+        </div>
+
+        <p class="tamper">[Tamper-evidence line — every pick timestamped before game start, grading is one-way, no deletes. Link: verify it yourself on /card]</p>
+      </section>
+
+      <!-- 2. Units performance chart -->
+      <section aria-label="Performance chart">
+        <span class="label">2 · Units performance chart</span>
+        <h2>[Net units over time]</h2>
+        <div class="chart-ph">
+          <svg viewBox="0 0 390 200" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points="0,170 40,160 70,175 110,140 150,150 190,115 230,125 270,95 310,105 350,70 390,55"
+              fill="none" stroke="#9e9e9e" stroke-width="3"/>
+          </svg>
+          <div class="ph-label">[Robinhood-style equity curve — scrub to inspect]</div>
+        </div>
+        <div class="range-tabs" aria-label="Range tabs">
+          <span>Week</span><span>Month</span><span>3M</span><span class="active">All</span>
+        </div>
+      </section>
+
+      <!-- 3. Free pick samples -->
+      <section aria-label="Free pick samples">
+        <span class="label">3 · Free-pick samples</span>
+        <h2>[Free picks — try before you buy]</h2>
+        <p class="muted">[Framing line — occasional free picks posted publicly; subscriber picks stay private so the strategy can't be copied]</p>
+        <div class="picks-grid" style="margin-top:1rem;">
+          <article class="pick-card">
+            <span class="badge">Free pick</span>
+            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
+            <div class="row muted"><span>[Posted timestamp — before game start]</span><span>[Result: W]</span></div>
+          </article>
+          <article class="pick-card">
+            <span class="badge">Free pick</span>
+            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
+            <div class="row muted"><span>[Posted timestamp]</span><span>[Result: W]</span></div>
+          </article>
+          <article class="pick-card">
+            <span class="badge">Free pick</span>
+            <div class="row" style="margin-top:0.5rem;"><span>[Pick description]</span><span>[Odds]</span></div>
+            <div class="row muted"><span>[Posted timestamp]</span><span>[Result: L — shown honestly]</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 4. How joining works -->
+      <section aria-label="How joining works">
+        <span class="label">4 · How joining works</span>
+        <h2>[How joining works — personal, not janky]</h2>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="n">1</div>
+            <div><h3>[Create an account]</h3><p class="muted">[One line — free signup, email + password]</p></div>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <div><h3>[Send $30 via CashApp or Zelle]</h3><p class="muted">[One line — attach proof screenshot in the app]</p></div>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <div><h3>[Approved same day]</h3><p class="muted">[One line — personally approved, full access unlocks]</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Price + CTA -->
+      <section aria-label="Pricing">
+        <span class="label">5 · Price + CTA</span>
+        <div class="price-box">
+          <div class="price">$30<small>/month</small></div>
+          <p class="muted">[One tier, everything included — every pick, full record, cancel anytime]</p>
+          <button class="cta">[Join Edgeable →]</button>
+          <p class="muted" style="margin-top:0.75rem;">[Reassurance microcopy — manual process disclosed pre-CTA]</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- 6. Legal footer -->
+    <footer class="site" aria-label="Legal">
+      <span class="label">6 · Legal footer</span>
+      <p>[21+ only. Not a sportsbook. Opinions/analysis, not financial advice. Past performance does not guarantee future results.]</p>
+      <div class="links">
+        <a href="#">[Terms]</a>
+        <a href="#">[Privacy]</a>
+        <a href="#">[Verify the record → /card]</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
