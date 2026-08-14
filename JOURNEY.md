@@ -187,88 +187,184 @@
 
 **1. Record hero**
 - Content slots:
-  - Headline: proof-forward, ≤12 words. (Final copy: Phase 3.)
-  - Subhead: 1–2 sentences — what Edgeable is, why the record is verifiable. (Final copy: Phase 3.)
+  - Headline: "Every pick on record. Before the game starts."
+  - Subhead: "Edgeable is a sports-picks subscription. Every pick is timestamped before game start by a server clock. Grading is one-way. Nothing is deleted. The record you see is the record that happened."
   - Stat row: W-L-P record | Net units | ROI — live data from `picks`/`picksPublic` via the same computation as /card (`computeRecord` in `src/utils/picks.js`). Labels below each number. Pending picks excluded; voids excluded from ROI denominator per existing /card rules.
-  - Tamper-evidence callout: bordered/inset block. Explains: picks timestamped before game start, grading one-way, no deletes, pick contents private so strategy can't be copied. Inline link: "Verify it yourself →" → /card.
-  - **Hero anchor CTA:** "Join for $30/mo — see how it works ↓" — text link / subtle button variant (Phase 2 decides weight), anchors to the price+CTA section (`#join-cta`). Placed below the stat row, above the tamper callout or below it. This CTA exists so a convinced visitor (e.g. referred by a current subscriber) does not have to scroll through all proof sections.
+    - Label copy: "W-L-P" | "Net Units" | "ROI"
+    - Pending indicator (if any pending picks exist): small eyebrow above stat row in `--muted-foreground`: "Live record. [N] pick[s] pending."
+  - Tamper-evidence callout: bordered/inset block using `--surface-2` background and `--hairline` border.
+    - Heading (eyebrow style): "HOW THE RECORD WORKS"
+    - Body: "Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public."
+    - Inline link: "Verify the archive yourself" → /card
+  - **Hero anchor CTA:** Text link in `--brass` (dark: `--primary-text`) with rising-edge underline on hover.
+    - Copy: "Join for $30/mo. See how it works."
+    - Anchors to `#join-cta`.
 - States:
   - Default: live stats rendered.
-  - Loading: skeleton placeholders for stat numbers (3 boxes).
-  - Error / data unavailable: "Record temporarily unavailable — [View the full archive →]" linking to /card. No broken UI; the tamper-evidence callout and CTA remain visible.
-  - Record negative / short-history: stat row shows real numbers honestly. No special hiding state.
+  - Loading: skeleton placeholders for stat numbers (3 boxes, no copy change needed — stat labels remain visible).
+  - Error / data unavailable: Replace stat row with: "Record temporarily unavailable. View the full archive." linking to /card. Tamper-evidence callout and hero anchor CTA remain visible and functional. No broken UI.
+  - Record negative / short-history: stat row shows real numbers honestly, including a negative net units figure. No hiding state. A negative ROI renders as e.g. "−4.2%" in `--loss` color with the letter "ROI" label — color + value, not color alone.
+  - Zero graded picks in selected range: stat row shows "0-0-0 | 0.0 Units | 0.0% ROI" — honest zero state. Tamper-evidence callout remains. Hero anchor CTA remains.
 - Mobile: single-column stack. Stat row: 3 equal-width tiles, full-width. Desktop: hero can use a two-column grid (record left, tamper callout right).
 
 **2. Units performance chart**
+
 - Content slots:
-  - Section heading: "Net units over time" or equivalent. (Final copy: Phase 3.)
-  - Scrubable equity curve chart — Robinhood-style monotone-cubic smoothed line. Interaction baseline: `PerformanceChart.jsx` pattern (pointer/touch scrub updates headline stat + date label).
-  - Headline stat above chart: updates on scrub — shows net units at the scrub point and the date.
-  - Range tab controls: `role="tablist"` containing 4 `<button role="tab">` elements. Labels: Week | Month | 3M | All. Default selected: All. Keyboard: arrow keys navigate between tabs (roving `tabindex`). Touch target: minimum 44px height per tab. Active tab has distinct visual state (Phase 2 decides treatment).
-  - Chart data source: public net-units data (daily granularity, `dailyPnL` collection — engineering to expose world-readable; exact mechanism confirmed in plan). Pending picks excluded from the chart.
+  - Section heading (eyebrow): "PERFORMANCE"
+  - Section subhead: "Net units over time. Dips included."
+  - Headline stat above chart: large Spline Sans Mono display number showing cumulative net units at the scrub point. Updates on pointer/touch scrub. At rest (no scrub): shows the cumulative net units for the selected range.
+    - Format: "+12.4 units" or "−3.1 units" — sign always shown, `--win` for positive, `--loss` for negative, `--foreground` for zero.
+    - Date label below the headline stat: shows the date of the scrub point in "Aug 14, 2026" format (ET, pinned timezone). At rest: shows the range label ("All time" / "Last 30 days" etc.).
+  - Scrubable equity curve chart — monotone-cubic smoothed line. Interaction baseline: `PerformanceChart.jsx` pattern.
+  - Range tab controls: `role="tablist"` with 4 `<button role="tab">` elements. Labels: "1W" | "1M" | "3M" | "All". Default selected: "All". Keyboard: arrow keys navigate (roving tabindex). Touch target: 44px min-height. Active tab: `--gold` fill + `--gold-ink` text, 1px `--ring` border in light theme (per DESIGN.md hard rule 3).
+
+- **Chart specification (engineering sign-off required on public fields):**
+
+  **Data source:** `dailyPnL/{YYYY-MM-DD}` Firestore collection.
+
+  **Required public fields (currently signed-in only — needs world-readable rule change):**
+  - `units` (Number, 2 decimal — net units for that calendar day). REQUIRED for the chart y-axis.
+  - `wins` (Number, integer — daily win count). Secondary: used to build a cumulative W-L overlay or tooltip.
+  - `losses` (Number, integer). Secondary.
+  - `pushes` (Number, integer). Secondary.
+  - `notes` field: NOT required public; stays signed-in only.
+
+  **Engineering action required:** Update Firestore security rules to allow `get` and `list` on `dailyPnL` for unauthenticated users (`allow read: if true` or a scoped rule for the collection). Sean to sign off on the field exposure above before the rule ships.
+
+  **Granularity:** Daily. One document per calendar day. The chart x-axis maps one data point per day with a `dailyPnL` entry; days with no entry are gaps (no interpolation).
+
+  **Chart x-axis:** Date (daily). Labels at range-appropriate intervals (e.g. month-name ticks for 3M+, week-day ticks for 1W). Pinned to ET calendar dates (matching `dailyPnL` document key format `YYYY-MM-DD`).
+
+  **Chart y-axis:** Cumulative net units. Y-axis must include 0 — the zero baseline is always visible. The axis is never truncated to the data range. (Cairo, *How Charts Lie*, 2019: truncating a deviation chart's axis makes a small deviation look large, and a dip below zero look like a flat floor.) A single horizontal hairline at y=0 using `--hairline` color marks the zero baseline. No other horizontal gridlines.
+
+  **Computation rule (cumulative units):** Each chart data point is the running sum of `units` values from the earliest available `dailyPnL` document through that day's document, within the selected range. This matches the spirit of `computeRecord` in `picks.js` (net cumulative, not daily-only view). For the "All" range, the running total starts from the first document in the collection.
+
+  **Pending exclusion:** `dailyPnL` documents are only written after picks are graded (the existing admin P&L entry flow). Pending picks do not appear in `dailyPnL` and thus do not appear on the chart. This is structurally enforced, not a display-layer filter.
+
+  **ROI and W-L header (above chart):**
+  - The record header above the chart (stat row in Section 1) is the canonical W-L + ROI surface. The chart section does not duplicate the full stat row.
+  - The chart headline stat shows net units at the scrub point, not ROI. ROI is a ratio requiring total staked units, which is available from `picks` (subscriber data) not from `dailyPnL` alone. The chart headline stat is net units only, labeled clearly: "+12.4 units."
+  - If the engineering decision later exposes `unitsStaked` as a public field in `dailyPnL` (or a separate public aggregate doc), a cumulative ROI line may be added as a chart overlay — deferred to implementation.
+
+  **Colorblind safety:** The units equity line uses `--gold` (`#dbb155` dark / `--primary` fill) — a warm yellow. The zero baseline hairline uses `--hairline` (neutral). These are two channels: position (primary) and color (secondary). The data is not color-encoded alone — position on the y-axis carries the value. No additional redundancy encoding required for a single-series line chart.
+
 - States:
-  - Default: chart rendered with All range.
-  - Loading: placeholder box with skeleton animation.
-  - Sparse data (<7 data points in selected range): render available points; do not extrapolate. Show "Not enough history for this range — showing all available data" note below the chart.
-  - Negative net units period: shown as a dip on the curve, without truncation or axis manipulation. Chart baseline at 0 units; negative values render below the axis. This is non-negotiable — hiding a dip would contradict the proof-forward pitch.
-  - Range with zero data points: "No data for this range" — chart area empty with note. Tab remains selectable.
-  - Data fetch error: "Chart temporarily unavailable" with a link to /card.
-- Mobile: chart is full container-width. Range tabs are full-width, equal-distribution, 44px min-height touch targets. Scrub works via touch events.
-- Desktop: chart widens with container (max ~640px centered, or full column width in grid).
+  - Default: chart rendered for "All" range, running cumulative from first document.
+  - Loading: placeholder box (full width, ~200px height) with skeleton pulse animation. Range tabs render in skeleton state.
+  - Sparse data (<7 data points in selected range): render the available points as a line (do not extrapolate, do not draw a line between non-adjacent points). Show note below chart in `--muted-foreground`: "Not enough history for this range. Showing all available data." The "All" tab is auto-selected silently when a range tab has <1 data point.
+  - Negative net units period: shown as a dip below the zero baseline on the curve, using the same `--gold` line color. No truncation, no axis manipulation, no hiding. The zero-baseline hairline makes the dip visually clear. The headline stat above the chart shows the negative value in `--loss` color when scrubbed into a negative period.
+  - Range with zero data points: "No data for this range" — chart area is empty with this note in `--muted-foreground`. The zero-baseline hairline remains visible. Tab remains selectable (do not disable it — disabling implies the data doesn't exist, which may just be a short history).
+  - Data fetch error: "Chart temporarily unavailable. View the full record on /card." Note in `--muted-foreground`; inline link to /card.
+
+- Mobile: chart full container-width. Range tabs full-width, equal-distribution, 44px min-height. Scrub via touch events (same touch handler as `PerformanceChart.jsx`).
+- Desktop: chart widens with container (max ~640px centered or full column width in two-column grid if used).
 
 **3. Free-pick samples**
 - Content slots:
-  - Section heading: frames the samples as try-before-you-buy, not manufactured scarcity. (Final copy: Phase 3 — must name framing explicitly: occasional `access='public'` picks; subscriber picks stay private.)
-  - 2–3 free-pick cards. Each card: "Free pick" badge | pick description (from `picks` where `access='public'`) | posted timestamp (before game start — prominent) | result badge (W/L/P — shown honestly, including losses).
-  - Framing note: subscriber picks stay private so the strategy can't be copied or reverse-engineered. This is stated as a feature, not an apology.
-  - Link: "See the full record →" → /card (contextual nav).
+  - Section heading (eyebrow): "FREE PICKS"
+  - Section subhead: "Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after."
+  - Framing note (below heading, before cards): "Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses."
+  - 2–3 free-pick cards. Each card contains:
+    - Badge (top-left): "Free pick" in `--accent` tint with `--accent-foreground` text (eyebrow weight).
+    - Pick description: from `picks` where `access = 'public'` (the full description, sport, odds visible here because public picks are intentionally shared).
+    - Posted timestamp (prominent, Spline Sans Mono): "Posted [time] ET" (before game start, server clock). This is the verifiable proof element.
+    - Game start timestamp: "Game: [datetime] ET" (so the visitor can confirm the pick was posted first).
+    - Result badge: W / L / P glyph + color (using `--win` / `--loss` / `--muted-foreground`). Shown honestly: losses displayed, not filtered. Color + letter glyph per DESIGN.md "color never sole status signal" rule.
+  - Link below cards: "See the complete record" → /card
 - States:
-  - Default: 2–3 most recent graded public picks displayed.
-  - No public picks yet: section is hidden entirely (do not show an empty state here — the section's absence is preferable to an empty promise). Engineering flag: conditional render on `access='public'` pick count > 0.
-  - Loading: skeleton pick cards.
+  - Default: 2–3 most recent graded public picks. Ordered by `postedAt` descending (most recent first).
+  - No public picks yet: section is hidden entirely. No empty-state shown — a promise with nothing behind it would undermine the proof-forward pitch. Engineering: conditional render when `picks where access='public' AND status != 'pending'` count > 0.
+  - 1 public pick available: show 1 card. Section heading and framing note remain.
+  - Loading: skeleton pick cards (same height as a card, 2 skeletons). Section heading renders immediately (static text).
+  - Pending public pick (posted but not yet graded): show the card but replace result badge with "Pending" in `--muted-foreground`. Do not hide the card — a pending public pick proves the pre-game timestamp claim in real time.
 - Mobile: single-column stack of pick cards.
-- Desktop: 3-column picks grid (or 2-column if only 2 picks available).
+- Desktop: 3-column picks grid (or 2-column if only 2 picks available); 1-column if only 1 pick.
 
 **4. How joining works**
 - Content slots:
-  - Section heading: frames the 3-step process as personal/concierge, not janky. (Final copy: Phase 3.)
-  - Step 1: "Create an account" — free signup, email + password, /signup link.
-  - Step 2: "Send $30 via CashApp or Zelle" — exact payment info from `config/paymentInfo`; attach proof screenshot in-app. No external checkout.
-  - Step 3: "Approved same day" — personally reviewed, full access unlocks when approved.
-  - Each step: number indicator (44px touch target circle or equivalent) + heading + 1–2 sentence description.
+  - Section heading: "How it works"
+  - Section subhead: "Three steps. No checkout, no bot. Every member is personally reviewed."
+  - Step 1:
+    - Number indicator: "1" (44px circle, `--secondary` background, `--secondary-foreground` text)
+    - Heading: "Create a free account"
+    - Body: "Sign up with your email. Takes 30 seconds. No payment yet."
+    - [Inline link text:] "Go to signup" → /signup (secondary link style, not a button — the primary CTA is in Section 5)
+  - Step 2:
+    - Number indicator: "2"
+    - Heading: "Send $30 via CashApp or Zelle"
+    - Body: "Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman."
+  - Step 3:
+    - Number indicator: "3"
+    - Heading: "You're in, same day"
+    - Body: "Every request is personally reviewed. If your payment clears, you get full access the same day. You'll hear from us."
+  - Reassurance note below steps (in `--muted-foreground`, smaller body size): "The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew."
 - States:
-  - Default: 3 steps rendered.
-  - (No loading or error state — this is static copy.)
-- Mobile: single-column stack, steps numbered 1–3 vertically.
+  - Default: 3 steps rendered. (Static content — no data fetch.)
+  - (No loading or error states for this section.)
+- Mobile: single-column stack, steps 1-2-3 vertically with clear visual separation.
 - Desktop: 3-column horizontal layout, steps side-by-side.
 
 **5. Price + CTA** `id="join-cta"`
+
+This section uses the `--gold` full-bleed band (DESIGN.md "CTA gold band" expressive moment). All text uses `--gold-ink`. No muted or secondary text on the gold band per DESIGN.md hard rule 2.
+
 - Content slots:
-  - Price: "$30" large + "/month" secondary. Single tier, no comparison table.
-  - Value description: one sentence — what's included (every pick, full record, performance chart, cancel anytime). (Final copy: Phase 3.)
-  - **Primary CTA button:** "Join Edgeable →" (or equivalent). Full-width on mobile; centered max-width on desktop. Minimum height 48px. Primary visual weight (Phase 2 decides color/treatment). → /signup.
-  - Reassurance microcopy: below the CTA button. Acknowledges the manual process explicitly — sets expectation that this is a personal approval, not instant. (Final copy: Phase 3.)
-  - Signed-in state: CTA button replaced with "Go to your dashboard →" link if user is authenticated.
+  - Eyebrow (above price, `--gold-ink` muted-weight): "EDGEABLE MEMBERSHIP"
+  - Price: "$30" in Spline Sans Mono display size + "/month" in Archivo body-size secondary. Single tier.
+  - Value description: "Every pick. Full record. Live performance chart. You cancel when you want."
+  - **Primary CTA button:** `--gold-ink` text on a dark `--foreground`-family fill (inverted within the gold band), or a `--card`-surface button within the gold band — exact treatment is DESIGN.md/implementation call; the constraint is: all text on the gold band uses `--gold-ink`, so the button must invert to provide readable contrast on the button face.
+    - Copy: "Join Edgeable"
+    - Min height: 48px. Full-width on mobile; centered max-width (~400px) on desktop.
+    - Navigates to: /signup
+  - Reassurance microcopy (below CTA button, `--gold-ink`, smaller body size): "Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots."
+  - Signed-in state: CTA button replaced with text link: "You're already a member. Go to your dashboard." → /dashboard. Gold band remains.
+
 - States:
-  - Default: price + CTA visible.
-  - Signed-in: CTA replaced with dashboard link (no dead action).
-  - (No data-fetch states — price is static.)
-- Mobile: price and CTA centered, full-width button.
-- Desktop: content centered with max-width (~480px) within the wider column.
+  - Default: price + CTA visible. Gold band rendered.
+  - Signed-in: CTA button replaced, reassurance copy replaced with "You're already signed in."
+  - (No data-fetch states — price is static copy.)
+
+- Mobile: price and CTA centered, full-width button, vertical stack within the gold band.
+- Desktop: content centered with max-width (~480px) within the wider column of the gold band.
 
 **CTAs on /join — count and placement summary:**
-- CTA 1 (hero anchor): Text link or subtle anchor button in Section 1 below stat row. Low visual weight. Anchors to Section 5. For convinced visitors.
-- CTA 2 (primary): Full button in Section 5 (price+CTA). High visual weight. Navigates to /signup. For visitors who completed the proof-review journey.
+- CTA 1 (hero anchor): Text link in `--brass` (dark: `--primary-text`) with rising-edge underline on hover. Copy: "Join for $30/mo. See how it works." Placed in Section 1 below the stat row. Anchors to Section 5 (`#join-cta`). For convinced visitors who don't need the full proof journey.
+- CTA 2 (primary): Full `--gold` solid button, 48px min-height. Copy: "Join Edgeable." Placed in Section 5. Navigates to /signup. For visitors who read through the proof sections.
 - Total: 2 CTAs. Rationale: Fitts's law (Fitts 1954) — primary target must be reachable without hunting. The hero anchor reduces scroll distance to action for high-intent visitors without competing visually with the primary CTA.
+
+---
+
+### Public data fields — engineering sign-off required (Phase 3 output)
+
+The following Firestore changes are required to support the /join page. These are named here for Sean's sign-off; implementation is at build/dev time.
+
+| Collection | Field | Current access | Required access | Why |
+|-----------|-------|---------------|-----------------|-----|
+| `dailyPnL/{YYYY-MM-DD}` | `units` | Signed-in only | World-readable | Chart y-axis: cumulative net units curve |
+| `dailyPnL/{YYYY-MM-DD}` | `wins` | Signed-in only | World-readable | Secondary: daily W-L tooltip on scrub |
+| `dailyPnL/{YYYY-MM-DD}` | `losses` | Signed-in only | World-readable | Secondary: daily W-L tooltip on scrub |
+| `dailyPnL/{YYYY-MM-DD}` | `pushes` | Signed-in only | World-readable | Secondary: daily W-L tooltip on scrub |
+| `dailyPnL/{YYYY-MM-DD}` | `notes` | Signed-in only | Stays signed-in | Notes are internal; not needed public |
+| `picks/{id}` | `description`, `sport`, `odds`, `stakeUnits` | Signed-in (active sub or public pick) | No change | Per-pick detail stays subscriber-only except access='public' picks |
+| `picksPublic/{id}` | All existing fields | World-readable | No change | Already public: `gameStartTime`, `postedAt`, `status`, `gradedAt` |
+
+**Rule change:** `dailyPnL` collection needs `allow read: if true` (or equivalent world-readable rule) on all documents. Only the four fields above are exposed in the chart; the `notes` field, if it needs to stay private, would require a subcollection or a separate public aggregate document. Simplest path: make the whole document world-readable since `notes` is low-sensitivity internal data. Sean's call.
+
+**No change to pick contents:** `picks/{id}` description, sport, odds, and stakeUnits remain subscriber-only except for `access='public'` picks (which are already accessible to any signed-in user per existing rules and are displayed in Section 3 free-pick cards).
 
 **6. Legal footer**
 - Content slots:
-  - 21+ age requirement statement.
-  - Not a sportsbook disclaimer. Opinions/analysis, not financial advice.
-  - Past performance does not guarantee future results.
-  - Links: Terms (/terms) | Privacy (/privacy) | Verify the record (/card).
-- Mobile: single-column stack of text + link row.
-- Desktop: same, wider container.
+  - Age requirement: "You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction."
+  - Not a sportsbook: "Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment."
+  - Past performance: "Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss."
+  - Links row: "Terms" (/terms) | "Privacy" (/privacy) | "Verify the record" (/card)
+  - Copyright: "Edgeable [current year]"
+- Mobile: single-column stack. Text blocks stacked vertically. Links row wraps as needed.
+- Desktop: same, wider container with a max-width matching the page column.
+
+**Page-level signed-in banner (non-disruptive, above Section 0 header):**
+- Copy: "You're already signed in. Go to your dashboard." with a text link to /dashboard.
+- Visual: thin bar using `--muted` background, `--muted-foreground` text. Not a modal, not a full banner. Dismissible.
 
 **States (page-level):**
 - Default: all sections rendered with live data.

@@ -1,7 +1,7 @@
 # Plan: Edgeable /join landing page + "modern gold" identity refresh
 
 **Date:** 2026-08-14 · **Track:** Standard · **Entry stage:** Discover (no JOURNEY.md, no DESIGN.md)
-**Status:** in-progress · **Started:** 2026-08-14 12:30 · **Current Phase:** 2 · **Workspace:** feature/join-landing (branch)
+**Status:** in-progress · **Started:** 2026-08-14 12:30 · **Current Phase:** 3 · **Workspace:** feature/join-landing (branch)
 **Research doc:** `.design-foundations/research/2026-08-14-edgeable-join-landing.md` (confirmed)
 
 ## Context
@@ -110,6 +110,13 @@ Full lifecycle, three phases: Discover (journey + page spec for one page) → De
 - [x] Committed
 Commit: 8db8553
 Summary: JOURNEY.md created at repo root — job story, journey map, IA, flows including the post-CTA payment/approval wait state, complete /join page spec (6 blocks, hero anchor CTA + bottom CTA, mobile-first ordering, accessible range-tab spec) and the restrained /card cross-link CTA; design can now lay out against locked page structure.
+
+### Phase 2: Design DNA + tokens (Gate: Full)
+- [x] BUILD: Discovery + design + production complete (fable)
+- [x] REVIEW: FAIL → fix pass → PASS (2 attempts; wordmark asset Critical resolved with ink SVG variants)
+- [x] Committed
+Commit: 8dcbf69
+Summary: DESIGN.md "Gilt Ledger" LOCKED (Sean confirmed) — Archivo + Spline Sans Mono, dual warm-neutral themes seeded from brand gold with all AA pairs verified, −4.6° rising-edge motif spec, hard contrast rules, ink wordmark variants for light theme; Phase 3 composes copy + chart on these tokens.
 
 ## Verification plan
 
