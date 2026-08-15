@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!-- /join styled mock (Dusk Ledger, amended 2026-08-14 on Sean's feedback: no purple, warm-metal gradient,
-     Portal device frames + glow rings, atmospheric hero depth, anti-sparse richness). -->
+     Portal device frames + glow rings, atmospheric hero depth, anti-sparse richness).
+     Motion amendment 4 (2026-08-15, Sean's order): scroll-entrance reveals + chart area fill and
+     pulsing live dot (the page's one ambient animation). Reduced motion disables all of it. -->
 <!-- Tokens verbatim from DESIGN.md (LOCKED + amended). Desktop-first: 1200px primary; mobile adapts down. -->
 <!-- Copy verbatim from JOURNEY.md sections 0-6; added elements are subordinate presentation + small factual labels only. -->
 <!-- No hard-coded hex outside the token blocks. Every color via hsl(var(--token)). -->
@@ -56,6 +58,7 @@
         --hero-g2: 38 73.6% 89.6%;           /* #f8ead1  pale amber */
         --hero-g3: 40 62.9% 86.3%;           /* #f2e3c6  warm bronze (horizon) */
         --hero-wash-a: 0.10;                 /* atmospheric gold-wash alpha cap, light (AA-verified composite) */
+        --chart-fill-a: 0.16;                /* chart area-fill alpha, light (motion amendment 4; decorative non-text) */
         /* soft depth */
         --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
         --radius: 0.875rem;
@@ -104,6 +107,7 @@
         --hero-g2: 30 33.3% 10.6%;           /* #241b12  dark bronze */
         --hero-g3: 28 36.6% 16.1%;           /* #38281a  amber ember (horizon) */
         --hero-wash-a: 0.15;                 /* atmospheric gold-wash alpha cap, dark (AA-verified composite) */
+        --chart-fill-a: 0.22;                /* chart area-fill alpha, dark (motion amendment 4) */
         --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
         --radius: 0.875rem;
         --radius-card: 1.5rem;
@@ -152,6 +156,7 @@
         --hero-g2: 30 33.3% 10.6%;
         --hero-g3: 28 36.6% 16.1%;
         --hero-wash-a: 0.15;
+        --chart-fill-a: 0.22;
         --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
         color-scheme: dark;
         --wordmark-asset: url('../public/edgeable-wordmark.svg');
@@ -365,15 +370,39 @@
       border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary; blends into the fill in dark */
     }
     .chart-wrap { margin-top: 32px; }
-    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; overflow: visible; }
     .curve { stroke: hsl(var(--gold)); }
     .zero-baseline { stroke: hsl(var(--hairline)); } /* the ONE information-bearing hairline */
+    /* Chart "live" treatment (DESIGN.md motion amendment 4). All colors via tokens; data unchanged. */
+    .fill-stop-top { stop-color: hsl(var(--gold)); stop-opacity: var(--chart-fill-a); }
+    .fill-stop-bot { stop-color: hsl(var(--gold)); stop-opacity: 0; }
+    .area-fill { fill: url(#gold-fill); }
+    .dot-core { fill: hsl(var(--gold)); }
+    .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; } /* visible only while pulsing; hidden static (reduced motion) */
     @media (prefers-reduced-motion: no-preference) {
       .curve {
         stroke-dasharray: 1; stroke-dashoffset: 1;
         animation: draw 700ms var(--ease) forwards; /* chart reveal, once per load */
       }
       @keyframes draw { to { stroke-dashoffset: 0; } }
+      /* area fill fades in during the draw; labels + live dot wait for the draw to complete */
+      .area-fill { opacity: 0; animation: fade-in 500ms var(--ease) 250ms forwards; }
+      .chart-wrap .x-labels { opacity: 0; animation: fade-in 400ms var(--ease) 700ms forwards; }
+      .chart-dot { opacity: 0; animation: fade-in 260ms var(--ease) 700ms forwards; }
+      /* the pulsing halo: the page's ONE ambient animation (documented motion-budget exception) */
+      .dot-halo {
+        transform-box: fill-box; transform-origin: center;
+        animation: dot-pulse 2.4s ease-out 1s infinite;
+      }
+      @keyframes fade-in { to { opacity: 1; } }
+      @keyframes dot-pulse {
+        0%   { transform: scale(1);   opacity: 0.45; }
+        70%  { transform: scale(2.6); opacity: 0; }
+        100% { transform: scale(2.6); opacity: 0; }
+      }
+      /* charts inside a scroll-reveal element hold their draw until revealed */
+      .reveal-ready [data-reveal]:not(.in) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+      .reveal-ready [data-reveal]:not(.in) .x-labels { animation-play-state: paused; }
     }
     .x-labels {
       margin-top: 12px; display: flex; justify-content: space-between;
@@ -518,6 +547,20 @@
       border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm); cursor: pointer;
     }
 
+    /* ====== SCROLL ENTRANCES (DESIGN.md motion amendment 4) ======
+       Once-only fade + 20px rise as sections/cards enter the viewport. Card grids stagger 80ms.
+       The hidden state exists ONLY under .reveal-ready, which JS adds after confirming
+       IntersectionObserver support and marking already-visible elements: no JS, nothing hides;
+       above the fold never waits. Reduced motion never sees a hidden state (media-gated). */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal-ready [data-reveal] {
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+      .reveal-ready [data-reveal].in { opacity: 1; transform: none; }
+    }
+
     /* ====== MOBILE ADAPTATION (desktop-first: overrides below 900px) ====== */
     @media (max-width: 900px) {
       .container { padding: 0 1.25rem; }
@@ -608,6 +651,14 @@
                 </div>
                 <div class="teaser-chart">
                   <svg viewBox="0 0 420 130">
+                    <defs>
+                      <!-- shared gold area-fill gradient (referenced by every chart on the page; stops styled via tokens) -->
+                      <linearGradient id="gold-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" class="fill-stop-top"></stop>
+                        <stop offset="1" class="fill-stop-bot"></stop>
+                      </linearGradient>
+                    </defs>
+                    <path class="area-fill" d="M0 124C14 118 26 112 40 110C54 108 66 116 80 112C94 108 106 92 120 88C134 84 148 94 160 90C172 86 184 66 200 60C216 54 228 70 242 74C256 78 268 60 282 52C296 44 310 46 324 40C338 34 352 26 368 20C384 14 406 12 420 8L420 124Z"></path>
                     <line class="zero-baseline" x1="0" y1="124" x2="420" y2="124" stroke-width="1"></line>
                     <path class="curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
                       d="M0 124C14 118 26 112 40 110C54 108 66 116 80 112C94 108 106 92 120 88C134 84 148 94 160 90C172 86 184 66 200 60C216 54 228 70 242 74C256 78 268 60 282 52C296 44 310 46 324 40C338 34 352 26 368 20C384 14 406 12 420 8"></path>
@@ -633,12 +684,12 @@
 
     <!-- 2. Units performance chart (inside a browser device frame per DESIGN.md amendment 2) -->
     <section class="section" aria-label="Performance">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">Performance</p>
         <p class="sub">Net units over time. Dips included.</p>
       </div>
 
-      <div class="frame chart-frame">
+      <div class="frame chart-frame" data-reveal>
         <div class="frame-chrome" aria-hidden="true">
           <span class="frame-dots"><span></span><span></span><span></span></span>
           <span class="frame-addr">edgeabled.web.app/card</span>
@@ -659,11 +710,19 @@
 
           <div class="chart-wrap">
             <svg viewBox="0 0 1000 320" role="img" aria-label="Cumulative net units, June 1 to August 14, 2026. Rises from zero with a dip in mid-July, ending at plus 18.4 units. Zero baseline shown.">
+              <!-- soft gold area fill under the curve (motion amendment 4; same data path, closed to the baseline) -->
+              <path class="area-fill" d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10L1000 310Z"></path>
               <!-- zero baseline: the one information-bearing hairline -->
               <line class="zero-baseline" x1="0" y1="310" x2="1000" y2="310" stroke-width="1"></line>
               <!-- equity curve: 75 daily points, Jun 1 to Aug 14 2026, ends +18.4 -->
               <path class="curve" pathLength="1" fill="none" stroke-width="2.5" stroke-linecap="round"
                 d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10"></path>
+              <!-- live dot on the last data point: appears after the 700ms draw completes;
+                   the halo pulse is the page's ONE ambient animation (motion amendment 4) -->
+              <g class="chart-dot" aria-hidden="true">
+                <circle class="dot-halo" cx="1000" cy="10" r="5"></circle>
+                <circle class="dot-core" cx="1000" cy="10" r="4.5"></circle>
+              </g>
             </svg>
             <div class="x-labels" aria-hidden="true">
               <span>Jun 1</span><span>Jul 1</span><span>Aug 1</span><span>Aug 14</span>
@@ -675,14 +734,14 @@
 
     <!-- 3. Free-pick samples -->
     <section class="section" aria-label="Free picks">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">Free picks</p>
         <p class="sub measure">Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after.</p>
         <p class="framing" style="margin-top: 16px;">Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses.</p>
       </div>
 
-      <div class="picks-grid">
-        <article class="soft-card pick-card">
+      <div class="picks-grid" data-reveal-stagger>
+        <article class="soft-card pick-card" data-reveal>
           <div class="pick-head">
             <span class="pick-badge">Free pick</span>
             <span class="sport-chip">MLB</span>
@@ -699,7 +758,7 @@
           <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> Win</p>
         </article>
 
-        <article class="soft-card pick-card">
+        <article class="soft-card pick-card" data-reveal>
           <div class="pick-head">
             <span class="pick-badge">Free pick</span>
             <span class="sport-chip">MLB</span>
@@ -716,7 +775,7 @@
           <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> Loss</p>
         </article>
 
-        <article class="soft-card pick-card">
+        <article class="soft-card pick-card" data-reveal>
           <div class="pick-head">
             <span class="pick-badge">Free pick</span>
             <span class="sport-chip">MLB</span>
@@ -734,18 +793,18 @@
         </article>
       </div>
 
-      <p class="picks-more"><a href="/card">See the complete record</a></p>
+      <p class="picks-more" data-reveal><a href="/card">See the complete record</a></p>
     </section>
 
     <!-- 4. How joining works -->
     <section class="section" aria-label="How it works">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <h2>How it works</h2>
         <p class="sub">Three steps. No checkout, no bot. Every member is personally reviewed.</p>
       </div>
 
-      <div class="steps">
-        <article class="soft-card step">
+      <div class="steps" data-reveal-stagger>
+        <article class="soft-card step" data-reveal>
           <div class="step-top">
             <span class="step-num" aria-hidden="true">1</span>
             <span class="step-icon" aria-hidden="true">
@@ -761,7 +820,7 @@
           <p>Sign up with your email. Takes 30 seconds. No payment yet.</p>
           <a href="/signup">Go to signup</a>
         </article>
-        <article class="soft-card step">
+        <article class="soft-card step" data-reveal>
           <div class="step-top">
             <span class="step-num" aria-hidden="true">2</span>
             <span class="step-icon" aria-hidden="true">
@@ -775,7 +834,7 @@
           <h3>Send $30 via CashApp or Zelle</h3>
           <p>Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman.</p>
         </article>
-        <article class="soft-card step">
+        <article class="soft-card step" data-reveal>
           <div class="step-top">
             <span class="step-num" aria-hidden="true">3</span>
             <span class="step-icon" aria-hidden="true">
@@ -791,15 +850,15 @@
         </article>
       </div>
 
-      <p class="steps-note measure">The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
+      <p class="steps-note measure" data-reveal>The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
     </section>
 
     <!-- 5. Price + CTA: substantial panel + phone-frame dashboard preview (the gold band stays retired) -->
     <section class="section" id="join-cta" aria-label="Membership">
-      <div class="join-grid">
+      <div class="join-grid" data-reveal-stagger>
 
         <!-- Phone device frame: truthful miniature of the real subscriber dashboard performance card -->
-        <div class="app-preview">
+        <div class="app-preview" data-reveal>
           <span class="eyebrow">Inside the app</span>
           <div class="phone" role="img" aria-label="Preview of the subscriber dashboard performance card: scope control, net units stat, equity curve, and recent daily results including a losing day.">
             <div class="phone-notch" aria-hidden="true"></div>
@@ -809,6 +868,7 @@
               <div class="mini-when">All time</div>
               <div class="mini-chart">
                 <svg viewBox="0 0 260 96">
+                  <path class="area-fill" d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6L260 90Z"></path>
                   <line class="zero-baseline" x1="0" y1="90" x2="260" y2="90" stroke-width="1"></line>
                   <path class="curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
                     d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6"></path>
@@ -823,7 +883,7 @@
           </div>
         </div>
 
-        <div class="price-panel">
+        <div class="price-panel" data-reveal>
           <p class="eyebrow">Edgeable membership</p>
           <div class="price-line">
             <span class="amount">$30</span>
@@ -847,7 +907,7 @@
 
   <!-- 6. Legal footer -->
   <footer class="legal">
-    <div class="container">
+    <div class="container" data-reveal>
       <div class="footer-wordmark wordmark" aria-hidden="true">
         <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="">
         <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="">
@@ -903,6 +963,34 @@
           if (next) { e.preventDefault(); select(next); }
         });
       });
+    })();
+
+    // Scroll entrances (DESIGN.md motion amendment 4): once-only, staggered card grids,
+    // above-the-fold shown instantly. No IntersectionObserver or reduced motion: nothing hides.
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!('IntersectionObserver' in window)) return;
+      var els = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+      // 80ms stagger inside marked groups (pick cards, steps, the join grid)
+      Array.prototype.forEach.call(document.querySelectorAll('[data-reveal-stagger]'), function (group) {
+        Array.prototype.forEach.call(group.querySelectorAll('[data-reveal]'), function (el, i) {
+          el.style.setProperty('--reveal-delay', (i * 80) + 'ms');
+        });
+      });
+      // anything already in the viewport at load is shown instantly (above the fold never waits)
+      els.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+      });
+      document.documentElement.classList.add('reveal-ready');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in'); // once only: never re-triggers on scroll-up
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); });
     })();
   </script>
 </body>
