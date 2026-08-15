@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<!-- /join — final styled mock (Gilt Ledger). Tokens verbatim from DESIGN.md (LOCKED). -->
-<!-- Copy verbatim from JOURNEY.md /join page spec sections 0–6 (Phase-3 final microcopy). -->
-<!-- No hard-coded hex outside the :root/.dark token blocks — every color via hsl(var(--token)). -->
+<!-- /join styled mock (Dusk Ledger re-deal). Tokens verbatim from DESIGN.md (AWAITING CONFIRMATION; working law). -->
+<!-- Desktop-first: the 1200px composition is the primary layout; mobile adapts down via media queries. -->
+<!-- Copy verbatim from JOURNEY.md sections 0-6; visual treatments per DESIGN.md supersession map. -->
+<!-- No hard-coded hex outside the token blocks. Every color via hsl(var(--token)). -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,46 +10,59 @@
   <title>Edgeable: Every pick on record</title>
   <style>
     /* === FONTS (exact @import per DESIGN.md fonts adoption note) === */
-    @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
 
-    /* === DESIGN TOKENS — DESIGN.md app token block, verbatim (HSL triples) === */
+    /* ============================================================
+       DESIGN TOKENS: DESIGN.md app token block, verbatim (HSL triples)
+       ============================================================ */
     :root {
-        --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 — page */
+        --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 - page */
         --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
-        --card: 60 20% 99%;                  /* #fdfdfc  n1 — cards sit lighter */
+        --card: 60 20% 99%;                  /* #fdfdfc  n1 - cards sit lighter */
         --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
         --popover: 60 20% 99%;               /* #fdfdfc */
         --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
         /* --primary is FILL-ONLY in light theme (hard rule 1). Gold TEXT uses --primary-text. */
-        --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) — fills only */
+        --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) - fills only */
         --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
         --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links */
         --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
         --secondary-foreground: 48 5.6% 17.5%;
         --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
-        --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 — 5.68:1 */
+        --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 - 5.68:1 */
         --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
-        --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold — 5.29:1 on --accent */
+        --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold - 5.29:1 on --accent */
         --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
         --destructive-foreground: 0 0% 100%;
         --success: 124 38.9% 32.7%;          /* #337437  success-11 */
         --success-foreground: 0 0% 100%;
         --warning: 41 43% 32.4%;
         --warning-foreground: 0 0% 100%;
-        --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 — decorative hairlines */
-        --input: 42 5.2% 38%;                /* #66635c  n11 — field border ≥3:1 */
-        --ring: 41 43% 32.4%;                /* #76602f  focus */
+        --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 - decorative edges (rare) */
+        --input: 42 5.2% 38%;                /* #66635c  n11 - field border */
+        --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary */
         /* raw Edge Club tokens */
         --gold: 41 65% 59.6%;                /* #dbb155 */
         --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
         --brass: 41 43% 32.4%;               /* #76602f */
         --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
-        --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 */
-        --dim: 39 9.1% 63.3%;                /* #aaa499  n10 placeholder */
+        --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 - information-bearing rules ONLY */
+        --dim: 39 9.1% 63.3%;                /* #aaa499 */
         --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
         --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
-        --radius: 0.5rem;                    /* 8px */
+        /* dusk gradient hero (Section 1 backdrop only) */
+        --hero-g1: 38 86% 94%;               /* #fdf4e4  pale amber sky (top) */
+        --hero-g2: 23 54% 91%;               /* #f4e4da  warm rose */
+        --hero-g3: 270 32% 91%;              /* #e9e2f0  soft violet (horizon) */
+        /* soft depth */
+        --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
         color-scheme: light;
+        /* per-theme wordmark assets (DESIGN.md hard rule 5) */
+        --wordmark-asset: url('../public/edgeable-wordmark-ink.svg');
     }
     .dark {
         --background: 60 2.7% 7.3%;          /* #131312  n1 */
@@ -58,14 +72,14 @@
         --popover: 40 4.5% 13.1%;            /* #232220  n3 */
         --popover-foreground: 43 14.3% 90.4%;
         --primary: 41 65% 59.6%;             /* #dbb155 */
-        --primary-foreground: 42 61.9% 4.1%; /* #110d04  9.63:1 */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04 */
         --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text */
         --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
         --secondary-foreground: 43 14.3% 90.4%;
         --muted: 40 4.5% 13.1%;              /* #232220  n3 */
-        --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 — 8.77:1 */
+        --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 */
         --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
-        --accent-foreground: 40 42.9% 65.7%; /* #cdb482  8.73:1 */
+        --accent-foreground: 40 42.9% 65.7%; /* #cdb482 */
         --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
         --destructive-foreground: 60 2.7% 7.3%;
         --success: 125 60.2% 59.6%;          /* #5ad664 */
@@ -78,534 +92,589 @@
         --gold: 41 65% 59.6%;
         --gold-ink: 42 61.9% 4.1%;
         --brass: 40 42.9% 65.7%;             /* #cdb482 */
-        --surface-2: 60 2.7% 7.3%;           /* #131312  wells = page depth */
+        --surface-2: 60 2.7% 7.3%;
         --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
-        --dim: 42 7% 36.7%;                  /* #646057 */
+        --dim: 42 7% 36.7%;
         --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss */
         --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win */
-        --radius: 0.5rem;
+        --hero-g1: 263 27% 12%;              /* #1c1626  deep dusk violet (top) */
+        --hero-g2: 284 19% 16%;              /* #2c2130  mauve */
+        --hero-g3: 12 21% 19%;               /* #3a2a26  ember warm (horizon) */
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
         color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
     }
+    /* System preference: dark tokens auto-apply unless the demo toggle forces .light.
+       (Same values as the .dark block above, comments elided.) */
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;
+        --surface-2: 60 2.7% 7.3%;
+        --hairline: 40 4.5% 13.1%;
+        --dim: 42 7% 36.7%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --hero-g1: 263 27% 12%;
+        --hero-g2: 284 19% 16%;
+        --hero-g3: 12 21% 19%;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
+      }
+    }
+    /* === END TOKEN BLOCKS === */
 
-    /* === TYPE + SPACE TOKENS (DESIGN.md scale, ratio 1.25 from 16px) === */
+    /* Type + font aliases (DESIGN.md type spec) */
     :root {
-      --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
-      --text-xs: 12px; --text-sm: 14px; --text-base: 16px; --text-lg: 20px;
-      --text-xl: 25px; --text-2xl: 31px; --text-3xl: 39px; --text-4xl: 49px;
-      --text-display: 61px; --text-stat: 76px;
-      --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
-      --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
-      --edge-angle: -4.6deg;   /* the wordmark blade angle — the ONLY diagonal angle */
+      --text-xs: 0.75rem;    /* 12 */
+      --text-sm: 0.875rem;   /* 14 */
+      --text-base: 1rem;     /* 16 */
+      --text-lg: 1.25rem;    /* 20 */
+      --text-xl: 1.5625rem;  /* 25 */
+      --text-2xl: 1.9375rem; /* 31 */
+      --text-3xl: 2.4375rem; /* 39 */
+      --text-4xl: 3.0625rem; /* 49 */
+      --text-display: 3.8125rem; /* 61 */
+      --text-stat: 4.75rem;      /* 76 - hero record number, desktop */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* === BASE RESET === */
+    /* === BASE === */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font-display);
-      font-size: var(--text-base);
       background: hsl(var(--background));
       color: hsl(var(--foreground));
-      line-height: 1.5;
+      line-height: 1.55;
+      font-size: var(--text-base);
+      -webkit-font-smoothing: antialiased;
     }
-    a { color: inherit; }
-    button { font: inherit; cursor: pointer; }
-    :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+    a { color: hsl(var(--primary-text)); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid hsl(var(--ring));
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .measure { max-width: 640px; margin-left: auto; margin-right: auto; }
 
-    /* === MOTION BUDGET — micro 120ms / standard 180ms / draw-in 650ms === */
-    a, button { transition: color 120ms cubic-bezier(0.2,0,0,1), background-color 120ms cubic-bezier(0.2,0,0,1), border-color 120ms cubic-bezier(0.2,0,0,1); }
-    @media (prefers-reduced-motion: no-preference) {
-      .rising-edge { transform-origin: left center; animation: edge-draw 650ms cubic-bezier(0.22,1,0.36,1) both; }
-      @keyframes edge-draw { from { transform: rotate(var(--edge-angle)) scaleX(0); } to { transform: rotate(var(--edge-angle)) scaleX(1); } }
-      .chart-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: chart-reveal 650ms cubic-bezier(0.22,1,0.36,1) 120ms forwards; }
-      @keyframes chart-reveal { to { stroke-dashoffset: 0; } }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-
-    /* === SHARED === */
-    .container { max-width: 1100px; margin: 0 auto; padding-left: var(--sp-5); padding-right: var(--sp-5); }
-    .col { max-width: 640px; }
-    section { padding-top: var(--sp-8); padding-bottom: var(--sp-8); }
-    @media (min-width: 768px) { section { padding-top: var(--sp-9); padding-bottom: var(--sp-9); } }
     .eyebrow {
-      font-family: var(--font-display); font-weight: 600; font-size: 11px;
-      letter-spacing: 0.16em; text-transform: uppercase; color: hsl(var(--muted-foreground));
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.6875rem; /* 11px */
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
     }
     .mono { font-family: var(--font-mono); }
-    .muted { color: hsl(var(--muted-foreground)); }
-    .hairline-top { border-top: 1px solid hsl(var(--hairline)); }
 
-    /* === 0. SITE HEADER (static, not sticky) === */
-    header.site {
-      border-bottom: 1px solid hsl(var(--hairline));
-      padding: var(--sp-4) 0;
+    /* Section rhythm: 112px desktop default, 64 mobile */
+    .section { margin-top: 112px; }
+    .section-head { text-align: center; margin-bottom: 48px; }
+    .section-head h2 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; margin-top: 12px; }
+    .section-head .sub { color: hsl(var(--muted-foreground)); margin-top: 12px; }
+
+    /* Soft-depth card (glow ring, no hairline edges) */
+    .soft-card {
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card);
+      box-shadow: var(--elev-ring);
     }
-    header.site .container { display: flex; align-items: center; justify-content: space-between; }
-    .wordmark img { height: 22px; display: block; }
+
+    /* ====== SECTION 0: header (on the gradient) ====== */
+    .dusk {
+      background: linear-gradient(180deg,
+        hsl(var(--hero-g1)) 0%,
+        hsl(var(--hero-g2)) 44%,
+        hsl(var(--hero-g3)) 74%,
+        hsl(var(--background)) 100%);
+      padding-bottom: 96px;
+    }
+    header.site {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 28px;
+    }
+    .wordmark img { height: 30px; display: block; }
     .wordmark .wm-dark { display: none; }
     .dark .wordmark .wm-light { display: none; }
     .dark .wordmark .wm-dark { display: block; }
-    .header-right { display: flex; align-items: center; gap: var(--sp-4); }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) .wordmark .wm-light { display: none; }
+      :root:not(.light) .wordmark .wm-dark { display: block; }
+    }
     .login-link {
-      font-weight: 500; font-size: var(--text-sm); text-decoration: none;
-      color: hsl(var(--foreground)); min-height: 44px; display: inline-flex; align-items: center; padding: 0 var(--sp-2);
+      font-weight: 600; font-size: var(--text-sm);
+      color: hsl(var(--primary-text));
+      min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
     }
-    .login-link:hover { color: hsl(var(--primary-text)); }
-    .theme-toggle {
-      /* demo-only theme toggle for the mock */
-      min-height: 44px; min-width: 44px; padding: 0 var(--sp-3);
-      background: hsl(var(--card)); color: hsl(var(--foreground));
-      border: 1px solid hsl(var(--border)); border-radius: var(--radius);
-      font-size: var(--text-xs); font-weight: 600;
-    }
-    .theme-toggle:hover { background: hsl(var(--muted)); }
 
-    /* === 1. RECORD HERO === */
-    .hero { padding-top: var(--sp-8); }
-    .hero-grid { display: grid; gap: var(--sp-7); }
-    @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.15fr 0.85fr; gap: var(--sp-8); align-items: start; } }
+    /* ====== SECTION 1: record hero (on the gradient) ======
+       Text-on-gradient law: only --foreground / --primary-text / --muted-foreground
+       sit directly on the gradient; everything else rides the card scrim. */
+    .hero { padding-top: 96px; }
+    .hero-grid {
+      display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: start;
+    }
     .hero h1 {
-      font-weight: 800; font-size: var(--text-3xl); line-height: 1.1;
-      letter-spacing: -0.01em; max-width: 15ch;
+      font-size: var(--text-display);
+      line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
     }
-    @media (min-width: 768px) { .hero h1 { font-size: var(--text-4xl); } }
-    .hero .subhead { margin-top: var(--sp-4); color: hsl(var(--muted-foreground)); max-width: 52ch; }
-    .pending-eyebrow { margin-top: var(--sp-6); }
-    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); margin-top: var(--sp-3); }
-    @media (min-width: 900px) { .stat-row { grid-template-columns: 1.2fr 1fr 0.9fr; gap: var(--sp-6); } }
-    .stat-num {
+    .hero .subhead {
+      margin-top: 24px; color: hsl(var(--muted-foreground)); max-width: 640px;
+      font-size: var(--text-lg); line-height: 1.55;
+    }
+    .pending-eyebrow { margin-top: 48px; }
+    .stat-row {
+      margin-top: 12px;
+      display: grid; grid-template-columns: repeat(3, auto); gap: 48px;
+      justify-content: start;
+    }
+    .stat .num {
       font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
-      font-size: clamp(31px, 7vw, var(--text-display));
-      letter-spacing: -0.02em;
+      font-size: var(--text-stat);
+      color: hsl(var(--foreground));
+      letter-spacing: -0.01em;
+      white-space: nowrap;
     }
-    .stat-num.hero-record { font-size: clamp(39px, 8.5vw, var(--text-stat)); }
-    .stat-label { margin-top: var(--sp-2); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: hsl(var(--primary-text)); }
-    .stat-pos { color: hsl(var(--win)); }
-    /* THE rising edge — the page's one diagonal (−4.6°), 4px --gold, round caps */
-    .rising-edge {
-      height: 4px; width: min(100%, 560px); margin-top: var(--sp-6);
-      background: hsl(var(--gold)); border-radius: 2px;
-      transform: rotate(var(--edge-angle)); transform-origin: left center;
-    }
-    .tamper {
-      background: hsl(var(--surface-2)); border: 1px solid hsl(var(--hairline));
-      border-radius: var(--radius); padding: var(--sp-5);
-    }
-    .tamper p { margin-top: var(--sp-3); font-size: var(--text-sm); color: hsl(var(--foreground)); }
-    .tamper a { color: hsl(var(--primary-text)); font-weight: 600; }
+    .stat .num.roi, .stat .num.units { font-size: var(--text-display); padding-top: 0.35em; }
+    .stat .label { margin-top: 12px; }
     .hero-anchor {
-      display: inline-block; margin-top: var(--sp-6);
-      color: hsl(var(--primary-text)); font-weight: 600; text-decoration: none;
-      border-bottom: 2px solid transparent; padding-bottom: 2px;
+      display: inline-flex; align-items: center; min-height: 44px;
+      margin-top: 40px; font-weight: 600;
+      color: hsl(var(--primary-text));
     }
-    .hero-anchor:hover { border-bottom-color: hsl(var(--gold)); }
+    /* Tamper-evidence callout: card scrim on the gradient (>=85% opacity), panel radius, glow ring */
+    .tamper {
+      background: hsl(var(--card) / 0.92);
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-panel);
+      box-shadow: var(--elev-ring);
+      padding: 2rem;
+    }
+    .tamper p { margin-top: 16px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--card-foreground)); }
+    .tamper a { font-weight: 600; }
 
-    /* === 2. PERFORMANCE CHART === */
-    .chart-head { margin-top: var(--sp-2); color: hsl(var(--muted-foreground)); }
-    .chart-stat { margin-top: var(--sp-5); font-family: var(--font-mono); font-weight: 600; font-size: clamp(31px, 6vw, var(--text-4xl)); line-height: 1.0; }
-    .chart-stat.pos { color: hsl(var(--win)); }
-    .chart-stat.neg { color: hsl(var(--loss)); }
-    .chart-date { margin-top: var(--sp-2); font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
-    .chart-wrap { margin-top: var(--sp-5); }
-    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
-    .chart-line { fill: none; stroke: hsl(var(--gold)); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .chart-zero { stroke: hsl(var(--hairline)); stroke-width: 1; }
-    .chart-scrub-dot { fill: hsl(var(--gold)); stroke: hsl(var(--background)); stroke-width: 1.5; }
-    .chart-tick { font-family: var(--font-mono); font-size: 11px; fill: hsl(var(--muted-foreground)); }
-    .range-tabs { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+    /* ====== SECTION 2: performance chart ====== */
+    .chart-card { padding: 2.5rem 2.5rem 2rem; }
+    .chart-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .chart-headline .val {
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-3xl); line-height: 1.0;
+      color: hsl(var(--win));
+    }
+    .chart-headline .when { margin-top: 8px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .range-tabs { display: flex; gap: 8px; }
     .range-tabs [role="tab"] {
-      flex: 1; min-height: 44px; border-radius: 4px;
+      font-family: var(--font-mono); font-weight: 500; font-size: var(--text-sm);
+      min-height: 44px; min-width: 56px; padding: 0 20px;
+      border-radius: var(--radius-pill);
       background: transparent; color: hsl(var(--muted-foreground));
-      border: 1px solid transparent; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm);
+      border: 1px solid transparent; cursor: pointer;
+      transition: background-color 140ms var(--ease), color 140ms var(--ease);
     }
     .range-tabs [role="tab"]:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
     .range-tabs [role="tab"][aria-selected="true"] {
-      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
-      border: 1px solid hsl(var(--ring)); /* hard rule 3: ring border on gold fill */
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink)); font-weight: 600;
+      border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary; blends into the fill in dark */
     }
-    @media (min-width: 768px) { .range-tabs { max-width: 400px; } }
+    .chart-wrap { margin-top: 32px; }
+    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+    .curve { stroke: hsl(var(--gold)); }
+    .zero-baseline { stroke: hsl(var(--hairline)); } /* the ONE information-bearing hairline */
+    @media (prefers-reduced-motion: no-preference) {
+      .curve {
+        stroke-dasharray: 1; stroke-dashoffset: 1;
+        animation: draw 700ms var(--ease) forwards; /* chart reveal, once per load */
+      }
+      @keyframes draw { to { stroke-dashoffset: 0; } }
+    }
+    .x-labels {
+      margin-top: 12px; display: flex; justify-content: space-between;
+      font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
 
-    /* === 3. FREE PICKS === */
-    .picks-note { margin-top: var(--sp-3); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); max-width: 62ch; }
-    .picks-grid { display: grid; gap: var(--sp-4); margin-top: var(--sp-5); }
-    @media (min-width: 768px) { .picks-grid { grid-template-columns: repeat(3, 1fr); } }
-    .pick-card {
-      background: hsl(var(--card)); border: 1px solid hsl(var(--border));
-      border-radius: var(--radius); padding: var(--sp-4);
-      display: flex; flex-direction: column; gap: var(--sp-3);
+    /* ====== SECTION 3: free picks ====== */
+    .framing { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); max-width: 640px; margin: 0 auto; }
+    .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .pick-card { padding: 2rem; display: flex; flex-direction: column; gap: 16px; }
+    .pick-badge {
+      align-self: flex-start;
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: 10px; padding: 6px 12px;
     }
-    .pick-top { display: flex; justify-content: space-between; align-items: center; }
-    .free-badge {
-      display: inline-block; background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
-      font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
-      padding: var(--sp-1) var(--sp-2); border-radius: 4px;
-    }
-    .result-badge { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm); }
-    .result-badge.w { color: hsl(var(--win)); }
-    .result-badge.l { color: hsl(var(--loss)); }
-    .pick-desc { font-weight: 600; }
-    .pick-times { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); display: grid; gap: var(--sp-1); }
+    .pick-desc { font-weight: 600; font-size: var(--text-lg); line-height: 1.3; }
+    .pick-times { font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); display: grid; gap: 6px; }
     .pick-times .posted { color: hsl(var(--foreground)); font-weight: 600; }
-    .picks-link { display: inline-block; margin-top: var(--sp-5); color: hsl(var(--primary-text)); font-weight: 600; }
-
-    /* === 4. HOW JOINING WORKS === */
-    .how h2 { font-weight: 700; font-size: var(--text-2xl); line-height: 1.1; }
-    .how .subhead { margin-top: var(--sp-3); color: hsl(var(--muted-foreground)); }
-    .steps { display: grid; gap: var(--sp-6); margin-top: var(--sp-6); }
-    @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); } }
-    .step-num {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
-      display: flex; align-items: center; justify-content: center;
+    .pick-result { display: flex; align-items: center; gap: 10px; margin-top: auto; font-weight: 600; font-size: var(--text-sm); }
+    .result-glyph {
       font-family: var(--font-mono); font-weight: 600;
+      width: 32px; height: 32px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
     }
-    .step h3 { margin-top: var(--sp-3); font-size: var(--text-lg); font-weight: 700; line-height: 1.2; }
-    .step p { margin-top: var(--sp-2); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
-    .step a { color: hsl(var(--primary-text)); font-weight: 600; font-size: var(--text-sm); }
-    .reassure { margin-top: var(--sp-6); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); max-width: 58ch; }
+    .result-win  { color: hsl(var(--win)); }
+    .result-loss { color: hsl(var(--loss)); }
+    .result-win .result-glyph  { background: hsl(var(--muted)); }
+    .result-loss .result-glyph { background: hsl(var(--muted)); }
+    .picks-more { text-align: center; margin-top: 40px; }
+    .picks-more a { font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 
-    /* === 5. PRICE + CTA — the gold band (all text --gold-ink, hard rule 2) === */
-    #join-cta { background: hsl(var(--gold)); color: hsl(var(--gold-ink)); }
-    .cta-inner { max-width: 480px; margin: 0 auto; text-align: center; }
-    .cta-inner .eyebrow { color: hsl(var(--gold-ink)); }
-    .price { margin-top: var(--sp-4); font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
-    .price .per { font-family: var(--font-display); font-weight: 500; font-size: var(--text-lg); }
-    .value-desc { margin-top: var(--sp-4); }
+    /* ====== SECTION 4: how it works ====== */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .step { padding: 2rem; }
+    .step-num {
+      width: 44px; height: 44px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .step h3 { margin-top: 20px; font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .step p { margin-top: 10px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .step a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; font-weight: 600; font-size: var(--text-sm); }
+    .steps-note { text-align: center; margin-top: 40px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+
+    /* ====== SECTION 5: price + CTA (calm card panel; the gold band is retired) ====== */
+    .price-panel {
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-panel); box-shadow: var(--elev-ring);
+      max-width: 560px; margin: 0 auto; padding: 4rem 3rem; text-align: center;
+    }
+    .price-line { margin-top: 24px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+    .price-line .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
+    .price-line .per { color: hsl(var(--muted-foreground)); font-size: var(--text-lg); }
+    .value-desc { margin-top: 20px; }
     .cta-btn {
-      /* button face inverts on the band: ink fill, gold text — 9.63:1 both themes */
-      display: block; width: 100%; max-width: 400px; margin: var(--sp-6) auto 0;
-      min-height: 48px; border: 0; border-radius: var(--radius);
-      background: hsl(var(--gold-ink)); color: hsl(var(--gold));
-      font-weight: 700; font-size: var(--text-base); text-decoration: none;
-      display: flex; align-items: center; justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 52px; padding: 0 28px; margin-top: 32px;
+      width: 100%; max-width: 400px;
+      border-radius: var(--radius-pill);
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary (hard rule 3); blends in dark */
+      font-weight: 700; font-size: var(--text-base); cursor: pointer;
+      text-decoration: none;
+      transition: transform 140ms var(--ease), filter 140ms var(--ease);
     }
-    .cta-btn:hover { color: hsl(var(--primary)); opacity: 0.92; }
-    #join-cta :focus-visible { outline-color: hsl(var(--gold-ink)); }
-    .cta-reassure { margin-top: var(--sp-4); font-size: var(--text-sm); }
+    .cta-btn:hover { filter: brightness(1.04); text-decoration: none; }
+    .cta-btn:active { transform: scale(0.99); }
+    .cta-reassure { margin-top: 24px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
 
-    /* === 6. LEGAL FOOTER === */
-    footer.legal { border-top: 1px solid hsl(var(--hairline)); padding: var(--sp-8) 0; }
-    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); max-width: 68ch; }
-    footer.legal p + p { margin-top: var(--sp-3); }
-    .footer-links { margin-top: var(--sp-5); display: flex; flex-wrap: wrap; gap: var(--sp-4); font-size: var(--text-sm); }
-    .footer-links a { color: hsl(var(--foreground)); font-weight: 500; }
-    .footer-links a:hover { color: hsl(var(--primary-text)); }
-    .copyright { margin-top: var(--sp-5); font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    /* ====== SECTION 6: legal footer ====== */
+    footer.legal { margin-top: 112px; padding: 64px 0 48px; }
+    footer.legal .blocks { display: grid; gap: 16px; max-width: 640px; margin: 0 auto; text-align: center; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); line-height: 1.55; }
+    .footer-links { display: flex; justify-content: center; gap: 32px; margin-top: 32px; }
+    .footer-links a { font-weight: 600; font-size: var(--text-sm); min-height: 44px; display: inline-flex; align-items: center; }
+    .copyright { text-align: center; margin-top: 24px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* Demo theme toggle (mock chrome only, not part of the page spec) */
+    .theme-toggle {
+      position: fixed; right: 20px; bottom: 20px; z-index: 10;
+      min-height: 44px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm); cursor: pointer;
+    }
+
+    /* ====== MOBILE ADAPTATION (desktop-first: overrides below 900px) ====== */
+    @media (max-width: 900px) {
+      .container { padding: 0 1.25rem; }
+      .section { margin-top: 64px; }
+      footer.legal { margin-top: 64px; }
+      .hero { padding-top: 64px; }
+      .dusk { padding-bottom: 64px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .hero h1 { font-size: var(--text-3xl); }
+      .hero .subhead { font-size: var(--text-base); }
+      .stat-row { grid-template-columns: 1fr 1fr 1fr; gap: 16px; justify-content: stretch; }
+      .stat .num { font-size: var(--text-2xl); }
+      .stat .num.roi, .stat .num.units { font-size: var(--text-2xl); padding-top: 0; }
+      .picks-grid, .steps { grid-template-columns: 1fr; }
+      .chart-card, .pick-card, .step { padding: 1.5rem; }
+      .price-panel { padding: 3rem 1.5rem; }
+      .range-tabs { width: 100%; }
+      .range-tabs [role="tab"] { flex: 1; min-width: 0; }
+      .cta-btn { max-width: none; }
+      .footer-links { gap: 20px; flex-wrap: wrap; }
+    }
+
+    /* === prefers-reduced-motion: all animation off; chart renders complete === */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .curve { stroke-dasharray: none; stroke-dashoffset: 0; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 0. Site header (static per DESIGN.md Phase-2 decision) -->
-  <header class="site">
+  <!-- Warm dusk gradient backs Section 0 + Section 1 only, dissolving into --background -->
+  <div class="dusk">
     <div class="container">
-      <a class="wordmark" href="/" aria-label="Edgeable home">
-        <!-- per-theme wordmark assets, DESIGN.md hard rule 5 -->
-        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
-        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable" aria-hidden="true">
-      </a>
-      <div class="header-right">
-        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Theme</button>
+
+      <!-- 0. Site header -->
+      <header class="site">
+        <a class="wordmark" href="/" aria-label="Edgeable home">
+          <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+          <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable">
+        </a>
         <a class="login-link" href="/">Log in</a>
-      </div>
-    </div>
-  </header>
+      </header>
 
-  <main>
-    <!-- 1. Record hero -->
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <h1>Every pick on record. Before the game starts.</h1>
-          <p class="subhead">Edgeable is a sports-picks subscription. Every pick is timestamped before game start by a server clock. Grading is one-way. Nothing is deleted. The record you see is the record that happened.</p>
+      <!-- 1. Record hero -->
+      <section class="hero" aria-label="Record">
+        <div class="hero-grid">
+          <div>
+            <h1>Every pick on record. Before the game starts.</h1>
+            <p class="subhead">Edgeable is a sports-picks subscription. Every pick is timestamped before game start by a server clock. Grading is one-way. Nothing is deleted. The record you see is the record that happened.</p>
 
-          <p class="eyebrow pending-eyebrow">Live record. 2 picks pending.</p>
-          <div class="stat-row">
-            <div>
-              <div class="stat-num hero-record mono">61-42-3</div>
-              <div class="stat-label">W-L-P</div>
+            <p class="eyebrow pending-eyebrow">Live record. 2 picks pending.</p>
+            <div class="stat-row">
+              <div class="stat">
+                <div class="num mono">61-42-3</div>
+                <div class="label eyebrow">W-L-P</div>
+              </div>
+              <div class="stat">
+                <div class="num units mono">+18.4</div>
+                <div class="label eyebrow">Net Units</div>
+              </div>
+              <div class="stat">
+                <div class="num roi mono">+8.9%</div>
+                <div class="label eyebrow">ROI</div>
+              </div>
             </div>
-            <div>
-              <div class="stat-num stat-pos mono">+18.4</div>
-              <div class="stat-label">Net Units</div>
-            </div>
-            <div>
-              <div class="stat-num stat-pos mono">+8.9%</div>
-              <div class="stat-label">ROI</div>
-            </div>
+
+            <a class="hero-anchor" href="#join-cta">Join for $30/mo. See how it works.</a>
           </div>
-          <div class="rising-edge" aria-hidden="true"></div>
 
-          <a class="hero-anchor" href="#join-cta">Join for $30/mo. See how it works.</a>
+          <!-- Tamper-evidence callout: card scrim on the gradient -->
+          <aside class="tamper">
+            <h2 class="eyebrow">How the record works</h2>
+            <p>Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public.</p>
+            <p><a href="/card">Verify the archive yourself</a></p>
+          </aside>
         </div>
+      </section>
 
-        <aside class="tamper" aria-labelledby="tamper-heading">
-          <h2 class="eyebrow" id="tamper-heading">How the record works</h2>
-          <p>Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public.</p>
-          <p><a href="/card">Verify the archive yourself</a></p>
-        </aside>
-      </div>
-    </section>
+    </div>
+  </div>
+
+  <main class="container">
 
     <!-- 2. Units performance chart -->
-    <section class="hairline-top" aria-labelledby="perf-heading">
-      <div class="container col">
-        <h2 class="eyebrow" id="perf-heading">Performance</h2>
-        <p class="chart-head">Net units over time. Dips included.</p>
+    <section class="section" aria-label="Performance">
+      <div class="section-head">
+        <p class="eyebrow">Performance</p>
+        <p class="sub">Net units over time. Dips included.</p>
+      </div>
 
-        <div class="chart-stat pos mono" id="chartStat">+18.4 units</div>
-        <div class="chart-date" id="chartDate">All time</div>
-
-        <div class="chart-wrap">
-          <svg id="chart" viewBox="0 0 640 240" role="img" aria-label="Line chart of cumulative net units over time for the selected range. Zero baseline always shown.">
-            <line class="chart-zero" id="zeroLine" x1="0" x2="640" y1="0" y2="0"></line>
-            <path class="chart-line" id="chartPath" pathLength="1" d=""></path>
-            <circle class="chart-scrub-dot" id="scrubDot" r="4" style="display:none"></circle>
-            <g id="ticks"></g>
-          </svg>
+      <div class="soft-card chart-card">
+        <div class="chart-top">
+          <div class="chart-headline">
+            <div class="val" aria-live="polite">+18.4 units</div>
+            <div class="when">All time</div>
+          </div>
+          <div class="range-tabs" role="tablist" aria-label="Chart range">
+            <button role="tab" aria-selected="false" tabindex="-1">1W</button>
+            <button role="tab" aria-selected="false" tabindex="-1">1M</button>
+            <button role="tab" aria-selected="false" tabindex="-1">3M</button>
+            <button role="tab" aria-selected="true" tabindex="0">All</button>
+          </div>
         </div>
 
-        <div class="range-tabs" role="tablist" aria-label="Chart range">
-          <button role="tab" aria-selected="false" tabindex="-1" data-range="7">1W</button>
-          <button role="tab" aria-selected="false" tabindex="-1" data-range="30">1M</button>
-          <button role="tab" aria-selected="false" tabindex="-1" data-range="90">3M</button>
-          <button role="tab" aria-selected="true" tabindex="0" data-range="all">All</button>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 1000 320" role="img" aria-label="Cumulative net units, June 1 to August 14, 2026. Rises from zero with a dip in mid-July, ending at plus 18.4 units. Zero baseline shown.">
+            <!-- zero baseline: the one information-bearing hairline -->
+            <line class="zero-baseline" x1="0" y1="310" x2="1000" y2="310" stroke-width="1"></line>
+            <!-- equity curve: 75 daily points, Jun 1 to Aug 14 2026, ends +18.4 -->
+            <path class="curve" pathLength="1" fill="none" stroke-width="2.5" stroke-linecap="round"
+              d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10"></path>
+          </svg>
+          <div class="x-labels" aria-hidden="true">
+            <span>Jun 1</span><span>Jul 1</span><span>Aug 1</span><span>Aug 14</span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- 3. Free-pick samples -->
-    <section class="hairline-top" aria-labelledby="freepicks-heading">
-      <div class="container">
-        <h2 class="eyebrow" id="freepicks-heading">Free picks</h2>
-        <p class="chart-head">Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after.</p>
-        <p class="picks-note">Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses.</p>
-
-        <div class="picks-grid">
-          <article class="pick-card">
-            <div class="pick-top">
-              <span class="free-badge">Free pick</span>
-              <span class="result-badge w">W · Win</span>
-            </div>
-            <p class="pick-desc">Guardians ML +112 vs. Twins</p>
-            <div class="pick-times">
-              <span class="posted">Posted 11:42 AM ET</span>
-              <span>Game: Aug 12, 7:10 PM ET</span>
-            </div>
-          </article>
-
-          <article class="pick-card">
-            <div class="pick-top">
-              <span class="free-badge">Free pick</span>
-              <span class="result-badge l">L · Loss</span>
-            </div>
-            <p class="pick-desc">Padres −1.5 (−138) at Giants</p>
-            <div class="pick-times">
-              <span class="posted">Posted 2:05 PM ET</span>
-              <span>Game: Aug 8, 9:45 PM ET</span>
-            </div>
-          </article>
-
-          <article class="pick-card">
-            <div class="pick-top">
-              <span class="free-badge">Free pick</span>
-              <span class="result-badge w">W · Win</span>
-            </div>
-            <p class="pick-desc">Under 8.5 (−105), Yankees at Orioles</p>
-            <div class="pick-times">
-              <span class="posted">Posted 10:58 AM ET</span>
-              <span>Game: Aug 3, 1:35 PM ET</span>
-            </div>
-          </article>
-        </div>
-
-        <a class="picks-link" href="/card">See the complete record</a>
+    <section class="section" aria-label="Free picks">
+      <div class="section-head">
+        <p class="eyebrow">Free picks</p>
+        <p class="sub measure">Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after.</p>
+        <p class="framing" style="margin-top: 16px;">Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses.</p>
       </div>
+
+      <div class="picks-grid">
+        <article class="soft-card pick-card">
+          <span class="pick-badge">Free pick</span>
+          <p class="pick-desc">Yankees ML (-125) vs Red Sox, 1u</p>
+          <div class="pick-times">
+            <span class="posted">Posted 2:12 PM ET</span>
+            <span>Game: Aug 9, 7:05 PM ET</span>
+          </div>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> Win</p>
+        </article>
+
+        <article class="soft-card pick-card">
+          <span class="pick-badge">Free pick</span>
+          <p class="pick-desc">Dodgers -1.5 (+104) at Padres, 0.5u</p>
+          <div class="pick-times">
+            <span class="posted">Posted 4:47 PM ET</span>
+            <span>Game: Jul 28, 9:40 PM ET</span>
+          </div>
+          <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> Loss</p>
+        </article>
+
+        <article class="soft-card pick-card">
+          <span class="pick-badge">Free pick</span>
+          <p class="pick-desc">Braves vs Mets Under 8.5 (-110), 1u</p>
+          <div class="pick-times">
+            <span class="posted">Posted 11:58 AM ET</span>
+            <span>Game: Jul 19, 1:10 PM ET</span>
+          </div>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> Win</p>
+        </article>
+      </div>
+
+      <p class="picks-more"><a href="/card">See the complete record</a></p>
     </section>
 
     <!-- 4. How joining works -->
-    <section class="hairline-top how" aria-labelledby="how-heading">
-      <div class="container">
-        <h2 id="how-heading">How it works</h2>
-        <p class="subhead">Three steps. No checkout, no bot. Every member is personally reviewed.</p>
-
-        <div class="steps">
-          <div class="step">
-            <div class="step-num" aria-hidden="true">1</div>
-            <h3>Create a free account</h3>
-            <p>Sign up with your email. Takes 30 seconds. No payment yet.</p>
-            <p><a href="/signup">Go to signup</a></p>
-          </div>
-          <div class="step">
-            <div class="step-num" aria-hidden="true">2</div>
-            <h3>Send $30 via CashApp or Zelle</h3>
-            <p>Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman.</p>
-          </div>
-          <div class="step">
-            <div class="step-num" aria-hidden="true">3</div>
-            <h3>You're in, same day</h3>
-            <p>Every request is personally reviewed. If your payment clears, you get full access the same day. You'll hear from us.</p>
-          </div>
-        </div>
-
-        <p class="reassure">The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
+    <section class="section" aria-label="How it works">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p class="sub">Three steps. No checkout, no bot. Every member is personally reviewed.</p>
       </div>
+
+      <div class="steps">
+        <article class="soft-card step">
+          <span class="step-num" aria-hidden="true">1</span>
+          <h3>Create a free account</h3>
+          <p>Sign up with your email. Takes 30 seconds. No payment yet.</p>
+          <a href="/signup">Go to signup</a>
+        </article>
+        <article class="soft-card step">
+          <span class="step-num" aria-hidden="true">2</span>
+          <h3>Send $30 via CashApp or Zelle</h3>
+          <p>Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman.</p>
+        </article>
+        <article class="soft-card step">
+          <span class="step-num" aria-hidden="true">3</span>
+          <h3>You're in, same day</h3>
+          <p>Every request is personally reviewed. If your payment clears, you get full access the same day. You'll hear from us.</p>
+        </article>
+      </div>
+
+      <p class="steps-note measure">The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
     </section>
 
-    <!-- 5. Price + CTA — the gold band -->
-    <section id="join-cta" aria-labelledby="cta-heading">
-      <div class="container cta-inner">
-        <p class="eyebrow" id="cta-heading">Edgeable Membership</p>
-        <p class="price mono">$30<span class="per">/month</span></p>
+    <!-- 5. Price + CTA: calm card panel (the gold band is retired per DESIGN.md) -->
+    <section class="section" id="join-cta" aria-label="Membership">
+      <div class="price-panel">
+        <p class="eyebrow">Edgeable membership</p>
+        <div class="price-line">
+          <span class="amount">$30</span>
+          <span class="per">/month</span>
+        </div>
         <p class="value-desc">Every pick. Full record. Live performance chart. You cancel when you want.</p>
         <a class="cta-btn" href="/signup">Join Edgeable</a>
         <p class="cta-reassure">Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots.</p>
       </div>
     </section>
 
-    <!-- 6. Legal footer -->
-    <footer class="legal">
-      <div class="container">
+  </main>
+
+  <!-- 6. Legal footer -->
+  <footer class="legal">
+    <div class="container">
+      <div class="blocks">
         <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>
         <p>Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment.</p>
         <p>Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss.</p>
-        <nav class="footer-links" aria-label="Legal">
-          <a href="/terms">Terms</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/card">Verify the record</a>
-        </nav>
-        <p class="copyright mono">Edgeable 2026</p>
       </div>
-    </footer>
-  </main>
+      <nav class="footer-links" aria-label="Legal">
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/card">Verify the record</a>
+      </nav>
+      <p class="copyright">Edgeable 2026</p>
+    </div>
+  </footer>
+
+  <!-- Demo theme toggle (mock chrome only) -->
+  <button class="theme-toggle" type="button" aria-label="Toggle theme demo">Theme</button>
 
   <script>
-    /* ===== Theme: system preference respected + demo toggle ===== */
+    // Demo toggle: cycles system -> dark -> light. Tokens follow prefers-color-scheme by default.
     (function () {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      var userSet = false;
-      function apply(dark) {
-        document.documentElement.classList.toggle('dark', dark);
-        document.getElementById('themeToggle').setAttribute('aria-pressed', String(dark));
-      }
-      apply(mq.matches);
-      mq.addEventListener('change', function (e) { if (!userSet) apply(e.matches); });
-      document.getElementById('themeToggle').addEventListener('click', function () {
-        userSet = true;
-        apply(!document.documentElement.classList.contains('dark'));
+      var root = document.documentElement;
+      var states = ['system', 'dark', 'light'];
+      var i = 0;
+      document.querySelector('.theme-toggle').addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        root.classList.remove('dark', 'light');
+        if (states[i] !== 'system') root.classList.add(states[i]);
+        this.textContent = 'Theme: ' + states[i];
       });
     })();
 
-    /* ===== Chart: sample dailyPnL cumulative units, Jun 1 – Aug 14, 2026 =====
-       Honest curve: rises to +11.0, dips to +3.2 (mid-July losing stretch), recovers to +18.4.
-       Zero baseline always included; axis never truncated (Cairo rule, per spec). */
+    // Range tabs: roving tabindex + arrow keys (mock-level interactivity; data does not change).
     (function () {
-      var CUM = [
-        1.1,2.3,1.8,2.9,4.0,3.4,4.6,5.2,4.7,5.9,6.4,5.8,7.0,7.6,6.9,8.1,8.8,8.2,9.4,9.0,
-        10.2,9.6,10.4,11.0,10.2,9.5,10.6,10.1,9.3,8.6,                      /* June */
-        7.8,7.0,6.2,6.8,5.9,5.1,4.4,3.8,4.5,3.6,3.2,4.1,5.0,4.4,5.3,6.1,5.6,6.8,7.5,7.0,
-        8.2,9.0,8.4,9.6,10.3,9.8,11.0,11.8,11.2,12.4,13.0,                  /* July */
-        12.5,13.6,14.2,13.7,14.9,15.5,14.8,16.0,16.6,16.1,17.2,17.8,17.3,18.4 /* Aug 1–14 */
-      ];
-      var START = new Date(2026, 5, 1); /* Jun 1, 2026 */
-      var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var W = 640, H = 240, PAD_T = 12, PAD_B = 28, PAD_X = 4;
-      var svg = document.getElementById('chart');
-      var path = document.getElementById('chartPath');
-      var zero = document.getElementById('zeroLine');
-      var ticks = document.getElementById('ticks');
-      var dot = document.getElementById('scrubDot');
-      var statEl = document.getElementById('chartStat');
-      var dateEl = document.getElementById('chartDate');
-      var RANGE_LABEL = { '7': 'Last 7 days', '30': 'Last 30 days', '90': 'Last 90 days', 'all': 'All time' };
-      var cur = { vals: [], startIdx: 0, pts: [], label: 'All time' };
-
-      function dateOf(i) { var d = new Date(START); d.setDate(d.getDate() + i); return d; }
-      function fmt(d) { return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
-      function fmtUnits(v) { return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + ' units'; }
-
-      function render(range) {
-        var startIdx = range === 'all' ? 0 : Math.max(0, CUM.length - parseInt(range, 10));
-        var base = startIdx === 0 ? 0 : CUM[startIdx - 1];
-        var vals = CUM.slice(startIdx).map(function (v) { return +(v - base).toFixed(1); });
-        var min = Math.min(0, Math.min.apply(null, vals));
-        var max = Math.max(0, Math.max.apply(null, vals));
-        var span = (max - min) || 1;
-        var innerH = H - PAD_T - PAD_B, innerW = W - PAD_X * 2;
-        function x(i) { return PAD_X + (vals.length === 1 ? innerW / 2 : i * innerW / (vals.length - 1)); }
-        function y(v) { return PAD_T + (max - v) / span * innerH; }
-        var pts = vals.map(function (v, i) { return [x(i), y(v)]; });
-        path.setAttribute('d', pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(''));
-        zero.setAttribute('y1', y(0).toFixed(1)); zero.setAttribute('y2', y(0).toFixed(1));
-        /* month/date ticks */
-        ticks.textContent = '';
-        var step = Math.max(1, Math.floor(vals.length / 4));
-        for (var i = 0; i < vals.length; i += step) {
-          var d = dateOf(startIdx + i);
-          var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          t.setAttribute('class', 'chart-tick');
-          t.setAttribute('x', Math.min(x(i), W - 60).toFixed(1));
-          t.setAttribute('y', H - 8);
-          t.textContent = MONTHS[d.getMonth()] + ' ' + d.getDate();
-          ticks.appendChild(t);
-        }
-        cur = { vals: vals, startIdx: startIdx, pts: pts, label: RANGE_LABEL[range] };
-        rest();
-      }
-
-      function setStat(v) {
-        statEl.textContent = fmtUnits(v);
-        statEl.classList.toggle('pos', v > 0);
-        statEl.classList.toggle('neg', v < 0);
-      }
-      function rest() {
-        dot.style.display = 'none';
-        setStat(cur.vals[cur.vals.length - 1]);
-        dateEl.textContent = cur.label;
-      }
-
-      /* scrub (pointer + touch), instant feedback per motion spec */
-      svg.addEventListener('pointermove', function (e) {
-        var r = svg.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width * W;
-        var innerW = W - PAD_X * 2;
-        var i = Math.round((px - PAD_X) / innerW * (cur.vals.length - 1));
-        i = Math.max(0, Math.min(cur.vals.length - 1, i));
-        setStat(cur.vals[i]);
-        dateEl.textContent = fmt(dateOf(cur.startIdx + i));
-        dot.style.display = '';
-        dot.setAttribute('cx', cur.pts[i][0]); dot.setAttribute('cy', cur.pts[i][1]);
-      });
-      svg.addEventListener('pointerleave', rest);
-
-      /* range tabs: roving tabindex + arrow keys */
       var tabs = Array.prototype.slice.call(document.querySelectorAll('.range-tabs [role="tab"]'));
       function select(tab) {
         tabs.forEach(function (t) {
           var on = t === tab;
-          t.setAttribute('aria-selected', String(on));
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
           t.tabIndex = on ? 0 : -1;
         });
-        render(tab.dataset.range);
+        tab.focus();
       }
-      tabs.forEach(function (t, i) {
-        t.addEventListener('click', function () { select(t); });
-        t.addEventListener('keydown', function (e) {
-          var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : null;
-          if (j === null) return;
-          e.preventDefault();
-          var n = tabs[(j + tabs.length) % tabs.length];
-          n.focus(); select(n);
+      tabs.forEach(function (tab, idx) {
+        tab.addEventListener('click', function () { select(tab); });
+        tab.addEventListener('keydown', function (e) {
+          var next = null;
+          if (e.key === 'ArrowRight') next = tabs[(idx + 1) % tabs.length];
+          if (e.key === 'ArrowLeft') next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          if (next) { e.preventDefault(); select(next); }
         });
       });
-
-      render('all');
     })();
   </script>
 </body>

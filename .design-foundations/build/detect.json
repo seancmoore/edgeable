@@ -10,16 +10,34 @@
   "findings": [
     {
       "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
+      "rule": "nested-cards",
+      "category": "layout",
+      "severity": "high",
+      "evidence": "<a class=\"cta-btn\"> is a card inside a card ancestor",
+      "line": 617
+    },
+    {
+      "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
+      "rule": "overused-font",
+      "category": "typography",
+      "severity": "medium",
+      "evidence": "overused font \"Inter\" as a primary face",
+      "line": 13
+    },
+    {
+      "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
       "rule": "aphoristic-cadence",
       "category": "copy",
       "severity": "medium",
-      "evidence": "5 aphoristic constructions: \"AM ET Game: Aug 3, 1:35 PM ET See the complete record How it works Three steps. \"",
+      "evidence": "5 aphoristic constructions: \"Game: Jul 19, 1:10 PM ET W Win See the complete record How it works Three steps.\"",
       "line": null
     }
   ],
   "counts": {
-    "total": 1,
+    "total": 3,
     "byRule": {
+      "nested-cards": 1,
+      "overused-font": 1,
       "aphoristic-cadence": 1
     }
   }

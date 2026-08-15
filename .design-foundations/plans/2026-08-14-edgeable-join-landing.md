@@ -1,7 +1,8 @@
 # Plan: Edgeable /join landing page + "modern gold" identity refresh
 
 **Date:** 2026-08-14 · **Track:** Standard · **Entry stage:** Discover (no JOURNEY.md, no DESIGN.md)
-**Status:** complete · **Started:** 2026-08-14 12:30 · **Completed:** 2026-08-14 14:15 · **Duration:** ~1h45m · **Workspace:** feature/join-landing (branch)
+**Status:** complete (after Phase 2 re-deal) · **Started:** 2026-08-14 12:30 · **Completed:** 2026-08-14 · **Workspace:** feature/join-landing (branch)
+**Re-deal 2026-08-14:** Sean rejected the Gilt Ledger direction on the rendered mock ("looks very weird on desktop especially"). New reference (user-supplied): refero "Portal" style, https://styles.refero.design/style/b9aeb945-2f6e-4557-9115-e3ff3a8f8dc8 — twilight editorial: near-mono neutrals + ONE sparing accent, atmospheric gradient hero, 22-30px card radius + pill buttons, soft glow-ring depth (no hard shadows/hairline severity), 1200px centered desktop-first, 80-120px section air. New pins: all-sans stands (serif logo-only), gold = the single sparing accent (buttons/links/active only, no gold bands), warm dusk atmospheric hero, DESKTOP-FIRST layout. JOURNEY.md structure + Phase-3 copy stand; DESIGN.md re-dealt; mock re-rendered.
 **Research doc:** `.design-foundations/research/2026-08-14-edgeable-join-landing.md` (confirmed)
 
 ## Context
@@ -129,6 +130,13 @@ Summary: JOURNEY.md /join spec carries final visitor-facing copy for all six sec
 - [x] BUILD: mocks/join.html re-rendered at full fidelity on locked tokens
 - [x] REVIEW: dual-blind PASS (detector exit 0; 1 Major usability fix + 3 mechanical fixes applied by orchestrator)
 Summary: Both-theme styled mock with the one −4.6° motif, honest chart, verbatim final copy; pixel screenshot still pending (no browser tool this session).
+
+### Phase 2 re-deal: "Dusk Ledger" (Gate: Full)
+- [x] BUILD: DESIGN.md rewritten grounded in refero Portal (fable); palette.mjs exit 0 + 52 supplemental AA pairs incl. gradient stops
+- [x] Mock: mocks/join.html re-rendered desktop-first on the new tokens
+- [x] REVIEW: dual-blind PASS (detector exit 0; Major mobile stat-row overflow risk flagged for build time)
+- [x] LOCKED by Sean on the rendered desktop mock
+Summary: Dusk Ledger replaces Gilt Ledger — Inter + Spline Sans Mono, near-mono neutrals with gold as the single sparing accent, warm dusk gradient hero, soft glow-ring depth, pill buttons, calm centered 1200px desktop-first. JOURNEY structure/copy unchanged. Known build-time fixes: mobile stat-row overflow, real headings for sections 2/3/5 eyebrows, tab aria-controls linkage.
 
 ## Verification plan
 

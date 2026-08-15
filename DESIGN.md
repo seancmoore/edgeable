@@ -1,76 +1,65 @@
-# Design: Gilt Ledger
+# Design: Dusk Ledger
 
-**Date:** 2026-08-14 · **Status:** **LOCKED** (direction confirmed by Sean 2026-08-14 — this is law for all downstream design and implementation)
-**Archetype:** Ruler (primary), Sage inflecting the data presentation only · **Register:** calm product structure · expressive at: record hero, chart reveal, CTA gold band
-**Grounding:** Robinhood's equity-curve-as-proof + Mercury's bank-grade dual-theme calm
-**DNA:** Art Deco/Luxury (base) + type voice and motion from Data-Dense Professional · **Dominant axis:** type voice
-**Composition:** \<dealt\> — Art Deco/Luxury × **Editorial Spread** (variance 7: oversized display type against modest body columns, magazine asymmetry, deliberate gaps, display-type-first hierarchy) × hue 84.5 (yellow/gold) × signature "exactly one diagonal element per view, always at the same angle" (`dealer.mjs --project edgeable-join --date 2026-08-14 --candidates 1 --pin hue=84.5`, reroll 0 — executed as dealt)
-**Pins:** hue = 84.5 (OKLCH hue of brand gold `#d8b773`, from research taste signals); serif confined to the logo (page all-sans — rides the TYPE line as a stated constraint); vintage cream dropped. Pinned values are user law.
+**Date:** 2026-08-14 · **Status:** **LOCKED** (confirmed by Sean on the rendered desktop mock, 2026-08-14 — replaces the rejected "Gilt Ledger" DNA; this is law for all downstream design and implementation)
+**Archetype:** Ruler (primary), Sage inflecting the data presentation only · **Register:** twilight-calm structure · expressive at: the atmospheric gradient hero (the page's one expressive moment), chart reveal (moderate)
+**Grounding:** Refero "Portal" style (https://styles.refero.design/style/b9aeb945-2f6e-4557-9115-e3ff3a8f8dc8) — twilight editorial: premium magazine calm + native-app polish — collided with Edgeable's proof-first content (the verifiable record, the units curve)
+**DNA:** Twilight editorial (base) + numeric proof voice (Spline Sans Mono) retained from the product · **Dominant axis:** composition (calm centered air + soft depth)
+**Composition:** user-pinned — calm centered, ~1200px max-width, 80–120px desktop section gaps, soft-depth cards (variance ~2). The previously dealt Editorial Spread cell was rejected by Sean on rendered pixels and stays consumed per the re-deal protocol; every axis is now user law from the Portal reference, so no fresh deal was run (pinned axes are dealt around, never re-chosen).
+**Pins (user law):** hue pinned to brand gold `#d8b773` family (OKLCH hue 84.5) as the SINGLE chromatic accent, used sparingly and functionally only; ALL-SANS page (serif = logo asset only); no gold bands or large gold fields; warm dusk atmospheric gradient hero; DESKTOP-FIRST (1200px composition is primary, mobile adapts down); both themes follow system; WCAG AA law unchanged; token block stays in the `src/index.css` shadcn HSL-triple vocabulary.
 
 ---
 
 ## Direction
 
-A private bank's ledger, kept by a machine: deep warm-neutral surfaces, one metallic gold, and oversized monospaced numerals doing the talking. It serves a skeptical stranger deciding whether a picks record is real — so the luxury is restraint (hairlines, one accent, one diagonal), and the flourish is always the *evidence*: the number, the timestamp, the curve. Gold-on-ink luxury discipline colliding with terminal-grade numeric type is not a template cluster — it can only come from this brand's gold blade and this page's proof-first content.
+A calm, premium dusk: near-monochrome paper-and-ink surfaces, one warm gold accent that only ever means "act here," and a soft twilight-sky gradient behind the record — the page's single expressive moment, and it backs the proof. The luxury is air and softness (24px cards, pill buttons, glow-ring depth, 100px of breathing room between sections), not severity. The mono numerals still do the talking: the record, the curve, the timestamps. Editorial beauty over feature claims; handcrafted, never SaaS-template.
 
 ## Comps (reference points)
 
-> styles.refero.design could not be browsed in this environment (no browser MCP). Comps are named from well-known product design references, stated explicitly per the dispatch note.
+| Comp | Borrowed (as-is) | Adapted (translated for Edgeable) |
+|------|------------------|-----------------------------------|
+| **Refero "Portal"** (primary — user-supplied law) | Near-mono neutral system (paper white / ash / smoke / graphite / ink); EXACTLY ONE chromatic accent, sparing and functional (buttons, links, active states); atmospheric gradient hero; generous centered air (80–120px desktop gaps, ~1200px max-width); soft depth (22–30px card radii, pill buttons, glow-ring elevation, no hard hairlines or drop-shadow stacks); Inter-class type neutrality | Accent: their iOS blue → **brand gold** `#d8b773` family, with the light-theme text-safe step (`--primary-text`). Gradient: their sky-blue → violet → coral → **warm dusk** (pale amber → warm rose → soft violet light / deep violet → mauve → ember dark) so it flatters flat gold and stays on-brand. Their serif headlines → rejected: page stays ALL-SANS per Sean's pin; serif lives in the wordmark only |
+| **Robinhood** (portfolio view) | Equity-curve-as-hero: one large live number, scrubable line, range tabs, chrome out of the way — already the app's `PerformanceChart.jsx` baseline | Curve rendered in the calm register: gold line on neutral ground, single zero-baseline hairline (information-bearing, so it survives), soft draw-in once |
+| **Mercury** (mercury.com) | Bank-grade credibility across BOTH finished themes; warm-neutral light mode that reads precise, not creamy | Kept as the register model for "closer to fintech than sportsbook," now expressed through softness and air instead of hairline severity |
 
-| Comp | What it contributes |
-|------|--------------------|
-| **Robinhood** (portfolio view) | The equity-curve-as-hero pattern: one large live number, a scrubable line under it, range tabs, chrome that gets out of the way. Already the app's `PerformanceChart.jsx` interaction baseline — /join inherits it. |
-| **Linear** (linear.app marketing site) | Hairline-not-shadow surface discipline and tight display type on near-neutral darks — the proof that "premium" can come from type + 1px rules instead of glow and gradients. Anti-template posture. |
-| **Mercury** (mercury.com) | Bank-grade credibility across BOTH finished themes; warm-neutral light mode that reads precise, not creamy. The register model for "closer to fintech than sportsbook." |
+## The rising-edge motif (resolved: chart-only)
 
-## Signature move — the rising edge
-
-**One gold diagonal per viewport, always at −4.6°** (the measured angle of the wordmark blade: rise 41.1/run 514 in `public/edgeable-wordmark.svg`). Rendered as a 3–4px `--gold` rule with round caps, rising left-to-right.
-
-**Motif usage spec:**
-- **May appear:** (1) the hero — as the underline/divider beneath the record stat row (the page's one diagonal); (2) the chart line itself counts as the diagonal when the chart section fills the viewport (do not add a second decorative diagonal near it); (3) the /join OG share image.
-- **May NOT appear:** more than once per viewport (the dealt rule is the enforcement); behind or through body text; as a per-card or per-list-item ornament; on /card, /terms, /privacy chrome; at any other angle; animated ambiently (a single 650ms draw-in on first paint is allowed, then it is static).
-- All other rules and dividers in the system are **horizontal hairlines** (`--border`/`--hairline`) — the diagonal is singular by contrast.
+The −4.6° wordmark-blade diagonal survives **only as the equity-curve line itself** — the chart IS the rising edge, authentically, when the record rises. No decorative diagonal rules anywhere: no hero underline motif, no diagonal dividers, no forced horizon line in the gradient. A hard 3–4px diagonal is exactly the hairline severity this register retires; the motif is not forced, per the pin.
 
 ## Expressive moments
 
-1. **Record hero** (peak, committed amplitude): stat row in Spline Sans Mono at the display sizes (49–76px), the rising-edge rule beneath it, gold used on the numbers' unit labels only. Everything else in the hero holds the calm baseline.
-2. **Chart reveal** (moderate): 650ms left-to-right draw-in (existing `chart-reveal` keyframe), once per load; scrub feedback is instant.
-3. **CTA gold band** (moderate): Section 5 (`#join-cta`) may use a full-bleed `--gold` field — the only large-area gold on the page. ALL text on it is `--gold-ink` (9.63:1); no muted text on gold.
-   **Clarification (intentional, not an oversight):** the gold band is a full-bleed *decorative section background*, not a bordered UI component — WCAG 1.4.11 non-text contrast governs UI component boundaries and information-bearing graphics, so it does not apply to the band field itself. Every piece of text and every control ON the band uses `--gold-ink` (9.63:1, verified), and interactive gold fills inside it still carry the light-theme 1px `--ring` border per hard rule 3. No muted or secondary text may ever appear on the band.
+1. **Atmospheric gradient hero** (peak): the dusk-sky gradient backs Section 1 (record hero) ONLY — full-bleed behind the header + hero, dissolving into `--background` before Section 2. Hero content (headline, stat row in Spline Sans Mono at display sizes, tamper-evidence panel, anchor link) sits directly on it under the text-on-gradient law below. The gradient is static: no animation, no parallax, no aurora drift.
+2. **Chart reveal** (moderate): 700ms left-to-right draw-in (existing `chart-reveal` pattern, softened timing), once per load; scrub feedback instant.
 
-Everything else — header, free-pick cards, 3-step section, footer — holds the structure register: neutral surfaces, hairlines, sans body, no gold except interactive accents.
+Everything else — free-pick cards, 3-step section, price/CTA panel, footer — holds the calm structure register: neutral surfaces, soft depth, generous air, gold only on interactive elements.
 
 ## Type
 
-- **Display + body: Archivo** (Google Fonts, variable; fallback `system-ui, -apple-system, 'Segoe UI', sans-serif`). Compact grotesque — sharp at heavy weights, screen-ready realist structure. Replaces Mulish.
-- **Numerals & timestamps: Spline Sans Mono** (already loaded by the app; fallback `ui-monospace, monospace`). Used for: the stat row (W-L-P, net units, ROI), chart headline + axis/date labels, posted-at timestamps, odds, and the `$30` price. Naturally tabular — no layout shift on live updates.
-- **Serif: Bodoni Moda — wordmark asset only.** Never set as page text. (Mulish's Google-Fonts import can be dropped at adoption time; Bodoni Moda stays only if the wordmark is ever rendered as live text.)
-- **Pairing logic:** deliberate contrast (grotesque × mono), per the appendix pairing rule — not the uncanny middle.
-- **Scale:** ratio 1.25 (major third) from 16px — `12 / 14 / 16 / 20 / 25 / 31 / 39 / 49` px (`--text-xs` … `--text-4xl`), plus display steps `61` (`--text-display`, section-level stats) and `76` (`--text-stat`, hero record number, mobile may clamp to 61).
-- **Leading:** body 1.5 · display 1.1 · mono stats 1.0. **Weights:** Archivo 400/500/600/700 (800 display only); Spline Sans Mono 500/600.
-- **Eyebrow style** (kept from current system, re-typed): Archivo 600, 11px, 0.16em tracking, uppercase, `--muted-foreground`.
+- **Display + body: Inter** (Google Fonts, variable; fallback `system-ui, -apple-system, 'Segoe UI', sans-serif`). Chosen over keeping Archivo: the Portal register is Inter-class neutrality — realist/neo-grotesque, tall x-height, screen-native, no display-face aggression. Archivo's compact sharp shoulders were the old severity; in a calm centered composition they fight the register. Display sizes track −0.02em; weights capped at 700 (no 800 shouting).
+- **Numerals & timestamps: Spline Sans Mono** (already app-loaded; fallback `ui-monospace, monospace`) — KEPT. The record and chart are the proof; naturally-tabular mono means no layout shift on live scrub, and the grotesque × mono collision is the page's one type tension. Used for: stat row (W-L-P, net units, ROI), chart headline + axis/date labels, posted-at timestamps, odds, the `$30` price.
+- **Serif: Bodoni Moda — wordmark asset only.** Never set as page text.
+- **Pairing logic:** deliberate contrast (neutral grotesque × mono), per the appendix pairing rule — not the uncanny middle.
+- **Scale:** ratio 1.25 (major third) from 16px — `12 / 14 / 16 / 20 / 25 / 31 / 39 / 49` px (`--text-xs` … `--text-4xl`), plus display steps `61` (`--text-display`) and `76` (`--text-stat`, hero record number — desktop primary; mobile clamps to 61).
+- **Leading:** body 1.55 (airier than the old 1.5, serving the generous-air register) · display 1.1 · mono stats 1.0. **Weights:** Inter 400/500/600/700; Spline Sans Mono 500/600.
+- **Eyebrow style:** Inter 600, 11px, 0.14em tracking, uppercase, `--muted-foreground`.
 
-### Fonts adoption note (Phase 3 / implementation — exact lines, so the wrong fonts cannot render)
+### Fonts adoption note (implementation — exact lines)
 
-Archivo is specced above but is **not** in the current `src/index.css` Google Fonts import (which still loads Bodoni Moda + Mulish). At adoption time, replace the existing `@import` with:
-
-```css
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@500;600&display=swap');
-```
-
-Font-family stacks (define as tokens and use everywhere — never bare family names):
+Replace the existing `@import` in `src/index.css` with:
 
 ```css
---font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;  /* display + body */
---font-mono: 'Spline Sans Mono', ui-monospace, monospace;                     /* numerals, timestamps, odds, price */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
 ```
 
-The Mulish import line is dropped (Archivo replaces it). The Bodoni Moda import may also be dropped **only after verifying** the wordmark SVGs render their `<text>` correctly without it in the target browsers (the SVGs reference `'Bodoni Moda', serif`); until verified, keep the Bodoni Moda import. Bodoni Moda is never set as page text either way.
+```css
+--font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;  /* display + body */
+--font-mono: 'Spline Sans Mono', ui-monospace, monospace;                   /* numerals, timestamps, odds, price */
+```
+
+Mulish and Archivo imports are dropped. The Bodoni Moda import may be dropped **only after verifying** the wordmark SVGs render their `<text>` correctly without it in target browsers; until verified, keep it. Bodoni Moda is never page text either way.
 
 ## Color tokens
 
-Generated by `palette.mjs` (design-for-ai 4.2.0): `--seed "#d8b773" --chroma balanced --harmony mono --scheme both` → seed reported as `oklch 0.79 0.095 84.5` — the brand gold is the seed by construction. **Script exit 0.** Full output archived at `.design-foundations/build/palette-gold-balanced-mono.css`.
+Generated by `palette.mjs` (design-for-ai 4.2.0): `--seed "#d8b773" --chroma balanced --harmony mono --scheme both` → seed reported as `oklch 0.79 0.095 84.5` — the brand gold is the seed by construction, and the generated neutral ramp is exactly the Portal near-mono system (paper white / ash / smoke / graphite / ink with a faint warm cast that flatters gold). **Script exit 0** (re-run 2026-08-14 for this re-deal). Full output archived at `.design-foundations/build/palette-gold-balanced-mono-2b.css`.
 
 ### palette.mjs output (verbatim)
 
@@ -149,19 +138,28 @@ PASS  [dark] accent-on-solid on accent-9: 9.63:1 (target 4.5:1)
     --success-foreground: 0 0% 100%;     /* 5.68:1 */
     --warning: 41 43% 32.4%;             /* #76602f  deep gold as warning */
     --warning-foreground: 0 0% 100%;     /* 6.03:1 */
-    --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 — decorative hairlines */
-    --input: 42 5.2% 38%;                /* #66635c  n11 — field border ≥3:1 */
-    --ring: 41 43% 32.4%;                /* #76602f  focus — 5.92:1 vs card */
+    --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 — decorative edges (rare; see depth system) */
+    --input: 42 5.2% 38%;                /* #66635c  n11 — field border ≥3:1 (5.68:1) */
+    --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary — 5.92:1 vs card */
     /* raw Edge Club tokens */
     --gold: 41 65% 59.6%;                /* #dbb155 */
     --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
-    --brass: 41 43% 32.4%;               /* #76602f  deep gold: gold TEXT + light gold-button border */
+    --brass: 41 43% 32.4%;               /* #76602f  deep gold: gold TEXT + light gold-fill border */
     --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
-    --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 */
+    --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 — information-bearing rules ONLY (chart zero baseline) */
     --dim: 39 9.1% 63.3%;                /* #aaa499  n10 placeholder */
     --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
     --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
-    --radius: 0.5rem;                    /* 8px */
+    /* dusk gradient hero (Section 1 backdrop only) — every stop AA-verified for hero text colors */
+    --hero-g1: 38 86% 94%;               /* #fdf4e4  pale amber sky (top) */
+    --hero-g2: 23 54% 91%;               /* #f4e4da  warm rose */
+    --hero-g3: 270 32% 91%;              /* #e9e2f0  soft violet (horizon) */
+    /* soft depth */
+    --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+    --radius: 0.875rem;                  /* 14px — fields, small controls */
+    --radius-card: 1.5rem;               /* 24px — cards */
+    --radius-panel: 1.75rem;             /* 28px — feature panels (tamper callout, price panel) */
+    --radius-pill: 9999px;               /* pill buttons + tabs */
     color-scheme: light;
 }
 .dark {
@@ -179,72 +177,105 @@ PASS  [dark] accent-on-solid on accent-9: 9.63:1 (target 4.5:1)
     --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
     --secondary-foreground: 43 14.3% 90.4%;
     --muted: 40 4.5% 13.1%;              /* #232220  n3 */
-    --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 — 8.77:1 */
+    --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 — 9.29:1 */
     --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
-    --accent-foreground: 40 42.9% 65.7%; /* #cdb482  8.73:1 */
+    --accent-foreground: 40 42.9% 65.7%; /* #cdb482  7.93:1 */
     --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
     --destructive-foreground: 60 2.7% 7.3%; /* ink fg — 4.89:1 */
     --success: 125 60.2% 59.6%;          /* #5ad664  success-9 */
     --success-foreground: 60 2.7% 7.3%;  /* 9.95:1 */
     --warning: 41 65% 59.6%;             /* #dbb155 */
     --warning-foreground: 42 61.9% 4.1%;
-    --border: 38 6.9% 22.7%;             /* #3e3b36  n6 */
-    --input: 41 7% 44.7%;                /* #7a756a  n8.5 interpolation — 3.83:1 */
-    --ring: 41 65% 59.6%;                /* #dbb155  8.72:1 */
+    --border: 38 6.9% 22.7%;             /* #3e3b36  n6 — decorative edges (rare) */
+    --input: 41 7% 44.7%;                /* #7a756a  n8.5 interpolation — 4.05:1 */
+    --ring: 41 65% 59.6%;                /* #dbb155  9.24:1 */
     /* raw Edge Club tokens */
     --gold: 41 65% 59.6%;                /* #dbb155 */
     --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
     --brass: 40 42.9% 65.7%;             /* #cdb482  deep-gold text tone */
     --surface-2: 60 2.7% 7.3%;           /* #131312  wells = page depth */
-    --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
+    --hairline: 40 4.5% 13.1%;           /* #232220  n3 — information-bearing rules ONLY */
     --dim: 42 7% 36.7%;                  /* #646057  n8 placeholder */
-    --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss — 8.39:1 */
-    --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win — 9.16:1 */
-    --radius: 0.5rem;
+    --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss — 8.88:1 */
+    --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win — 9.70:1 */
+    /* dusk gradient hero — every stop AA-verified for hero text colors */
+    --hero-g1: 263 27% 12%;              /* #1c1626  deep dusk violet (top) */
+    --hero-g2: 284 19% 16%;              /* #2c2130  mauve */
+    --hero-g3: 12 21% 19%;               /* #3a2a26  ember warm (horizon) */
+    /* soft depth */
+    --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+    --radius: 0.875rem;
+    --radius-card: 1.5rem;
+    --radius-panel: 1.75rem;
+    --radius-pill: 9999px;
     color-scheme: dark;
 }
 ```
 
-**Supplemental alias-pair verification** (WCAG 2.x computed on the mapped values above — all PASS at their targets):
-light body 12.89:1 · light muted-fg 5.68:1 · light gold text (`--brass`/`--primary-text` #76602f on neutral-2) 5.72:1 · light `--accent-foreground` (#76602f on `--accent` #f9efdd) 5.29:1 · ink-on-gold 9.63:1 · light destructive fill 6.32:1 / text 5.99:1 · light success 5.68/5.39:1 · light input border 5.68:1 · light ring 5.92:1 · dark body 14.34:1 · dark muted-fg 8.77:1 · dark gold text (`--brass`/`--primary-text` #cdb482) 8.73:1 on card / 9.25:1 on bg · dark gold vs bg (non-text) 9.24:1 · dark destructive fill 4.89:1 / text 8.39:1 · dark success 9.95/9.16:1 · dark input 3.83:1 · dark ring 8.72:1.
+**Supplemental alias-pair verification** (WCAG 2.x computed 2026-08-14 via `.design-foundations/build/contrast-2b.mjs` — **all required pairs PASS, exit 0**):
+light body 12.89:1 (bg) / 13.35:1 (card) · light muted-fg 5.68:1 · light gold text (`--primary-text` #76602f) 5.72:1 bg / 5.92:1 card · light `--accent-foreground` on `--accent` 5.29:1 · ink-on-gold 9.63:1 · light destructive fill 6.32:1 / text 5.99:1 · light success 5.68/5.39:1 · light input border 5.68:1 · light ring 5.92:1 · dark body 15.18:1 (bg) / 14.34:1 (card) · dark muted-fg 9.29:1 · dark gold text (#cdb482) 9.25:1 bg / 8.73:1 card · dark gold vs bg (non-text) 9.24:1 · dark destructive fill 4.89:1 / text 8.88:1 · dark success 9.95/9.70:1 · dark input 4.05:1 · dark ring 9.24:1 · **gradient stops, light** (ink / brass link / muted-fg on each stop): #fdf4e4 → 12.45 / 5.52 / 5.49 · #f4e4da → 10.97 / 4.87 / 4.84 · #e9e2f0 → 10.74 / 4.76 / 4.74 · light ring border vs stops ≥4.76 (non-text ≥3) · **gradient stops, dark** (fg / gold-text / muted-fg / gold-pill-non-text on each stop): #1c1626 → 14.39 / 8.76 / 8.80 / 8.75 · #2c2130 → 12.54 / 7.64 / 7.67 / 7.63 · #3a2a26 → 11.14 / 6.79 / 6.81 / 6.78.
 
-### Hard rules (contrast law — the defects the old palette had, fixed here)
+## The gradient hero — spec + text-on-gradient law
 
-1. **Gold is never light-theme text at accent-9.** Historic `#b58a3c` on white measures **3.15:1 — FAIL**; `#dbb155` on the light page is **1.91:1 — FAIL**. Light-theme gold text/icons/links always use `--brass` `#76602f` (5.72:1). Dark theme may use `--gold` or `--brass` freely (both ≥8:1). **Structural enforcement:** `--primary` is a *fill-role* alias — in light theme it is fill-only, always paired with `--primary-foreground` ink. All gold-colored *text* goes through **`--primary-text`** (light `#76602f` 5.72:1 · dark `#cdb482` 9.25:1), defined in both theme blocks. Components never set `text-primary` / `color: hsl(var(--primary))` as a foreground.
-2. **Ink on gold, always.** Any `--gold` fill (CTA button, gold band, active range tab) uses `--gold-ink` text — 9.63:1 both themes. No white-on-gold, no muted-on-gold.
-3. **Light-theme gold fills carry a 1px `--ring` border** (`#76602f`, 5.92:1 boundary) — a bare gold fill on near-white is 1.91:1 and fails non-text AA. Dark theme needs no border (gold vs bg 9.24:1).
-4. **Loss/win as text** use `--loss`/`--win` (text-safe steps), not `--destructive`/`--success` fills. **Usage context (dark theme):** dark `--loss` (`--error-11` `#f49c95`) is *page-background* safe — 8.88:1 on the dark bg, 8.39:1 on card. Do **NOT** use it as text on the `--destructive` fill badge (`#e1524f`): that pair is 1.82:1 — FAIL. Text ON the destructive fill is always `--destructive-foreground` (ink `#131312`, 4.89:1). Reserve `--loss` for standalone text lines and for badges that pair color with the letter glyph.
-5. **Wordmark theme rule (RESOLVED — assets delivered).** The cream-fill SVG (`#f4efe6`) is 1.09:1 on the light page — invisible. The ink-fill variants exist and are the law:
-   - **Light theme** uses **`public/edgeable-wordmark-ink.svg`** and **`public/edgeable-icon-ink.svg`** — text fill `#2f2e2a` (`--foreground`), 12.89:1 on the page bg / 13.35:1 on card. The gold blade stays `#d8b773` (1.82:1 on light bg — acceptable: the blade is a decorative logotype ornament, not a UI component or information-bearing graphic; the ink text carries legibility).
-   - **Dark theme** uses the existing **`public/edgeable-wordmark.svg`** and **`public/edgeable-icon.svg`** — cream `#f4efe6` at 16.23:1, blade at 9.69:1.
-   - Asset aliases for implementation: `--wordmark-asset-light: url('/edgeable-wordmark-ink.svg')` / `--wordmark-asset-dark: url('/edgeable-wordmark.svg')` (same pattern for the icon). Components reference the alias, never a hardcoded path, so theme switching swaps the asset.
+- **Where:** backs Section 0 (header) + Section 1 (record hero) only. `linear-gradient(180deg, hsl(var(--hero-g1)) 0%, hsl(var(--hero-g2)) 55%, hsl(var(--hero-g3)) 100%)`, dissolving into `--background` at the section boundary (a final blend stop into the page color — no hard seam). Static; never animated.
+- **Text-on-gradient law (contrast rule):** text on the gradient must sit on a **guaranteed-contrast zone or a scrim**. The entire gradient is a guaranteed-contrast zone for exactly three text colors — `--foreground`, `--primary-text`, `--muted-foreground` — because every stop × each of those colors is computed ≥4.5:1 in both themes (report above). Any OTHER text color over the gradient requires a `--card` scrim at ≥85% opacity (e.g. the tamper-evidence panel), and is then judged as the text-on-card pair. No exceptions, no "it looks readable."
+- **Gold on the gradient:** dark theme — gold pills/fills pass non-text ≥3:1 against every stop (≥6.78:1), no border needed. Light theme — bare gold on the light stops is 1.59–1.84:1 (computed FAIL), so light-theme gold fills on the gradient (and anywhere light) carry the 1px `--ring` border per hard rule 3.
+- **Wordmark on the gradient:** light theme uses the ink wordmark (fill #2f2e2a, ≥10.74:1 on every stop); dark theme uses the cream wordmark (≥11:1). Same assets as the theme rule below.
 
-## Space, shape, depth
+## Hard rules (contrast law — carried forward and extended)
 
-- **Spacing scale:** 4-base — `4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96` px. Section vertical padding: 64 mobile / 96 desktop. Editorial Spread's "deliberate gaps": section headers may sit offset-left of their content column on desktop; stat row tiles keep unequal gutters over uniform-card-grid symmetry.
-- **Radius:** `--radius` 8px (down from 11) — cards, buttons, fields all 8px; badges/chips 4px; **no pills**; the motif line and hairlines square (0).
-- **Borders/shadows:** hierarchy from **1px hairlines**, not shadows — `--border` for card edges and dividers, `--input` for field borders, `--ring` for focus (2px offset ring, kept from current system). The only shadow is the existing `card-glow` top-edge inset highlight (already hue-neutral warm, never pure black). No glassmorphism, no glow.
-- **JOURNEY.md Phase-2 decisions:** header **static** (not sticky — nothing competes with the proof); hero anchor CTA = **text link in `--brass`/dark `--brass`** with rising-edge-colored underline on hover (low weight per spec); range-tab active state = **`--gold` fill + `--gold-ink` text** pill-less rounded-4px tab (light adds the 1px ring border per hard rule 3); primary CTA = `--gold` solid, 48px min-height (light adds ring border); /card cross-link CTA = **`--muted-foreground` text link, `--brass` on hover** — subdued per the restraint rationale.
+1. **Gold is never light-theme text at accent-9.** `#dbb155` on the light page is 1.91:1 — FAIL. All gold-colored text/icons/links go through **`--primary-text`** (light `#76602f` 5.72:1 · dark `#cdb482` 9.25:1), defined in both theme blocks. `--primary` is a fill-role alias: light theme fill-only, always paired with `--primary-foreground` ink. Components never set `text-primary` / `color: hsl(var(--primary))` as a foreground.
+2. **Ink on gold, always.** Any `--gold` fill (pill CTA, active range tab) uses `--gold-ink` text — 9.63:1 both themes. No white-on-gold, no muted-on-gold.
+3. **Light-theme gold fills carry a 1px `--ring` border** (`#76602f`) — on the page (5.92:1 vs card), and on the gradient (≥4.76:1 vs every stop). Bare gold on light grounds is 1.59–1.91:1 and fails non-text AA. Dark theme needs no border (≥6.78:1 everywhere).
+4. **Loss/win as text** use `--loss`/`--win` (text-safe steps), not `--destructive`/`--success` fills. Dark `--loss` (`#f49c95`) is page/card safe (8.88/8.39:1) but is 1.82:1 on the `--destructive` fill — text ON the destructive fill is always `--destructive-foreground` ink (4.89:1). W/L/P badges pair color with the letter glyph (redundant cue, ch08) — color is never the sole status signal.
+5. **Wordmark theme rule (assets exist).** Light theme: **`public/edgeable-wordmark-ink.svg`** / **`edgeable-icon-ink.svg`** (ink text #2f2e2a; the gold blade stays decorative). Dark theme: **`public/edgeable-wordmark.svg`** / **`edgeable-icon.svg`** (cream #f4efe6, 16.23:1). Alias pattern: `--wordmark-asset-light: url('/edgeable-wordmark-ink.svg')` / `--wordmark-asset-dark: url('/edgeable-wordmark.svg')`; components reference the alias, never a hardcoded path.
+
+## Space, shape, depth (desktop-first)
+
+- **Composition:** centered, symmetric, calm. Content max-width **1200px**, centered; text measure ~640px. Section headers centered above their content — never offset. Equal gutters. This replaces (and bans) the Editorial Spread asymmetry that read "weird on desktop."
+- **Spacing scale:** 4-base — `4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 112 / 120` px. **Desktop section gaps 96–120px (default 112)**; mobile adapts down to 64. Card internal padding: 32 desktop / 24 mobile.
+- **Radius:** fields + small controls `--radius` 14px · cards `--radius-card` 24px · feature panels (tamper callout, price panel) `--radius-panel` 28px · buttons + range tabs full pill `--radius-pill` (primary CTA ~52px height, 28px side padding) · badges/chips 10px.
+- **Depth = soft glow-ring, not hairlines, not shadow stacks.** Elevated surfaces use `box-shadow: var(--elev-ring)` — a 5px near-neutral ring + one soft ambient — on `--card`. No 1px border card edges, no layered drop shadows, no glassmorphism. Hairlines survive ONLY where information-bearing: the chart zero baseline (`--hairline`) and input borders (`--input`, ≥3:1). Focus stays the existing 2px `--ring` offset ring.
+- **Section 5 (price + CTA) treatment — supersedes the retired gold band:** a centered `--card` panel (`--radius-panel`, `--elev-ring`) on the calm page ground; `$30` in Spline Sans Mono display; ONE gold pill CTA ("Join Edgeable", `--gold` fill + `--gold-ink` text, light adds the ring border); reassurance microcopy in `--muted-foreground` on the panel. Gold appears nowhere else in the section.
 
 ## Motion
 
-- **Timing:** micro 120ms / standard 180ms / large 650ms (chart + motif draw-in only) · **Easing:** `cubic-bezier(0.2, 0, 0, 1)` sharp ease-out for state changes; `cubic-bezier(0.22, 1, 0.36, 1)` for the two draw-ins (existing `chart-reveal` curve).
-- **Allowed:** hover/press/focus state changes; the chart draw-in once per load; the hero motif draw-in once per load; stat count-up once on first paint (≤500ms); scrub feedback (instant, no easing).
-- **Never:** ambient loops on /join (the `ec-glow` sign-in loader stays a sign-in-only exception); parallax; scroll-triggered entrance cascades; bounce easing; animated gradients.
-- **prefers-reduced-motion:** all animation `none`; chart and motif render complete; count-up renders final value.
+- **Timing:** micro 140ms / standard 220ms / large 700ms (chart draw-in only) · **Easing:** `cubic-bezier(0.22, 1, 0.36, 1)` soft ease-out throughout (one curve — the register is calm, not snappy).
+- **Allowed:** hover/press/focus state changes; the chart draw-in once per load; stat count-up once on first paint (≤500ms); scrub feedback (instant, no easing).
+- **Never:** animated gradients or aurora drift (the dusk sky is STATIC); parallax; scroll-triggered entrance cascades; ambient loops on /join (the `ec-glow` sign-in loader stays a sign-in-only exception); bounce easing.
+- **prefers-reduced-motion:** all animation `none`; chart renders complete; count-up renders final value.
 
-## Never (this project's tells at risk)
+## JOURNEY.md visual-supersession map (visual layer only — structure + copy untouched)
 
-- **No default-shadcn look** — the named failure mode. Concretely: no uniform card grid of identical rounded boxes, no `slate` greys, no shadow-based elevation stack, no generic hero-badge-pill + gradient-text pattern.
-- **No cream/serif regression** — `#f6f1e8`-family backgrounds and Bodoni-as-page-text are retired. The neutrals above are warm near-neutrals, not paper.
-- **No second accent hue.** Mono harmony: gold is the only brand hue. Functional colors (loss red / win green / info blue) appear only carrying their function — never decoratively. (Red never dominates a section — analytical context, ch09.)
-- **No gradient gold / metallic-effect gold.** Gold is flat `--gold` (Art Deco "not gradient gold").
-- **No dark-default glowing hero** (banned tell cell adjacent to this DNA): dark hero light comes from type contrast and the one gold rule, not glows.
-- **No second diagonal.** One rising edge per viewport, −4.6°, or none.
-- **Color never the sole status signal:** W/L/P badges pair color with the letter glyph (ch08 redundant-cue rule — already the app's pattern).
+JOURNEY.md predates this re-deal and carries Gilt Ledger visual annotations. This DESIGN.md supersedes them as follows; the mock/build phases apply these treatments to JOURNEY.md's unchanged structure and copy:
+
+| JOURNEY.md says (old DNA) | Dusk Ledger treatment |
+|---------------------------|------------------------|
+| Hero anchor CTA: `--brass` link with "rising-edge underline on hover" | `--primary-text` link with a standard text-decoration underline on hover — no diagonal motif |
+| Tamper-evidence callout: `--surface-2` bg + `--hairline` border | `--card` panel, `--radius-panel`, `--elev-ring` (it sits on the gradient, doubling as the hero's scrim surface) |
+| Range tab active: `--gold` fill + `--gold-ink`, "rounded-4px" | `--gold` fill + `--gold-ink`, **pill** radius; light adds the 1px `--ring` border |
+| Section 5: "`--gold` full-bleed band", all text `--gold-ink` | Centered `--card` panel per the depth system above — the gold band is retired; `--gold-ink` applies only ON the gold pill |
+| Free-pick "Free pick" badge: `--accent` tint + `--accent-foreground` | Unchanged (tint chips are small highlights — legal gold use) |
+| Header static (not sticky); /card cross-link = muted text link | Unchanged |
+| Chart line `--gold`, zero baseline `--hairline` | Unchanged (the baseline hairline is information-bearing) |
+| Mobile-first stack ordering | Ordering unchanged; the DESIGNED composition is now the 1200px desktop layout, mobile adapts down |
+
+## Never (this project's tells + failure modes at risk)
+
+- **No default-shadcn look** — the named failure mode. No uniform card grid of identical boxes, no `slate` greys, no shadow-based elevation stack, no hero-badge-pill + gradient-text pattern.
+- **No hard hairline severity** — 1px rules are never the elevation or division system. (The rejected DNA's core failure.) Information-bearing hairlines only (chart baseline, inputs).
+- **No magazine asymmetry** — no offset section headers, no unequal gutters, no "deliberate gaps." Centered, calm, symmetric. (The other core failure: "weird on desktop.")
+- **No gold floods** — no gold bands, no large gold fields, no gold section backgrounds. Gold = buttons, links, active tabs, small highlights ONLY.
+- **No second accent hue.** Mono harmony: gold is the only brand chroma. Functional colors (loss red / win green / info blue) appear only carrying their function; red never dominates a section (analytical context, ch09). The gradient's violet/rose are ambient neutrals of the sky, never used as UI accents.
+- **No animated gradients or glow auras.** The dusk gradient is one static backdrop; soft depth is a static ring, not a glow effect.
+- **No gradient/metallic gold.** Gold stays flat `--gold`; the gradient is the sky, never the gold.
+- **No serif page text / no cream regression** — Bodoni is wordmark-only; the retired `#f6f1e8` cream family stays retired.
+- **No decorative diagonals** — the −4.6° motif lives only in the chart line itself.
+- **No em dashes in visitor-facing copy** (standing copy law; restructure with periods/commas/colons).
 
 ## Open questions
 
-- Adoption sequencing for the rest of the app (this DNA is app-adoptable by design; /join ships first) — orchestrator/user call.
-- /join OG share image using the motif — deliverable flagged in research; belongs to mock/build, tokens here feed it.
-- Whether to drop the Mulish + Bodoni Moda Google-Fonts imports at adoption time (perf win; wordmark is SVG-outlined text so Bodoni may still be needed for SVG `<text>` rendering — verify at build).
+- Adoption sequencing for the rest of the app (this DNA is app-adoptable; /join ships first) — orchestrator/user call.
+- /join OG share image on the dusk gradient — belongs to mock/build; tokens here feed it.
+- Whether the gradient's dissolve-to-background boundary lands mid-hero or at the exact section edge — a mock-phase composition call within this spec's law.
+- Dropping the Bodoni Moda import (wordmark SVG `<text>` rendering) — verify at build.
