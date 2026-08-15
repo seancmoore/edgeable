@@ -187,8 +187,8 @@
 
 **1. Record hero**
 - Content slots:
-  - Headline: "Every pick on record. Before the game starts."
-  - Subhead: "Edgeable is a sports-picks subscription. Every pick is timestamped before game start by a server clock. Grading is one-way. Nothing is deleted. The record you see is the record that happened."
+  - Headline: "Do not trust me. Check the record." (Sean-selected 2026-08-15, "invitation to verify" direction)
+  - Subhead: "Every Edgeable pick is timestamped by a server before the game starts. Once graded, it stays graded, win or lose. What you see below is the complete history, and it is the same one subscribers tail every day."
   - Stat row: W-L-P record | Net units | ROI — live data from `picks`/`picksPublic` via the same computation as /card (`computeRecord` in `src/utils/picks.js`). Labels below each number. Pending picks excluded; voids excluded from ROI denominator per existing /card rules.
     - Label copy: "W-L-P" | "Net Units" | "ROI"
     - Pending indicator (if any pending picks exist): small eyebrow above stat row in `--muted-foreground`: "Live record. [N] pick[s] pending."
