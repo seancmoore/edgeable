@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDoc, getDocs, setDoc, deleteDoc,
+  collection, doc, getDoc, getDocs, writeBatch,
   query, where, orderBy, limit, Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase.js';
@@ -23,6 +23,51 @@ export async function getPnLEntry(dateId) {
   return { id: snap.id, ...snap.data() };
 }
 
+// ── Public mirror (dailyPnLPublic) ─────────────────────────────────────────
+// The anonymous landing page reads a world-readable numeric mirror of each
+// dailyPnL day: units, wins, losses, pushes, stakedUnits ONLY (never notes).
+// Every dailyPnL write below also writes the mirror doc in the same batch;
+// scripts/backfill-public-pnl.js mirrors the history.
+
+// UTC instant of midnight America/New_York for a YYYY-MM-DD id. dailyPnL day
+// ids are entered on an Eastern-time machine, so ET is the bucketing zone for
+// "that day's graded picks". (Exact except inside the DST switch hour itself,
+// when no picks settle.)
+function etMidnightUtc(dateId) {
+  const utcGuess = new Date(`${dateId}T00:00:00Z`);
+  const nyWall = new Date(utcGuess.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  return new Date(utcGuess.getTime() + (utcGuess.getTime() - nyWall.getTime()));
+}
+
+function nextDateId(dateId) {
+  const d = new Date(dateId + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+// Sum of stakeUnits across picks graded on that ET day. Matches computeRecord
+// (src/utils/picks.js) ROI semantics: wins/losses/pushes count toward staked,
+// voids are excluded. Pending picks have gradedAt == null and never match the
+// range query. Returns 0 when nothing is computable.
+async function computeStakedUnitsForDay(dateId) {
+  const start = etMidnightUtc(dateId);
+  const end = etMidnightUtc(nextDateId(dateId));
+  const q = query(
+    collection(db, 'picks'),
+    where('gradedAt', '>=', Timestamp.fromDate(start)),
+    where('gradedAt', '<', Timestamp.fromDate(end)),
+  );
+  const snap = await getDocs(q);
+  let staked = 0;
+  for (const d of snap.docs) {
+    const p = d.data();
+    if (p.status === 'void' || p.status === 'pending') continue;
+    const u = Number(p.stakeUnits);
+    if (Number.isFinite(u) && u > 0) staked += u;
+  }
+  return Math.round(staked * 100) / 100;
+}
+
 export async function savePnLEntry({ dateId, units, wins, losses, pushes, notes, admin }) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateId)) throw new Error('Invalid date.');
   if (units === '' || isNaN(Number(units))) throw new Error('Units must be a number.');
@@ -41,21 +86,45 @@ export async function savePnLEntry({ dateId, units, wins, losses, pushes, notes,
     updatedAt: now,
   };
 
+  // stakedUnits for the public mirror: computed from that day's graded picks
+  // where possible; a picks-query failure must never block the P&L save.
+  let stakedUnits = 0;
+  try {
+    stakedUnits = await computeStakedUnitsForDay(dateId);
+  } catch {
+    stakedUnits = 0;
+  }
+
+  const batch = writeBatch(db);
   if (existing.exists()) {
-    await setDoc(ref, data, { merge: true });
+    batch.set(ref, data, { merge: true });
   } else {
-    await setDoc(ref, {
+    batch.set(ref, {
       ...data,
       createdAt: now,
       createdBy: admin?.uid || '',
       createdByEmail: admin?.email || '',
     });
   }
+  // World-readable mirror: numbers only, no notes, written in the same batch.
+  batch.set(doc(db, 'dailyPnLPublic', dateId), {
+    units: Number(units),
+    wins:   data.wins   != null ? data.wins   : 0,
+    losses: data.losses != null ? data.losses : 0,
+    pushes: data.pushes != null ? data.pushes : 0,
+    stakedUnits,
+  });
+  await batch.commit();
 }
 
 
 export async function deletePnLEntry(dateId) {
-  await deleteDoc(doc(db, 'dailyPnL', dateId));
+  // Remove the day and its public mirror together so the landing chart can
+  // never show a day the private ledger no longer has.
+  const batch = writeBatch(db);
+  batch.delete(doc(db, 'dailyPnL', dateId));
+  batch.delete(doc(db, 'dailyPnLPublic', dateId));
+  await batch.commit();
 }
 
 export async function getRecentPnL(maxCount = 60) {
