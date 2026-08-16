@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<!-- /card styled mock (Dusk Ledger, LOCKED DESIGN.md law). The neutral PROOF page: the
+     tamper-evident archive the landing tells skeptics to check. Register: calm, bank-statement.
+     NO dusk gradient (that is /join's one expressive moment); clean background, standard header.
+     Exactly ONE quiet cross-link to /join per the approved journey restraint rationale.
+     Motion: subtle scroll reveals only; no chart, no ambient loops on this page. -->
+<!-- Tokens verbatim from DESIGN.md (LOCKED + amended), identical to mocks/join.html. -->
+<!-- Content model mirrors src/pages/PublicCard.jsx: record header computed from world-readable
+     stubs; locked rows expose ONLY existence, timestamps, and result (no sport/odds/stake);
+     public picks show full details; archive newest-first; losses stay up. -->
+<!-- No hard-coded hex outside the token blocks. Every color via hsl(var(--token)). No em dashes. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edgeable: The record</title>
+  <style>
+    /* === FONTS (exact @import per DESIGN.md fonts adoption note) === */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
+
+    /* ============================================================
+       DESIGN TOKENS: DESIGN.md app token block, verbatim (HSL triples)
+       ============================================================ */
+    :root {
+        --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 - page */
+        --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
+        --card: 60 20% 99%;                  /* #fdfdfc  n1 - cards sit lighter */
+        --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
+        --popover: 60 20% 99%;               /* #fdfdfc */
+        --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
+        /* --primary is FILL-ONLY in light theme (hard rule 1). Gold TEXT uses --primary-text. */
+        --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) - fills only */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
+        --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links */
+        --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
+        --secondary-foreground: 48 5.6% 17.5%;
+        --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
+        --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 - 5.68:1 */
+        --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
+        --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold - 5.29:1 on --accent */
+        --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
+        --destructive-foreground: 0 0% 100%;
+        --success: 124 38.9% 32.7%;          /* #337437  success-11 */
+        --success-foreground: 0 0% 100%;
+        --warning: 41 43% 32.4%;
+        --warning-foreground: 0 0% 100%;
+        --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 - decorative edges (rare) */
+        --input: 42 5.2% 38%;                /* #66635c  n11 - field border */
+        --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary */
+        /* raw Edge Club tokens */
+        --gold: 41 65% 59.6%;                /* #dbb155 */
+        --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+        --brass: 41 43% 32.4%;               /* #76602f */
+        --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
+        --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 - information-bearing rules ONLY */
+        --dim: 39 9.1% 63.3%;                /* #aaa499 */
+        --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
+        --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
+        /* soft depth */
+        --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: light;
+        /* per-theme wordmark assets (DESIGN.md hard rule 5) */
+        --wordmark-asset: url('../public/edgeable-wordmark-ink.svg');
+    }
+    .dark {
+        --background: 60 2.7% 7.3%;          /* #131312  n1 */
+        --foreground: 43 14.3% 90.4%;        /* #eae8e3  n12 */
+        --card: 30 4% 9.8%;                  /* #1a1918  n2 */
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;            /* #232220  n3 */
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;             /* #dbb155 */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04 */
+        --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text */
+        --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;              /* #232220  n3 */
+        --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 */
+        --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
+        --accent-foreground: 40 42.9% 65.7%; /* #cdb482 */
+        --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;          /* #5ad664 */
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;             /* #3e3b36  n6 */
+        --input: 41 7% 44.7%;                /* #7a756a */
+        --ring: 41 65% 59.6%;                /* #dbb155 */
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;             /* #cdb482 */
+        --surface-2: 60 2.7% 7.3%;
+        --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
+        --dim: 42 7% 36.7%;
+        --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss */
+        --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win */
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
+    }
+    /* System preference: dark tokens auto-apply unless the demo toggle forces .light.
+       (Same values as the .dark block above, comments elided.) */
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;
+        --surface-2: 60 2.7% 7.3%;
+        --hairline: 40 4.5% 13.1%;
+        --dim: 42 7% 36.7%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
+      }
+    }
+    /* === END TOKEN BLOCKS === */
+
+    /* Type + font aliases (DESIGN.md type spec) */
+    :root {
+      --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+      --text-xs: 0.75rem;    /* 12 */
+      --text-sm: 0.875rem;   /* 14 */
+      --text-base: 1rem;     /* 16 */
+      --text-lg: 1.25rem;    /* 20 */
+      --text-xl: 1.5625rem;  /* 25 */
+      --text-2xl: 1.9375rem; /* 31 */
+      --text-3xl: 2.4375rem; /* 39 */
+      --text-4xl: 3.0625rem; /* 49 */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* === BASE (same product as mocks/join.html; page ground is plain, no gradient) === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-display);
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.55;
+      font-size: var(--text-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: hsl(var(--primary-text)); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid hsl(var(--ring));
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    /* The ledger itself holds a bank-statement measure inside the 1200 grid:
+       calm centered column, ~880px, so rows scan like a statement, not a dashboard. */
+    .ledger-col { max-width: 880px; margin: 0 auto; }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.6875rem; /* 11px */
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+    }
+    .mono { font-family: var(--font-mono); }
+
+    /* Section rhythm: calmer than /join's 112 (utility register) but inside the 96-120 law */
+    .section { margin-top: 96px; }
+
+    .soft-card {
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card);
+      box-shadow: var(--elev-ring);
+    }
+
+    /* ====== Header (standard: wordmark + Log in; no gradient, no sticky) ====== */
+    header.site {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 28px;
+    }
+    .wordmark img { height: 30px; display: block; }
+    header.site .wordmark img { height: 38px; margin: -4px 0; }
+    .wordmark .wm-dark { display: none; }
+    .dark .wordmark .wm-light { display: none; }
+    .dark .wordmark .wm-dark { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) .wordmark .wm-light { display: none; }
+      :root:not(.light) .wordmark .wm-dark { display: block; }
+    }
+    .login-link {
+      font-weight: 600; font-size: var(--text-sm);
+      color: hsl(var(--primary-text));
+      min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
+    }
+
+    /* ====== 1. Record header (compact, zero sales energy) ====== */
+    .record-head { padding-top: 72px; }
+    .record-head h1 {
+      margin-top: 12px;
+      font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+    }
+    .record-head .explain {
+      margin-top: 16px; max-width: 640px;
+      color: hsl(var(--muted-foreground)); font-size: var(--text-base);
+    }
+    .stat-row {
+      margin-top: 40px;
+      display: grid; grid-template-columns: repeat(3, auto); gap: 64px;
+      justify-content: start;
+    }
+    .stat .num {
+      font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
+      font-size: var(--text-3xl);
+      letter-spacing: -0.01em; white-space: nowrap;
+    }
+    .stat .num.pos { color: hsl(var(--win)); }
+    .stat .label { margin-top: 10px; }
+    .record-meta {
+      margin-top: 20px; font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+      max-width: 640px;
+    }
+    /* Verification + the ONE quiet cross-link (journey restraint: no sales energy beyond this) */
+    .record-links {
+      margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: center;
+      font-size: var(--text-sm);
+    }
+    .record-links a { font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
+    .record-links svg { width: 15px; height: 15px; flex: none; }
+    .join-quiet { color: hsl(var(--muted-foreground)); display: inline-flex; align-items: center; min-height: 44px; }
+    .join-quiet a { display: inline-flex; align-items: center; min-height: 44px; margin-left: 6px; font-weight: 600; }
+
+    /* ====== 2/3. Ledger cards (Today + archive day groups) ====== */
+    .day-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .day-head h2 { font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .day-head .day-rec { font-family: var(--font-mono); font-weight: 500; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .day-card { padding: 12px; }
+    .day-card + .day-block, .day-block + .day-block { margin-top: 48px; }
+    .rows { list-style: none; display: grid; gap: 8px; }
+    /* Rows are quiet --muted wells (no hairline table rules: separation by shape + air).
+       Desktop grid: posted (prominent) | game | pick or lock | units | result. */
+    .row {
+      display: grid; align-items: center;
+      grid-template-columns: 172px 128px 1fr 72px 132px;
+      gap: 16px;
+      background: hsl(var(--muted));
+      border-radius: 14px;
+      padding: 14px 18px;
+      min-height: 60px;
+    }
+    .posted { font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .posted b { font-weight: 600; color: hsl(var(--foreground)); }
+    .gametime { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .pick { min-width: 0; font-size: var(--text-sm); }
+    .pick .desc { font-weight: 600; }
+    .pick .odds { color: hsl(var(--muted-foreground)); font-weight: 400; }
+    .pick .meta { margin-top: 2px; display: flex; align-items: center; gap: 10px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .pick .meta .sport { font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; }
+    .free-chip {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: 10px; padding: 3px 10px;
+    }
+    /* Subscriber stub: existence + timestamps + status ONLY (mirrors picksPublic reality) */
+    .locked { display: flex; align-items: center; gap: 10px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); font-weight: 500; }
+    .locked svg { width: 14px; height: 14px; flex: none; }
+    .units { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm); text-align: right; white-space: nowrap; }
+    .units.win { color: hsl(var(--win)); }
+    .units.loss { color: hsl(var(--loss)); }
+    .units.zero, .units.na { color: hsl(var(--muted-foreground)); font-weight: 500; }
+    /* Result: letter glyph + word, color never the sole cue (hard rule 4) */
+    .result { display: flex; align-items: center; justify-content: flex-end; gap: 10px; font-weight: 600; font-size: var(--text-sm); }
+    .result .glyph {
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm);
+      width: 30px; height: 30px; border-radius: 10px; flex: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: hsl(var(--card));
+    }
+    .result.win  { color: hsl(var(--win)); }
+    .result.loss { color: hsl(var(--loss)); }
+    .result.push, .result.void { color: hsl(var(--muted-foreground)); }
+    .result.void .word { text-decoration: line-through; }
+    .status-chip {
+      justify-self: end;
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border-radius: 10px; padding: 6px 12px;
+    }
+    .today-note { margin-top: 16px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .archive-sub { margin-top: 8px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .section-label { margin-bottom: 24px; }
+    .section-label h2 { font-size: var(--text-xl); font-weight: 700; letter-spacing: -0.01em; margin-top: 8px; }
+
+    /* ====== Footer: fine print, same register as the landing ====== */
+    footer.legal { margin-top: 96px; padding: 40px 0 32px; }
+    .footer-wordmark { display: flex; justify-content: center; margin-bottom: 20px; }
+    .footer-wordmark img { height: 16px; display: block; opacity: 0.55; }
+    footer.legal .blocks { display: grid; gap: 10px; max-width: 560px; margin: 0 auto; text-align: center; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); line-height: 1.5; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; }
+    .footer-links a { font-weight: 500; font-size: var(--text-xs); min-height: 44px; display: inline-flex; align-items: center; color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 3px; }
+    .footer-links a:hover { color: hsl(var(--primary-text)); }
+    .copyright { text-align: center; margin-top: 12px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* Demo theme toggle (mock chrome only, not part of the page spec) */
+    .theme-toggle {
+      position: fixed; right: 20px; bottom: 20px; z-index: 10;
+      min-height: 44px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm); cursor: pointer;
+    }
+
+    /* ====== SCROLL ENTRANCES (DESIGN.md motion amendment 4; JS-gated, once only) ====== */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal-ready [data-reveal] {
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+      .reveal-ready [data-reveal].in { opacity: 1; transform: none; }
+    }
+
+    /* ====== MOBILE ADAPTATION (designed at 390px, verified 360-430) ====== */
+    @media (max-width: 900px) {
+      .container { padding: 0 1.25rem; }
+      .section { margin-top: 64px; }
+      footer.legal { margin-top: 64px; padding: 32px 0 28px; }
+      .record-head { padding-top: 48px; }
+      .record-head h1 { font-size: var(--text-2xl); }
+      .stat-row { margin-top: 32px; grid-template-columns: 1fr 1fr 1fr; gap: 16px; justify-content: stretch; }
+      .stat .num { font-size: clamp(1.25rem, 5.8vw, 1.9375rem); }
+      .record-links { gap: 4px 24px; }
+      .day-card { padding: 8px; }
+      /* Rows re-stack: pick leads, timestamps pair beneath, verdict on the right */
+      .row {
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "pick verdict" "times verdict";
+        row-gap: 6px; padding: 12px 14px;
+      }
+      .pick, .locked { grid-area: pick; }
+      .row .times { grid-area: times; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+      .row .verdict { grid-area: verdict; align-self: center; display: grid; justify-items: end; gap: 4px; }
+      .units.na { display: none; }
+      .result { font-size: var(--text-xs); gap: 8px; }
+      .result .glyph { width: 26px; height: 26px; border-radius: 8px; }
+      .units { font-size: var(--text-xs); }
+      .footer-links { gap: 12px; flex-wrap: wrap; }
+      .footer-links a { padding: 0 6px; }
+    }
+    /* Desktop: the mobile "times" wrapper is display:contents so the grid columns apply */
+    @media (min-width: 901px) {
+      .row .times { display: contents; }
+      .row .verdict { display: contents; }
+    }
+
+    /* === prefers-reduced-motion: everything renders in place === */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- 0. Standard site header (no gradient: the dusk hero belongs to /join only) -->
+    <header class="site">
+      <a class="wordmark" href="/" aria-label="Edgeable home">
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable">
+      </a>
+      <a class="login-link" href="/">Log in</a>
+    </header>
+
+    <div class="ledger-col">
+
+      <!-- 1. Record header: compact, bank-statement calm -->
+      <section class="record-head" aria-label="The record">
+        <p class="eyebrow">The record</p>
+        <h1>Every pick, on the clock, forever.</h1>
+        <p class="explain">Each pick is timestamped before game time by a server clock, graded once in public, and never deleted. The losses stay up with the wins.</p>
+
+        <div class="stat-row" role="group" aria-label="Record totals">
+          <div class="stat">
+            <div class="num mono">61-42-3</div>
+            <div class="label eyebrow">W-L-P</div>
+          </div>
+          <div class="stat">
+            <div class="num mono pos">+18.4</div>
+            <div class="label eyebrow">Net Units</div>
+          </div>
+          <!-- Hidden state (PublicCard.jsx reality): units + ROI need odds and stake, which
+               subscriber stubs do not carry. When any row is locked for the viewer, Net Units
+               and ROI render a small lock glyph instead of a number, with the caption
+               "units & ROI are visible to subscribers". This mock shows the unlocked state. -->
+          <div class="stat">
+            <div class="num mono pos">+8.9%</div>
+            <div class="label eyebrow">ROI</div>
+          </div>
+        </div>
+        <p class="record-meta">Across 106 graded picks. Pending picks excluded. Voids excluded from ROI. Pushes count at zero units.</p>
+
+        <div class="record-links">
+          <a href="https://www.actionnetwork.com/" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Verified record on Action Network
+          </a>
+          <!-- The ONE cross-link (journey spec restraint): quiet text, no pill, no urgency -->
+          <span class="join-quiet">Want the picks behind it?<a href="/join">Join for $30/mo</a></span>
+        </div>
+      </section>
+
+      <!-- 2. Today's card -->
+      <section class="section" aria-label="Today's card">
+        <div class="section-label" data-reveal>
+          <p class="eyebrow">Friday, Aug 14, 2026</p>
+          <h2>Today's card</h2>
+        </div>
+        <div class="soft-card day-card" data-reveal>
+          <ul class="rows">
+            <!-- access=public pick: full details -->
+            <li class="row">
+              <span class="times">
+                <span class="posted">posted <b>10:12 AM ET</b></span>
+                <span class="gametime">game 6:45 PM ET</span>
+              </span>
+              <span class="pick">
+                <span class="desc">Phillies ML <span class="odds">@ -118</span></span>
+                <span class="meta"><span class="sport">MLB</span><span>1u</span><span class="free-chip">Free pick</span></span>
+              </span>
+              <span class="verdict">
+                <span class="units na" aria-hidden="true"></span>
+                <span class="status-chip">Pending</span>
+              </span>
+            </li>
+            <!-- subscriber stub: timestamps + status ONLY (no sport, odds, or stake in the public data) -->
+            <li class="row">
+              <span class="times">
+                <span class="posted">posted <b>10:12 AM ET</b></span>
+                <span class="gametime">game 7:05 PM ET</span>
+              </span>
+              <span class="locked">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Subscriber pick
+              </span>
+              <span class="verdict">
+                <span class="units na" aria-hidden="true"></span>
+                <span class="status-chip">Pending</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+        <p class="today-note" data-reveal>2 picks pending. Timestamps are set by the server at posting, in Eastern Time.</p>
+      </section>
+
+      <!-- 3. Archive: newest-first day groups; losses visible -->
+      <section class="section" aria-label="Archive">
+        <div class="section-label" data-reveal>
+          <p class="eyebrow">Archive</p>
+          <h2>Every past pick, newest first</h2>
+          <p class="archive-sub">Nothing edited, nothing backdated, nothing deleted. Units shown where the pick is public.</p>
+        </div>
+
+        <div class="day-block" data-reveal>
+          <div class="day-head">
+            <h2>Thursday, Aug 13</h2>
+            <span class="day-rec">2-1-0</span>
+          </div>
+          <div class="soft-card day-card">
+            <ul class="rows">
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>11:38 AM ET</b></span>
+                  <span class="gametime">game 7:10 PM ET</span>
+                </span>
+                <span class="pick">
+                  <span class="desc">Braves -1.5 <span class="odds">@ +104</span></span>
+                  <span class="meta"><span class="sport">MLB</span><span>1u</span><span class="free-chip">Free pick</span></span>
+                </span>
+                <span class="verdict">
+                  <span class="units win">+1.0u</span>
+                  <span class="result win"><span class="glyph" aria-hidden="true">W</span><span class="word">Win</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>11:38 AM ET</b></span>
+                  <span class="gametime">game 7:40 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result win"><span class="glyph" aria-hidden="true">W</span><span class="word">Win</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>12:55 PM ET</b></span>
+                  <span class="gametime">game 9:40 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result loss"><span class="glyph" aria-hidden="true">L</span><span class="word">Loss</span></span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="day-block" data-reveal>
+          <div class="day-head">
+            <h2>Wednesday, Aug 12</h2>
+            <span class="day-rec">1-0-1</span>
+          </div>
+          <div class="soft-card day-card">
+            <ul class="rows">
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>9:58 AM ET</b></span>
+                  <span class="gametime">game 1:05 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result win"><span class="glyph" aria-hidden="true">W</span><span class="word">Win</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>9:58 AM ET</b></span>
+                  <span class="gametime">game 7:20 PM ET</span>
+                </span>
+                <span class="pick">
+                  <span class="desc">Guardians ML <span class="odds">@ -105</span></span>
+                  <span class="meta"><span class="sport">MLB</span><span>1u</span><span class="free-chip">Free pick</span></span>
+                </span>
+                <span class="verdict">
+                  <span class="units zero">0.0u</span>
+                  <span class="result push"><span class="glyph" aria-hidden="true">P</span><span class="word">Push</span></span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="day-block" data-reveal>
+          <div class="day-head">
+            <h2>Tuesday, Aug 11</h2>
+            <span class="day-rec">1-2-0</span>
+          </div>
+          <div class="soft-card day-card">
+            <ul class="rows">
+              <!-- Honest ledger: the public loss stays up, units in the red -->
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>10:41 AM ET</b></span>
+                  <span class="gametime">game 7:07 PM ET</span>
+                </span>
+                <span class="pick">
+                  <span class="desc">Red Sox ML <span class="odds">@ -125</span></span>
+                  <span class="meta"><span class="sport">MLB</span><span>1u</span><span class="free-chip">Free pick</span></span>
+                </span>
+                <span class="verdict">
+                  <span class="units loss">-1.0u</span>
+                  <span class="result loss"><span class="glyph" aria-hidden="true">L</span><span class="word">Loss</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>10:41 AM ET</b></span>
+                  <span class="gametime">game 7:45 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result win"><span class="glyph" aria-hidden="true">W</span><span class="word">Win</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>10:41 AM ET</b></span>
+                  <span class="gametime">game 8:10 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result loss"><span class="glyph" aria-hidden="true">L</span><span class="word">Loss</span></span>
+                </span>
+              </li>
+              <li class="row">
+                <span class="times">
+                  <span class="posted">posted <b>1:19 PM ET</b></span>
+                  <span class="gametime">game 9:45 PM ET</span>
+                </span>
+                <span class="locked">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Subscriber pick
+                </span>
+                <span class="verdict">
+                  <span class="units na" aria-hidden="true"></span>
+                  <span class="result void"><span class="glyph" aria-hidden="true">V</span><span class="word">Void</span></span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- 4. Legal footer (same fine print register as the landing) -->
+  <footer class="legal">
+    <div class="container" data-reveal>
+      <div class="footer-wordmark wordmark" aria-hidden="true">
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="">
+      </div>
+      <div class="blocks">
+        <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>
+        <p>Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment.</p>
+        <p>Past performance does not guarantee future results. Prediction markets involve substantial risk of financial loss.</p>
+      </div>
+      <nav class="footer-links" aria-label="Legal">
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </nav>
+      <p class="copyright">Edgeable 2026</p>
+    </div>
+  </footer>
+
+  <!-- Demo theme toggle (mock chrome only) -->
+  <button class="theme-toggle" type="button" aria-label="Toggle theme demo">Theme</button>
+
+  <script>
+    // Demo toggle: cycles system -> dark -> light. Tokens follow prefers-color-scheme by default.
+    (function () {
+      var root = document.documentElement;
+      var states = ['system', 'dark', 'light'];
+      var i = 0;
+      document.querySelector('.theme-toggle').addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        root.classList.remove('dark', 'light');
+        if (states[i] !== 'system') root.classList.add(states[i]);
+        this.textContent = 'Theme: ' + states[i];
+      });
+    })();
+
+    // Scroll entrances (DESIGN.md motion amendment 4): once-only, above-the-fold shown
+    // instantly. No IntersectionObserver or reduced motion: nothing hides.
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!('IntersectionObserver' in window)) return;
+      var els = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+      els.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+      });
+      document.documentElement.classList.add('reveal-ready');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in'); // once only: never re-triggers on scroll-up
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
