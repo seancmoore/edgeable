@@ -193,7 +193,8 @@
     - Label copy: "W-L-P" | "Net Units" | "ROI"
     - Pending indicator (if any pending picks exist): small eyebrow above stat row in `--muted-foreground`: "Live record. [N] pick[s] pending."
   - Tamper-evidence callout: bordered/inset block using `--surface-2` background and `--hairline` border.
-    - Heading (eyebrow style): "HOW THE RECORD WORKS"
+    - Heading (eyebrow style): "How it all works" (renamed 2026-08-16; was "HOW THE RECORD WORKS")
+    - Navigation behavior (added 2026-08-16, Sean's order): the two hero side windows are section navigation. The whole tamper-evidence panel is a stretched link that smooth-scrolls to the How it works section (#how-it-works); the browser-framed chart teaser is a link that smooth-scrolls to the performance section (#performance). The /card "verify" link inside the panel stays independently clickable. Smooth scroll obeys prefers-reduced-motion (instant jump).
     - Body: "Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public."
     - Inline link: "Verify the archive yourself" → /card
   - **Hero anchor CTA:** Text link in `--brass` (dark: `--primary-text`) with rising-edge underline on hover.

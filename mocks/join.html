@@ -337,14 +337,26 @@
     .teaser-chart svg { display: block; width: 100%; height: auto; margin-top: 14px; }
     /* Tamper-evidence callout: card scrim on the gradient (>=85% opacity), panel radius, glow ring */
     .tamper {
+      position: relative; /* anchors the stretched nav link */
       background: hsl(var(--card) / 0.92);
       color: hsl(var(--card-foreground));
       border-radius: var(--radius-panel);
       box-shadow: var(--elev-ring);
       padding: 2rem;
+      transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
     }
     .tamper p { margin-top: 16px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--card-foreground)); }
     .tamper a { font-weight: 600; }
+    /* Both hero side windows are section navigation: whole surface clickable, gentle lift on hover */
+    .frame-nav { display: block; text-decoration: none; color: inherit; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease); }
+    .frame-nav:hover, .tamper:has(.tamper-nav:hover) { transform: translateY(-3px); }
+    .frame-nav:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: var(--radius-card); }
+    .tamper-nav { color: inherit; text-decoration: none; }
+    /* Stretched link: the heading's anchor covers the whole panel */
+    .tamper-nav::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-panel); }
+    .tamper-nav:focus-visible::after { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+    /* The /card link stays independently clickable above the stretched layer */
+    .tamper-ext { position: relative; z-index: 1; }
 
     /* ====== SECTION 2: performance chart (inside a browser frame per amendment 2) ====== */
     .chart-frame { max-width: 1040px; margin: 0 auto; }
@@ -638,8 +650,9 @@
           </div>
 
           <div class="hero-right">
-            <!-- Chart teaser in a browser device frame (Portal glow-ring mockup, pure HTML/CSS/SVG) -->
-            <div class="frame" role="img" aria-label="Preview of the public record page: cumulative net units curve rising to plus 18.4 units, dips included, zero baseline shown.">
+            <!-- Chart teaser in a browser device frame (Portal glow-ring mockup, pure HTML/CSS/SVG).
+                 Clickable: scrolls to the full performance section. -->
+            <a class="frame frame-nav" href="#performance" aria-label="Preview of the record: net units curve rising to plus 18.4. Jump to the full performance chart.">
               <div class="frame-chrome" aria-hidden="true">
                 <span class="frame-dots"><span></span><span></span><span></span></span>
                 <span class="frame-addr">edgeabled.web.app/card</span>
@@ -665,13 +678,14 @@
                   </svg>
                 </div>
               </div>
-            </div>
+            </a>
 
-            <!-- Tamper-evidence callout: card scrim on the gradient -->
+            <!-- Tamper-evidence callout: card scrim on the gradient.
+                 Clickable (stretched link): scrolls to the How it works section; the /card link stays independently clickable above it. -->
             <aside class="tamper">
-              <h2 class="eyebrow">How the record works</h2>
+              <h2 class="eyebrow"><a class="tamper-nav" href="#how-it-works">How it all works</a></h2>
               <p>Picks are posted to a public server before the game starts. Once posted, they cannot be edited or deleted. Grading is one-way: pending goes to win, loss, push, or void. Pick descriptions are subscriber-only so nobody can model or front-run the strategy. The W-L record, net units, and ROI are always public.</p>
-              <p><a href="/card">Verify the archive yourself</a></p>
+              <p><a class="tamper-ext" href="/card">Verify the archive yourself</a></p>
             </aside>
           </div>
         </div>
@@ -683,7 +697,7 @@
   <main class="container">
 
     <!-- 2. Units performance chart (inside a browser device frame per DESIGN.md amendment 2) -->
-    <section class="section" aria-label="Performance">
+    <section class="section" id="performance" aria-label="Performance">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Performance</p>
         <p class="sub">Net units over time. Dips included.</p>
@@ -797,7 +811,7 @@
     </section>
 
     <!-- 4. How joining works -->
-    <section class="section" aria-label="How it works">
+    <section class="section" id="how-it-works" aria-label="How it works">
       <div class="section-head" data-reveal>
         <h2>How it works</h2>
         <p class="sub">Three steps. No checkout, no bot. Every member is personally reviewed.</p>
