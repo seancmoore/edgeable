@@ -181,6 +181,7 @@
       --text-display: 3.8125rem; /* 61 */
       --text-stat: 4.75rem;      /* 76 - hero record number, desktop */
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-draw: cubic-bezier(0.45, 0, 0.25, 1); /* gentle in-out for the slow chart sweep */
     }
 
     /* === BASE === */
@@ -453,19 +454,24 @@
     .dot-core { fill: hsl(var(--gold)); }
     .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; } /* visible only while pulsing; hidden static (reduced motion) */
     @media (prefers-reduced-motion: no-preference) {
+      /* Slow smooth reveal: line draws AND area wipes left-to-right together over 1.8s */
       .curve {
         stroke-dasharray: 1; stroke-dashoffset: 1;
-        animation: draw 700ms var(--ease) forwards; /* chart reveal, once per load */
+        animation: draw 1800ms var(--ease-draw) forwards; /* chart reveal, once per load */
       }
       @keyframes draw { to { stroke-dashoffset: 0; } }
-      /* area fill fades in during the draw; labels + live dot wait for the draw to complete */
-      .area-fill { opacity: 0; animation: fade-in 500ms var(--ease) 250ms forwards; }
-      .chart-wrap .x-labels { opacity: 0; animation: fade-in 400ms var(--ease) 700ms forwards; }
-      .chart-dot { opacity: 0; animation: fade-in 260ms var(--ease) 700ms forwards; }
+      .area-fill {
+        clip-path: inset(0 100% 0 0);
+        animation: sweep 1800ms var(--ease-draw) forwards;
+      }
+      @keyframes sweep { to { clip-path: inset(0 0 0 0); } }
+      /* labels + live dot wait for the draw to complete */
+      .chart-wrap .x-labels { opacity: 0; animation: fade-in 450ms var(--ease) 1800ms forwards; }
+      .chart-dot { opacity: 0; animation: fade-in 260ms var(--ease) 1800ms forwards; }
       /* the pulsing halo: one of the page's TWO permitted ambient loops (amendment 5; the other is .live-dot) */
       .dot-halo {
         transform-box: fill-box; transform-origin: center;
-        animation: dot-pulse 2.4s ease-out 1s infinite;
+        animation: dot-pulse 2.4s ease-out 2.1s infinite;
       }
       @keyframes fade-in { to { opacity: 1; } }
       @keyframes dot-pulse {
@@ -843,7 +849,7 @@
             <span class="posted">Posted 2:12 PM ET</span>
             <span>Game: Aug 9, 7:05 PM ET</span>
           </div>
-          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> Win</p>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.8u</span></p>
         </article>
 
         <article class="soft-card pick-card" data-reveal>
@@ -860,7 +866,7 @@
             <span class="posted">Posted 4:47 PM ET</span>
             <span>Game: Jul 28, 9:40 PM ET</span>
           </div>
-          <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> Loss</p>
+          <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> <span class="mono">-0.5u</span></p>
         </article>
 
         <article class="soft-card pick-card" data-reveal>
@@ -877,7 +883,7 @@
             <span class="posted">Posted 11:58 AM ET</span>
             <span>Game: Jul 19, 1:10 PM ET</span>
           </div>
-          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> Win</p>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.9u</span></p>
         </article>
       </div>
 

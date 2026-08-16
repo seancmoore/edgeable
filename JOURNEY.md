@@ -268,7 +268,7 @@
     - Pick description: from `picks` where `access = 'public'` (the full description, sport, odds visible here because public picks are intentionally shared).
     - Posted timestamp (prominent, Spline Sans Mono): "Posted [time] ET" (before game start, server clock). This is the verifiable proof element.
     - Game start timestamp: "Game: [datetime] ET" (so the visitor can confirm the pick was posted first).
-    - Result badge: W / L / P glyph + color (using `--win` / `--loss` / `--muted-foreground`). Shown honestly: losses displayed, not filtered. Color + letter glyph per DESIGN.md "color never sole status signal" rule.
+    - Result badge (updated 2026-08-16, Sean's order): W / L / P glyph + the units outcome in mono, e.g. "W +0.8u" / "L -0.5u". Units computed honestly from odds and stake (win profit = stake × 100/|odds| for negative odds, stake × odds/100 for positive; loss = -stake). Color via `--win`/`--loss`/`--muted-foreground`; losses displayed, not filtered; color + glyph per DESIGN.md rule.
   - ~~Link below cards: "See the complete record" → /card~~ (Removed 2026-08-16, Sean's call: the performance chart carries the full record; the tamper panel's "Verify the archive yourself" /card link remains the archive path.)
 - States:
   - Default: 2–3 most recent graded public picks. Ordered by `postedAt` descending (most recent first).
