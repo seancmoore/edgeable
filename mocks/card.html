@@ -183,15 +183,18 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font-display);
-      /* Dusk echo at the page's end, same as /join */
+      /* ONE continuous dusk gradient backing the whole page: champagne sky at
+         the top, softening through amber, settling into warm bronze at the
+         page's end. All text on it uses the AA-verified gradient-safe colors;
+         the ledger content itself rides --card surfaces. */
       background:
-        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% 640px no-repeat,
-        linear-gradient(0deg,
+        radial-gradient(70% 45% at 14% 0%, hsl(var(--hero-g1)) 0%, transparent 72%),
+        radial-gradient(90% 30% at 50% 102%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%),
+        linear-gradient(180deg,
           hsl(var(--hero-g1)) 0%,
-          hsl(var(--hero-g2)) 44%,
-          hsl(var(--hero-g3)) 78%,
-          hsl(var(--background)) 100%) bottom center / 100% 640px no-repeat,
-        hsl(var(--background));
+          hsl(var(--hero-g2)) 34%,
+          hsl(var(--hero-g2)) 62%,
+          hsl(var(--hero-g3)) 100%);
       color: hsl(var(--foreground));
       line-height: 1.55;
       font-size: var(--text-base);
@@ -229,20 +232,9 @@
       box-shadow: var(--elev-ring);
     }
 
-    /* ====== Dusk backdrop (same warm-metal scheme as /join): backs the header +
-       record head only, dissolving into --background before the ledger. ====== */
-    .dusk {
-      background:
-        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%),
-        radial-gradient(150% 40% at 50% 100%, hsl(var(--hero-g3)) 0%, transparent 70%),
-        radial-gradient(70% 45% at 14% 0%, hsl(var(--hero-g1)) 0%, transparent 72%),
-        linear-gradient(180deg,
-          hsl(var(--hero-g1)) 0%,
-          hsl(var(--hero-g2)) 44%,
-          hsl(var(--hero-g3)) 78%,
-          hsl(var(--background)) 100%);
-      padding-bottom: 72px;
-    }
+    /* The whole page rides the body's single dusk gradient; this wrapper only
+       keeps the hero spacing (no background of its own). */
+    .dusk { padding-bottom: 72px; }
 
     /* ====== Header (standard: wordmark + Log in; on the gradient, no sticky) ====== */
     header.site {
