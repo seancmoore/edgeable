@@ -261,8 +261,8 @@
 **3. Free-pick samples**
 - Content slots:
   - Section heading (eyebrow): "FREE PICKS"
-  - Section subhead: "Occasionally, a pick goes public before the game. Here are the most recent ones: posted before tip-off, graded after."
-  - Framing note (below heading, before cards): "Subscriber picks stay private so nobody can model or front-run the strategy. What you see here is real: posted before the game, graded honestly including losses."
+  - Section subhead: "From time to time a pick goes out free to everyone. Here are the most recent ones: posted before tip-off, graded after."
+  - ~~Framing note (why subscriber picks are private)~~ (Removed 2026-08-16, Sean's call: the section just notes free picks exist. NOTE: the why-picks-are-hidden rationale now appears nowhere on /join; it lives only in the Terms/Guide if needed.)
   - 2–3 free-pick cards. Each card contains:
     - Badge (top-left): "Free pick" in `--accent` tint with `--accent-foreground` text (eyebrow weight).
     - Pick description: from `picks` where `access = 'public'` (the full description, sport, odds visible here because public picks are intentionally shared).
