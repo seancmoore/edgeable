@@ -197,9 +197,7 @@
     - Navigation behavior (added 2026-08-16, Sean's order): the two hero side windows are section navigation. The whole tamper-evidence panel is a stretched link that smooth-scrolls to the How it works section (#how-it-works); the browser-framed chart teaser is a link that smooth-scrolls to the performance section (#performance). The /card "verify" link inside the panel stays independently clickable. Smooth scroll obeys prefers-reduced-motion (instant jump).
     - Body (Sean-selected 2026-08-16, "tease the loop" direction; the panel is an attention grab, the full mechanics live in the How it works section it links to): "Daily plays, exact units, real odds. All on the record before kickoff. See the whole loop."
     - ~~Inline link: "Verify the archive yourself" → /card~~ (Removed 2026-08-16, Sean's call. NOTE: /join now has NO link to /card; the archive is reachable only via the app/site nav. The panel is purely a nav card to #how-it-works.)
-  - **Hero anchor CTA:** Text link in `--brass` (dark: `--primary-text`) with rising-edge underline on hover.
-    - Copy: "Join for $30/mo. See how it works."
-    - Anchors to `#join-cta`.
+  - ~~Hero anchor CTA: "Join for $30/mo. See how it works." → #join-cta~~ (Removed 2026-08-16, Sean's call: no price in the hero; the visitor should be intrigued to scroll for it. NOTE: this consciously reverses the wireframe review's hero-CTA finding; price first appears in the How it works step 1 and the membership panel. The hero side windows remain the hero's navigation affordances.)
 - States:
   - Default: live stats rendered.
   - Loading: skeleton placeholders for stat numbers (3 boxes, no copy change needed — stat labels remain visible).
