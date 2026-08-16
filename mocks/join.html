@@ -371,8 +371,6 @@
     /* Stretched link: the heading's anchor covers the whole panel */
     .tamper-nav::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-panel); }
     .tamper-nav:focus-visible::after { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
-    /* The /card link stays independently clickable above the stretched layer */
-    .tamper-ext { position: relative; z-index: 1; }
 
     /* ====== SECTION 2: performance chart (inside a browser frame per amendment 2) ====== */
     .chart-frame { max-width: 1040px; margin: 0 auto; }
@@ -721,7 +719,6 @@
             <aside class="tamper">
               <h2 class="eyebrow"><a class="tamper-nav" href="#how-it-works">How it all works</a></h2>
               <p>Posted before game time. Never edited, never deleted. Win or lose, it is all here.</p>
-              <p><a class="tamper-ext" href="/card">Verify the archive yourself</a></p>
             </aside>
           </div>
         </div>

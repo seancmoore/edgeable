@@ -196,7 +196,7 @@
     - Heading (eyebrow style): "How it all works" (renamed 2026-08-16; was "HOW THE RECORD WORKS")
     - Navigation behavior (added 2026-08-16, Sean's order): the two hero side windows are section navigation. The whole tamper-evidence panel is a stretched link that smooth-scrolls to the How it works section (#how-it-works); the browser-framed chart teaser is a link that smooth-scrolls to the performance section (#performance). The /card "verify" link inside the panel stays independently clickable. Smooth scroll obeys prefers-reduced-motion (instant jump).
     - Body (shrunk 2026-08-16, Sean's call: the hero panel is an attention grab, not an explainer; the full mechanics live in the How it works section it links to): "Posted before game time. Never edited, never deleted. Win or lose, it is all here."
-    - Inline link: "Verify the archive yourself" → /card
+    - ~~Inline link: "Verify the archive yourself" → /card~~ (Removed 2026-08-16, Sean's call. NOTE: /join now has NO link to /card; the archive is reachable only via the app/site nav. The panel is purely a nav card to #how-it-works.)
   - **Hero anchor CTA:** Text link in `--brass` (dark: `--primary-text`) with rising-edge underline on hover.
     - Copy: "Join for $30/mo. See how it works."
     - Anchors to `#join-cta`.
