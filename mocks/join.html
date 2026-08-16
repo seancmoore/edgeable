@@ -454,24 +454,26 @@
     .dot-core { fill: hsl(var(--gold)); }
     .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; } /* visible only while pulsing; hidden static (reduced motion) */
     @media (prefers-reduced-motion: no-preference) {
-      /* Slow smooth reveal: line draws AND area wipes left-to-right together over 1.8s */
+      /* Slow smooth reveal: line draws AND area wipes left-to-right together over 3.2s */
       .curve {
         stroke-dasharray: 1; stroke-dashoffset: 1;
-        animation: draw 1800ms var(--ease-draw) forwards; /* chart reveal, once per load */
+        animation: draw 3200ms var(--ease-draw) forwards; /* chart reveal, once per load */
       }
       @keyframes draw { to { stroke-dashoffset: 0; } }
       .area-fill {
         clip-path: inset(0 100% 0 0);
-        animation: sweep 1800ms var(--ease-draw) forwards;
+        animation: sweep 3200ms var(--ease-draw) forwards;
       }
       @keyframes sweep { to { clip-path: inset(0 0 0 0); } }
+      /* the chart card's own text (headline value + range tabs) eases in slowly as the sweep begins */
+      .chart-frame .chart-top { opacity: 0; animation: fade-in 1200ms var(--ease) 200ms forwards; }
       /* labels + live dot wait for the draw to complete */
-      .chart-wrap .x-labels { opacity: 0; animation: fade-in 450ms var(--ease) 1800ms forwards; }
-      .chart-dot { opacity: 0; animation: fade-in 260ms var(--ease) 1800ms forwards; }
+      .chart-wrap .x-labels { opacity: 0; animation: fade-in 1200ms var(--ease) 3200ms forwards; }
+      .chart-dot { opacity: 0; animation: fade-in 500ms var(--ease) 3200ms forwards; }
       /* the pulsing halo: one of the page's TWO permitted ambient loops (amendment 5; the other is .live-dot) */
       .dot-halo {
         transform-box: fill-box; transform-origin: center;
-        animation: dot-pulse 2.4s ease-out 2.1s infinite;
+        animation: dot-pulse 2.4s ease-out 3.8s infinite;
       }
       @keyframes fade-in { to { opacity: 1; } }
       @keyframes dot-pulse {
@@ -485,6 +487,7 @@
       /* the main performance chart holds its sweep until ~60% of it is in the viewport
          (dedicated observer adds .chart-go); the card itself may reveal earlier */
       .reveal-ready .chart-frame:not(.chart-go) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+      .reveal-ready .chart-frame:not(.chart-go) .chart-top,
       .reveal-ready .chart-frame:not(.chart-go) .x-labels { animation-play-state: paused; }
     }
     .x-labels {
@@ -562,13 +565,21 @@
       display: inline-flex; gap: 4px; background: hsl(var(--muted));
       border-radius: var(--radius-pill); padding: 4px;
     }
-    .seg span {
-      font-weight: 600; font-size: var(--text-xs); padding: 6px 14px;
+    .seg-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-xs); padding: 6px 14px;
       border-radius: var(--radius-pill); color: hsl(var(--muted-foreground));
+      background: transparent; border: 0; cursor: pointer;
+      transition: background 180ms var(--ease), color 180ms var(--ease);
     }
     .seg .on {
       background: hsl(var(--gold)); color: hsl(var(--gold-ink));
       border: 1px solid hsl(var(--ring)); /* light gold-fill boundary (hard rule 3) */
+    }
+    .seg-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+    .mini-chart svg .curve, .mini-chart svg .area-fill { transition: opacity 180ms var(--ease); }
+    .app-blurb {
+      margin: 20px auto 0; max-width: 340px;
+      font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground));
     }
     .mini-stat { margin-top: 18px; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: hsl(var(--win)); }
     .mini-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); margin-top: 4px; }
@@ -810,7 +821,7 @@
               <!-- equity curve: 75 daily points, Jun 1 to Aug 14 2026, ends +18.4 -->
               <path class="curve" pathLength="1" fill="none" stroke-width="2.5" stroke-linecap="round"
                 d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10"></path>
-              <!-- live dot on the last data point: appears after the 700ms draw completes;
+              <!-- live dot on the last data point: appears after the slow sweep completes;
                    the halo pulse is one of the page's two permitted ambient loops (amendments 4 + 5) -->
               <g class="chart-dot" aria-hidden="true">
                 <circle class="dot-halo" cx="1000" cy="10" r="5"></circle>
@@ -954,30 +965,35 @@
     <section class="section" id="join-cta" aria-label="Membership">
       <div class="join-grid" data-reveal-stagger>
 
-        <!-- Phone device frame: truthful miniature of the real subscriber dashboard performance card -->
+        <!-- Phone device frame: truthful miniature of the real subscriber dashboard performance card.
+             Interactive demo: Edgeable = full record; Yours = the same record counted from your join date. -->
         <div class="app-preview" data-reveal>
           <span class="eyebrow">Inside the app</span>
-          <div class="phone" role="img" aria-label="Preview of the subscriber dashboard performance card: scope control, net units stat, equity curve, and recent daily results including a losing day.">
+          <div class="phone" aria-label="Interactive preview of the subscriber dashboard performance card. Toggle between Edgeable's full record and Yours, the same record since your join date.">
             <div class="phone-notch" aria-hidden="true"></div>
-            <div class="phone-screen" aria-hidden="true">
-              <span class="seg"><span class="on">Edgeable</span><span>Yours</span></span>
-              <div class="mini-stat">+18.4 units</div>
-              <div class="mini-when">All time</div>
+            <div class="phone-screen">
+              <span class="seg" role="group" aria-label="Performance scope">
+                <button type="button" class="seg-btn on" data-scope="edgeable" aria-pressed="true">Edgeable</button>
+                <button type="button" class="seg-btn" data-scope="yours" aria-pressed="false">Yours</button>
+              </span>
+              <div class="mini-stat" id="mini-stat">+18.4 units</div>
+              <div class="mini-when" id="mini-when">All time</div>
               <div class="mini-chart">
-                <svg viewBox="0 0 260 96">
-                  <path class="area-fill" d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6L260 90Z"></path>
+                <svg viewBox="0 0 260 96" aria-hidden="true">
+                  <path class="area-fill" id="mini-fill" d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6L260 90Z"></path>
                   <line class="zero-baseline" x1="0" y1="90" x2="260" y2="90" stroke-width="1"></line>
-                  <path class="curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
+                  <path class="curve" id="mini-curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
                     d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6"></path>
                 </svg>
               </div>
-              <div class="mini-days">
+              <div class="mini-days" aria-hidden="true">
                 <div class="mini-day"><span>Aug 13</span><span class="d-win">+1.2u</span></div>
                 <div class="mini-day"><span>Aug 12</span><span class="d-loss">-0.5u</span></div>
                 <div class="mini-day"><span>Aug 11</span><span class="d-win">+2.0u</span></div>
               </div>
             </div>
           </div>
+          <p class="app-blurb">Yours is the same record, counted from the day you join. Early on your curve looks smaller. Stay, and the two charts grow together: the longer you ride the record, the more of its long-run growth ends up yours.</p>
         </div>
 
         <div class="price-panel" data-reveal>
@@ -1205,6 +1221,49 @@
 
       // Initial render: All range (the load-time CSS draw-in animates the generated path).
       apply(view('All'));
+    })();
+
+    // "Inside the app" demo: Edgeable (full record) vs Yours (same record since your join date).
+    // MOCK SAMPLE DATA: Yours = +6.2u since Jun 20; recent days identical (same picks, same grades).
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var SCOPES = {
+        edgeable: {
+          stat: '+18.4 units', when: 'All time',
+          curve: 'M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6'
+        },
+        yours: {
+          stat: '+6.2 units', when: 'Since you joined, Jun 20',
+          curve: 'M0 90C12 88 22 86 34 87C46 88 56 82 68 80C80 78 90 84 102 82C114 80 124 72 138 70C152 68 162 74 174 72C186 70 196 66 210 64C224 62 244 63 260 62'
+        }
+      };
+      var stat = document.getElementById('mini-stat');
+      var when = document.getElementById('mini-when');
+      var curve = document.getElementById('mini-curve');
+      var fill = document.getElementById('mini-fill');
+      var btns = document.querySelectorAll('.seg-btn');
+      function apply(scope) {
+        var d = SCOPES[scope];
+        stat.textContent = d.stat;
+        when.textContent = d.when;
+        curve.setAttribute('d', d.curve);
+        fill.setAttribute('d', d.curve + 'L260 90Z');
+      }
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.classList.contains('on')) return;
+          Array.prototype.forEach.call(btns, function (b) {
+            b.classList.toggle('on', b === btn);
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          if (reduce) { apply(btn.dataset.scope); return; }
+          curve.style.opacity = fill.style.opacity = 0;
+          setTimeout(function () {
+            apply(btn.dataset.scope);
+            curve.style.opacity = fill.style.opacity = 1;
+          }, 180);
+        });
+      });
     })();
 
     // Scroll entrances (DESIGN.md motion amendment 4): once-only, staggered card grids,
