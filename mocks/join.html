@@ -313,13 +313,14 @@
     /* Live-pending indicator (DESIGN.md motion amendment 5, 2026-08-16, Sean's order): a small
        red "recording" dot plus a --loss pending count. The dot's soft ~1.8s blink is the SECOND
        of exactly two permitted ambient loops on this page (the chart live dot is the other).
-       All color via the text-safe --loss token; reduced motion renders the dot static, no blink. */
+       All color via the theme's text-safe gold token (--primary-text: brass in light, gold in dark,
+       both AA on the hero gradient); reduced motion renders the dot static, no blink. */
     .pending-eyebrow { margin-top: 48px; display: flex; align-items: center; gap: 8px; }
     .live-dot {
       width: 7px; height: 7px; border-radius: 50%; flex: none;
-      background: hsl(var(--loss));
+      background: hsl(var(--primary-text));
     }
-    .pending-count { color: hsl(var(--loss)); }
+    .pending-count { color: hsl(var(--primary-text)); }
     @media (prefers-reduced-motion: no-preference) {
       .live-dot { animation: live-blink 1.8s ease-in-out infinite; }
       @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
