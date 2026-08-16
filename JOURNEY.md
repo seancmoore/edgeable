@@ -188,7 +188,7 @@
 **1. Record hero**
 - Content slots:
   - Headline: "Do not trust me. Check the record." (Sean-selected 2026-08-15, "invitation to verify" direction)
-  - Subhead (Sean-selected 2026-08-16, warm/human + real-data note): "If you have been burned by fake slips and deleted losses, good: you are exactly who this page is for. Edgeable is a picks service built on real data, and every pick goes on the record before the game starts and stays there, wins and losses alike. Have a look around before you decide anything."
+  - Subhead (Sean-selected 2026-08-16, warm/human + real-data note): "If you have been burned by fake slips and deleted losses, good: you are exactly who this service is for. Edgeable is a picks service built on real data, and every pick goes on the record before the game starts and stays there, wins and losses alike. Have a look around before you decide anything."
   - Stat row: W-L-P record | Net units | ROI — live data from `picks`/`picksPublic` via the same computation as /card (`computeRecord` in `src/utils/picks.js`). Labels below each number. Pending picks excluded; voids excluded from ROI denominator per existing /card rules.
     - Label copy: "W-L-P" | "Net Units" | "ROI"
     - Pending indicator (if any pending picks exist): small eyebrow above stat row in `--muted-foreground`: "Live record. [N] pick[s] pending."
