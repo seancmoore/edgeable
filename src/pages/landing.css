@@ -524,13 +524,13 @@
   border: 1px solid hsl(var(--ring)); /* light gold-fill boundary (hard rule 3) */
 }
 .dusk-theme .seg-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
-.dusk-theme .mini-chart { transition: opacity 180ms var(--ease); }
+.dusk-theme .mini-chart { transition: opacity 300ms var(--ease); }
 .dusk-theme .mini-chart .curve2 { stroke: hsl(var(--muted-foreground)); stroke-dasharray: 5 4; }
 /* Legend expands/collapses smoothly (0fr to 1fr grid row) so the Compare view
    stretches the panel instead of jumping; blurb below rides the same motion. */
 .dusk-theme .mini-legend-wrap {
   display: grid; grid-template-rows: 0fr;
-  transition: grid-template-rows 320ms var(--ease);
+  transition: grid-template-rows 650ms var(--ease-draw);
 }
 .dusk-theme .mini-legend-wrap.open { grid-template-rows: 1fr; }
 .dusk-theme .mini-legend {
@@ -545,7 +545,7 @@
   margin: 20px auto 0; max-width: 340px;
   font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground));
 }
-.dusk-theme .mini-stat { margin-top: 18px; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: hsl(var(--win)); white-space: nowrap; transition: font-size 320ms var(--ease); }
+.dusk-theme .mini-stat { margin-top: 18px; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: hsl(var(--win)); white-space: nowrap; transition: font-size 650ms var(--ease-draw); }
 /* Compare's "X / Y units" string is long: step the size down so it stays one
    line and the panel height does not jump when the scope switches. */
 .dusk-theme .mini-stat.compact { font-size: var(--text-base); }

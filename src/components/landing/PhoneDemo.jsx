@@ -103,7 +103,7 @@ export default function PhoneDemo({ series }) {
     window.setTimeout(() => {
       setScope(next);
       if (el) el.style.opacity = '1';
-    }, 180);
+    }, 300);
   };
 
   return (
