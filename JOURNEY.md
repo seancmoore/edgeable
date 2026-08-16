@@ -312,7 +312,7 @@ This section uses the `--gold` full-bleed band (DESIGN.md "CTA gold band" expres
 - Content slots:
   - Eyebrow (above price, `--gold-ink` muted-weight): "EDGEABLE MEMBERSHIP"
   - Price: "$30" in Spline Sans Mono display size + "/month" in Archivo body-size secondary. Single tier.
-  - Value description: "Every pick. Full record. Live performance chart. You cancel when you want."
+  - Value description: "Every pick. Full record. Live performance chart. Live updates and insights." (2026-08-16, Sean's call: "You cancel when you want" removed, replaced by live updates and insights.)
   - **Primary CTA button:** `--gold-ink` text on a dark `--foreground`-family fill (inverted within the gold band), or a `--card`-surface button within the gold band — exact treatment is DESIGN.md/implementation call; the constraint is: all text on the gold band uses `--gold-ink`, so the button must invert to provide readable contrast on the button face.
     - Copy: "Join Edgeable"
     - Min height: 48px. Full-width on mobile; centered max-width (~400px) on desktop.
