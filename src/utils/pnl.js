@@ -1,6 +1,6 @@
 import {
-  collection, doc, getDoc, getDocs, writeBatch,
-  query, where, orderBy, limit, Timestamp,
+  collection, doc, getDoc, getDocs, setDoc, writeBatch,
+  query, where, orderBy, limit, documentId, Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase.js';
 
@@ -68,6 +68,80 @@ async function computeStakedUnitsForDay(dateId) {
   return Math.round(staked * 100) / 100;
 }
 
+// ── Landing summary (landingStats/current) ─────────────────────────────────
+// The anonymous landing page reads ONE world-readable doc instead of querying
+// live collections. It holds raw numbers only and is rebuilt here after every
+// P&L write/delete (and by scripts/add-pnl-day.js / rebuild-landing-stats.js).
+// Sources are all readable by the admin session: dailyPnLPublic + picksPublic
+// are world-readable, and the free-pick query filters access=='public'.
+export async function rebuildLandingStats() {
+  // Per-day units series + totals from the public P&L mirror. Doc ids are
+  // YYYY-MM-DD, so ordering by document id is chronological.
+  const pnlSnap = await getDocs(
+    query(collection(db, 'dailyPnLPublic'), orderBy(documentId()), limit(2000))
+  );
+  let netUnits = 0;
+  let totalStaked = 0;
+  const series = pnlSnap.docs.map((d) => {
+    const data = d.data();
+    const u = Number(data.units) || 0;
+    netUnits = Math.round((netUnits + u) * 100) / 100;
+    totalStaked += Number(data.stakedUnits) || 0;
+    return { d: d.id, u };
+  });
+
+  // W-L-P + pending from the world-readable pick stubs (voids ignored).
+  const stubSnap = await getDocs(
+    query(collection(db, 'picksPublic'), orderBy('postedAt', 'desc'), limit(2000))
+  );
+  let wins = 0, losses = 0, pushes = 0, pending = 0;
+  for (const d of stubSnap.docs) {
+    const s = d.data().status;
+    if (s === 'win') wins++;
+    else if (s === 'loss') losses++;
+    else if (s === 'push') pushes++;
+    else if (s === 'pending') pending++;
+  }
+
+  // Newest graded free picks (up to 3), full details, timestamps as ISO
+  // strings so the summary doc stays plain raw values.
+  const freeSnap = await getDocs(
+    query(collection(db, 'picks'), where('access', '==', 'public'), orderBy('postedAt', 'desc'), limit(24))
+  );
+  const freePicks = freeSnap.docs
+    .map((d) => d.data())
+    .filter((p) => p.status === 'win' || p.status === 'loss' || p.status === 'push')
+    .slice(0, 3)
+    .map((p) => ({
+      desc: p.description || '',
+      sport: p.sport || '',
+      odds: Number(p.odds) || 0,
+      stake: Number(p.stakeUnits) || 0,
+      status: p.status,
+      postedAt: p.postedAt?.toDate?.()?.toISOString() || null,
+      gameStartTime: p.gameStartTime?.toDate?.()?.toISOString() || null,
+    }));
+
+  await setDoc(doc(db, 'landingStats', 'current'), {
+    series,
+    netUnits,
+    totalStaked: Math.round(totalStaked * 100) / 100,
+    record: { wins, losses, pushes, pending },
+    freePicks,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+// Best-effort refresh: a summary failure must never fail the P&L write that
+// triggered it. The repair tool is scripts/rebuild-landing-stats.js.
+async function refreshLandingStats() {
+  try {
+    await rebuildLandingStats();
+  } catch (err) {
+    console.warn('landingStats rebuild failed (P&L write succeeded):', err);
+  }
+}
+
 export async function savePnLEntry({ dateId, units, wins, losses, pushes, notes, admin }) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateId)) throw new Error('Invalid date.');
   if (units === '' || isNaN(Number(units))) throw new Error('Units must be a number.');
@@ -115,6 +189,7 @@ export async function savePnLEntry({ dateId, units, wins, losses, pushes, notes,
     stakedUnits,
   });
   await batch.commit();
+  await refreshLandingStats();
 }
 
 
@@ -125,6 +200,7 @@ export async function deletePnLEntry(dateId) {
   batch.delete(doc(db, 'dailyPnL', dateId));
   batch.delete(doc(db, 'dailyPnLPublic', dateId));
   await batch.commit();
+  await refreshLandingStats();
 }
 
 export async function getRecentPnL(maxCount = 60) {

@@ -10,9 +10,9 @@ import './landing.css';
 // Public landing page at "/" — a faithful React port of the approved mock
 // (mocks/join.html, Dusk Ledger). All visuals are scoped under .dusk-theme
 // (src/pages/landing.css); the rest of the app keeps its own global tokens.
-// Data comes from world-readable surfaces only: picksPublic (record +
-// pending count), dailyPnLPublic (net units, chart, ROI), and
-// picks where access=='public' (free-pick samples).
+// Data comes from ONE world-readable summary doc (landingStats/current, via
+// src/utils/publicLanding.js): record + pending count, net units + chart +
+// ROI, and the free-pick samples, all in a single read.
 
 const DownArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -99,7 +99,12 @@ export default function Landing() {
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
     els.forEach((el) => { if (!el.classList.contains('in')) io.observe(el); });
-    return () => io.disconnect();
+    // Failsafe: if the observer misbehaves in some browser, nothing may stay
+    // invisible. One sweep marks any still-hidden element as revealed.
+    const failsafe = window.setTimeout(() => {
+      root.querySelectorAll('[data-reveal]:not(.in)').forEach((el) => el.classList.add('in'));
+    }, 1200);
+    return () => { window.clearTimeout(failsafe); io.disconnect(); };
   }, [record.loading, pnl.loading, picks.loading]);
 
   // Smooth-scroll section navigation (the two hero windows). Obeys

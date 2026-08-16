@@ -17,6 +17,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { rebuildLandingStats } from './_landing-stats.mjs';
 
 const SERVICE_ACCOUNT_PATH = resolve(process.cwd(), 'service-account.json');
 if (!existsSync(SERVICE_ACCOUNT_PATH)) {
@@ -80,3 +81,12 @@ batch.set(db.collection('dailyPnLPublic').doc(dateId), { units, wins, losses, pu
 await batch.commit();
 
 console.log(`${existing.exists ? 'UPDATED' : 'ADDED'} ${dateId}: units=${units} W-L-P=${wins}-${losses}-${pushes} stakedUnits=${stakedUnits}${notes ? ` notes="${notes}"` : ''} (private + public mirror)`);
+
+// Keep the landing page's single summary doc fresh. The day is already
+// saved above, so a summary failure just points at the repair tool.
+try {
+  const s = await rebuildLandingStats(db);
+  console.log(`landingStats/current rebuilt (${s.series.length} day(s), netUnits=${s.netUnits}).`);
+} catch (err) {
+  console.warn('landingStats rebuild failed (day was saved). Run: node scripts/rebuild-landing-stats.js', err);
+}

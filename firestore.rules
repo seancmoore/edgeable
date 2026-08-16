@@ -164,6 +164,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── landing summary (single doc, 2026-08) ────────────────
+    // landingStats/current is the ONE doc the anonymous landing page reads:
+    // raw numbers only (units series, net/staked totals, W-L-P record, up to
+    // 3 free-pick samples). Rebuilt by admin write paths (src/utils/pnl.js,
+    // scripts/add-pnl-day.js) and scripts/rebuild-landing-stats.js.
+    // dailyPnLPublic above stays world-readable as the raw source of truth
+    // this summary is derived from.
+    match /landingStats/{docId} {
+      allow get: if true;
+      allow write: if isAdmin();
+    }
+
     // ── picks (tamper-evident pick record, tiered access) ────
     // Tamper-evidence contract:
     //  * writes pinned to the owner's UID + admin role
