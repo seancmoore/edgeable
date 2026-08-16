@@ -371,7 +371,27 @@
     .tamper p { margin-top: 16px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--card-foreground)); }
     .tamper a { font-weight: 600; }
     /* Both hero side windows are section navigation: whole surface clickable, gentle lift on hover */
-    .frame-nav { display: block; text-decoration: none; color: inherit; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease); }
+    .frame-nav { display: block; position: relative; text-decoration: none; color: inherit; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease); }
+    /* Hover/focus overlay: window content crossfades to a "See ..." destination label + down arrow */
+    .nav-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      background: hsl(var(--card) / 0.93);
+      border-radius: var(--radius-card);
+      font-weight: 600; font-size: var(--text-base); color: hsl(var(--foreground));
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+      pointer-events: none;
+    }
+    .tamper .nav-overlay { border-radius: var(--radius-panel); }
+    .nav-overlay svg { width: 22px; height: 22px; color: hsl(var(--primary-text)); }
+    .frame-nav:hover .nav-overlay, .frame-nav:focus-visible .nav-overlay,
+    .tamper:hover .nav-overlay, .tamper:focus-within .nav-overlay { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: no-preference) {
+      .frame-nav:hover .nav-overlay svg, .frame-nav:focus-visible .nav-overlay svg,
+      .tamper:hover .nav-overlay svg, .tamper:focus-within .nav-overlay svg { animation: arrow-nudge 1.2s ease-in-out infinite; }
+      @keyframes arrow-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+    }
     .frame-nav:hover, .tamper:has(.tamper-nav:hover) { transform: translateY(-3px); }
     .frame-nav:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: var(--radius-card); }
     .tamper-nav { color: inherit; text-decoration: none; }
@@ -720,6 +740,9 @@
                   </svg>
                 </div>
               </div>
+              <span class="nav-overlay" aria-hidden="true">See performance
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
             </a>
 
             <!-- Tamper-evidence callout: card scrim on the gradient.
@@ -727,6 +750,9 @@
             <aside class="tamper">
               <h2 class="eyebrow"><a class="tamper-nav" href="#how-it-works">How it all works</a></h2>
               <p>Daily plays, exact units, real odds. All on the record before kickoff. See the whole loop.</p>
+              <span class="nav-overlay" aria-hidden="true">See how it works
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
             </aside>
           </div>
         </div>
