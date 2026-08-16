@@ -63,7 +63,7 @@ export default function Landing() {
 
   useEffect(() => {
     const prev = document.title;
-    document.title = 'Edgeable: Every pick on record';
+    document.title = 'Edgeable';
     return () => { document.title = prev; };
   }, []);
 
@@ -472,7 +472,7 @@ export default function Landing() {
           <div className="blocks">
             <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>
             <p>Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment.</p>
-            <p>Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss.</p>
+            <p>Past performance does not guarantee future results. Prediction markets involve substantial risk of financial loss.</p>
           </div>
           <nav className="footer-links" aria-label="Legal">
             <Link to="/terms">Terms</Link>

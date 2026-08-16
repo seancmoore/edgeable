@@ -357,7 +357,7 @@ The following Firestore changes are required to support the /join page. These ar
 - Content slots:
   - Age requirement: "You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction."
   - Not a sportsbook: "Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment."
-  - Past performance: "Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss."
+  - Past performance: "Past performance does not guarantee future results. Prediction markets involve substantial risk of financial loss."
   - Links row: "Terms" (/terms) | "Privacy" (/privacy) | "Verify the record" (/card)
   - Copyright: "Edgeable [current year]"
 - Mobile: single-column stack. Text blocks stacked vertically. Links row wraps as needed.

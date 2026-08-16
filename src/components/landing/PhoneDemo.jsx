@@ -18,8 +18,7 @@ export default function PhoneDemo({ series }) {
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     []
   );
-  const curveRef = useRef(null);
-  const fillRef = useRef(null);
+  const chartRef = useRef(null);
 
   const data = useMemo(() => {
     const allVals = series.map((p) => p.cum);
@@ -97,14 +96,13 @@ export default function PhoneDemo({ series }) {
       setScope(next);
       return;
     }
-    const c = curveRef.current;
-    const f = fillRef.current;
-    if (c) c.style.opacity = '0';
-    if (f) f.style.opacity = '0';
+    // Fade the whole mini chart out, swap, fade back in; the legend expands
+    // in parallel via the animated grid row so the panel stretches smoothly.
+    const el = chartRef.current;
+    if (el) el.style.opacity = '0';
     window.setTimeout(() => {
       setScope(next);
-      if (c) c.style.opacity = '1';
-      if (f) f.style.opacity = '1';
+      if (el) el.style.opacity = '1';
     }, 180);
   };
 
@@ -130,9 +128,9 @@ export default function PhoneDemo({ series }) {
               </button>
             ))}
           </span>
-          <div className={cur.net < 0 ? 'mini-stat neg' : 'mini-stat'}>{cur.stat}</div>
+          <div className={`mini-stat${cur.net < 0 ? ' neg' : ''}${scope === 'compare' ? ' compact' : ''}`}>{cur.stat}</div>
           <div className="mini-when">{cur.when}</div>
-          <div className="mini-chart">
+          <div className="mini-chart" ref={chartRef}>
             <svg viewBox={`0 0 ${MW} 96`} aria-hidden="true">
               <defs>
                 <linearGradient id="gold-fill-mini" x1="0" y1="0" x2="0" y2="1">
@@ -140,9 +138,9 @@ export default function PhoneDemo({ series }) {
                   <stop offset="1" className="fill-stop-bot" />
                 </linearGradient>
               </defs>
-              <path ref={fillRef} className="area-fill" d={cur.area} />
+              <path className="area-fill" d={cur.area} />
               <line className="zero-baseline" x1="0" y1={data.zeroY[scope].toFixed(1)} x2={MW} y2={data.zeroY[scope].toFixed(1)} strokeWidth="1" />
-              <path ref={curveRef} className="curve" pathLength="1" fill="none" strokeWidth="2" strokeLinecap="round" d={cur.curve} />
+              <path className="curve" pathLength="1" fill="none" strokeWidth="2" strokeLinecap="round" d={cur.curve} />
               {/* second curve for the Compare view (Yours): dashed + muted =
                   distinguishable without color alone */}
               {cur.curve2 && (
@@ -150,12 +148,14 @@ export default function PhoneDemo({ series }) {
               )}
             </svg>
           </div>
-          {scope === 'compare' && (
-            <div className="mini-legend" aria-hidden="true">
+          {/* Always mounted: the wrapper's grid row animates 0fr to 1fr so the
+              panel stretches smoothly instead of jumping when Compare opens. */}
+          <div className={scope === 'compare' ? 'mini-legend-wrap open' : 'mini-legend-wrap'} aria-hidden="true">
+            <div className="mini-legend">
               <span><i className="lg-solid" />Edgeable, all time</span>
               <span><i className="lg-dash" />Yours, since {data.joinLabel || 'joining'}</span>
             </div>
-          )}
+          </div>
           {recentDays.length > 0 && (
             <div className="mini-days" aria-hidden="true">
               {recentDays.map((d) => (

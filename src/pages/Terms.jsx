@@ -14,7 +14,7 @@ export default function Terms() {
             {LEGAL.businessName} sells opinions, analysis, and access to its own
             informational content. Edgeable is not a sportsbook, bookmaker, broker, or financial
             advisor. It does not accept, place, broker, pool, or settle any wager, and it does not
-            manage anyone's betting, brokerage, or financial accounts. Nothing here is a guarantee of
+            manage anyone's trading, brokerage, or financial accounts. Nothing here is a guarantee of
             any result. You can lose money acting on this information, and you do so entirely at your
             own risk.
           </p>
@@ -57,7 +57,7 @@ export default function Terms() {
         <p>
           All content on the Service is provided for general informational, educational, and
           entertainment purposes only. It does not constitute, and must not be relied on as, financial,
-          investment, betting, legal, tax, or other professional advice, and it is not a recommendation,
+          investment, trading, legal, tax, or other professional advice, and it is not a recommendation,
           solicitation, or offer to place any wager or enter any transaction.
         </p>
         <p>
@@ -114,7 +114,7 @@ export default function Terms() {
 
       <LegalSection id="risk" title="6. Assumption of risk and no guarantee of results">
         <p>
-          Betting, trading, and speculation involve a substantial risk of loss, and you can lose some or
+          Prediction markets, trading, and speculation involve a substantial risk of loss, and you can lose some or
           all of any amount you stake. Edgeable makes no representation, warranty, or guarantee about any
           outcome, win rate, profit, return, or performance. Past or hypothetical results, including any
           record or performance figures shown on the Service, are not a promise or indicator of future
@@ -137,7 +137,7 @@ export default function Terms() {
         <p>
           To the fullest extent permitted by law, Edgeable, together with its owner, operators,
           employees, and contributors, will not be liable for any indirect, incidental, special,
-          consequential, exemplary, or punitive damages, or for any loss of money, profits, betting or
+          consequential, exemplary, or punitive damages, or for any loss of money, profits, prediction-market or
           trading losses, data, or goodwill, arising out of or relating to your use of, or inability to
           use, the Service or any information it provides, whether based in contract, tort, strict
           liability, or any other theory, and even if Edgeable has been advised of the possibility of

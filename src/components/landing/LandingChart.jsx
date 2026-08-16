@@ -103,10 +103,12 @@ export default function LandingChart({ series }) {
     chipRef.current?.classList.remove('on');
   };
 
-  // Range activation: roving tabindex + the animated ~500ms re-draw. React
-  // renders the new path first; this effect then drives the dash re-draw
-  // exactly like the mock (skipped on first paint, where the load-time CSS
-  // sweep owns the animation).
+  // Range activation: roving tabindex + the SAME slow 3.2s sweep as the
+  // load-time reveal (Sean's order: every range draws in slow and smooth,
+  // line and area fill together left to right). React renders the new path
+  // first; this effect then drives the sweep inline (skipped on first paint,
+  // where the load-time CSS sweep owns the animation).
+  const SWEEP_MS = 3200;
   useEffect(() => {
     if (firstRenderRef.current) {
       firstRenderRef.current = false;
@@ -114,32 +116,46 @@ export default function LandingChart({ series }) {
     }
     hideScrub();
     setAnnounceText(`${NAMES[v.key]}: ${fmtUnits(v.net)} net units.`);
-    if (reduced) return undefined;
     const curve = curveRef.current;
     const area = areaRef.current;
     const dot = dotRef.current;
     if (!curve || !area || !dot) return undefined;
+    if (reduced) {
+      // Instant swap, but the load animation's cleared clip-path must not
+      // leave the fill hidden: pin everything to its finished state.
+      curve.style.animation = 'none';
+      area.style.animation = 'none';
+      curve.style.strokeDasharray = 'none';
+      area.style.clipPath = 'inset(0 0 0 0)';
+      area.style.opacity = '1';
+      dot.style.opacity = '1';
+      return undefined;
+    }
     swappingRef.current = true;
-    // First interaction clears the load-time CSS animations (their forwards
-    // fill would override inline styles), then the swap is driven inline.
+    // Clear the load-time CSS animations (their forwards fill would override
+    // inline styles), then drive the full slow sweep inline: dash draw for
+    // the line + clip-path wipe for the area, in lockstep.
     curve.style.animation = 'none';
     area.style.animation = 'none';
     dot.style.animation = 'none';
-    dot.style.opacity = '0'; // the live dot hides during the transition
-    area.style.opacity = '0';
+    dot.style.transition = 'none';
+    dot.style.opacity = '0'; // the live dot hides during the sweep
     curve.style.transition = 'none';
     curve.style.strokeDasharray = '1';
     curve.style.strokeDashoffset = '1';
-    void curve.getBoundingClientRect(); // reflow so the redraw starts from zero
-    curve.style.transition = 'stroke-dashoffset 500ms var(--ease)';
-    curve.style.strokeDashoffset = '0';
-    area.style.transition = 'opacity 400ms var(--ease) 150ms';
+    area.style.transition = 'none';
     area.style.opacity = '1';
+    area.style.clipPath = 'inset(0 100% 0 0)';
+    void curve.getBoundingClientRect(); // reflow so the sweep starts from zero
+    curve.style.transition = `stroke-dashoffset ${SWEEP_MS}ms var(--ease-draw)`;
+    curve.style.strokeDashoffset = '0';
+    area.style.transition = `clip-path ${SWEEP_MS}ms var(--ease-draw)`;
+    area.style.clipPath = 'inset(0 0 0 0)';
     const t = window.setTimeout(() => {
-      dot.style.transition = 'opacity 260ms var(--ease)';
+      dot.style.transition = 'opacity 400ms var(--ease)';
       dot.style.opacity = '1'; // and reappears on the new endpoint
       swappingRef.current = false;
-    }, 500);
+    }, SWEEP_MS);
     return () => window.clearTimeout(t);
   }, [v, reduced]);
 
