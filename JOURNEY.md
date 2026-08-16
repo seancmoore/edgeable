@@ -83,7 +83,7 @@
 
 **Global navigation labels:** /join has a minimal header (Edgeable wordmark + "Log in" link). No global nav bar — /join is a standalone marketing page, not embedded in the app shell. This is intentional: navigation options compete with the CTA (Hick's law — Hick–Hyman 1952: fewer options → faster decision). The "Log in" link serves authenticated users who arrive on /join by mistake.
 
-**Navigation model:** Contextual only on /join. Internal links: tamper-evidence → /card; footer → /terms, /privacy, /card. No global nav. Post-CTA sequential navigation: /join → /signup → dashboard.
+**Navigation model:** Contextual only on /join. Internal links (updated 2026-08-16): footer → /terms, /privacy only, centered. All /card links removed from /join by Sean's calls (hero verify link, picks-section link, footer "Verify the record"): /join carries its own proof; /card remains reachable via the app/site nav only. No global nav. Post-CTA sequential navigation: /join → /signup → dashboard.
 
 **Validation:** NOT VALIDATED by card sort or tree test. Single new route on a small site; full IA validation is disproportionate. Recommend informal tree test if /join is ever embedded in a broader navigation system.
 
