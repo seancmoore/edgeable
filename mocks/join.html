@@ -294,6 +294,9 @@
       padding-top: 28px;
     }
     .wordmark img { height: 30px; display: block; }
+    /* Bigger header logo without moving anything: the extra height is absorbed by
+       negative vertical margins, so the header's layout box stays 30px tall */
+    header.site .wordmark img { height: 38px; margin: -4px 0; }
     .wordmark .wm-dark { display: none; }
     .dark .wordmark .wm-light { display: none; }
     .dark .wordmark .wm-dark { display: block; }
@@ -578,6 +581,14 @@
     }
     .seg-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
     .mini-chart svg .curve, .mini-chart svg .area-fill { transition: opacity 180ms var(--ease); }
+    .mini-chart .curve2 { stroke: hsl(var(--muted-foreground)); stroke-dasharray: 5 4; }
+    .mini-legend {
+      margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;
+      font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
+    .mini-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .mini-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid hsl(var(--primary-text)); }
+    .mini-legend .lg-dash { border-top-style: dashed; border-top-color: hsl(var(--muted-foreground)); }
     .app-blurb {
       margin: 20px auto 0; max-width: 340px;
       font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground));
@@ -976,6 +987,7 @@
               <span class="seg" role="group" aria-label="Performance scope">
                 <button type="button" class="seg-btn on" data-scope="edgeable" aria-pressed="true">Edgeable</button>
                 <button type="button" class="seg-btn" data-scope="yours" aria-pressed="false">Yours</button>
+                <button type="button" class="seg-btn" data-scope="compare" aria-pressed="false">Compare</button>
               </span>
               <div class="mini-stat" id="mini-stat">+18.4 units</div>
               <div class="mini-when" id="mini-when">All time</div>
@@ -985,7 +997,14 @@
                   <line class="zero-baseline" x1="0" y1="90" x2="260" y2="90" stroke-width="1"></line>
                   <path class="curve" id="mini-curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
                     d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6"></path>
+                  <!-- second curve for the Compare view (Yours): dashed + muted = distinguishable without color alone -->
+                  <path class="curve2" id="mini-curve2" fill="none" stroke-width="2" stroke-linecap="round" style="display:none"
+                    d="M0 90C12 88 22 86 34 87C46 88 56 82 68 80C80 78 90 84 102 82C114 80 124 72 138 70C152 68 162 74 174 72C186 70 196 66 210 64C224 62 244 63 260 62"></path>
                 </svg>
+              </div>
+              <div class="mini-legend" id="mini-legend" style="display:none" aria-hidden="true">
+                <span><i class="lg-solid"></i>Edgeable, all time</span>
+                <span><i class="lg-dash"></i>Yours, since Jun 20</span>
               </div>
               <div class="mini-days" aria-hidden="true">
                 <div class="mini-day"><span>Aug 13</span><span class="d-win">+1.2u</span></div>
@@ -1236,12 +1255,18 @@
         yours: {
           stat: '+6.2 units', when: 'Since you joined, Jun 20',
           curve: 'M0 90C12 88 22 86 34 87C46 88 56 82 68 80C80 78 90 84 102 82C114 80 124 72 138 70C152 68 162 74 174 72C186 70 196 66 210 64C224 62 244 63 260 62'
+        },
+        compare: {
+          stat: '+18.4 / +6.2 units', when: 'All time vs since Jun 20',
+          curve: 'M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6'
         }
       };
       var stat = document.getElementById('mini-stat');
       var when = document.getElementById('mini-when');
       var curve = document.getElementById('mini-curve');
+      var curve2 = document.getElementById('mini-curve2');
       var fill = document.getElementById('mini-fill');
+      var legend = document.getElementById('mini-legend');
       var btns = document.querySelectorAll('.seg-btn');
       function apply(scope) {
         var d = SCOPES[scope];
@@ -1249,6 +1274,9 @@
         when.textContent = d.when;
         curve.setAttribute('d', d.curve);
         fill.setAttribute('d', d.curve + 'L260 90Z');
+        // Compare overlays Yours (dashed, muted) on Edgeable's curve, with a legend
+        curve2.style.display = scope === 'compare' ? '' : 'none';
+        legend.style.display = scope === 'compare' ? '' : 'none';
       }
       Array.prototype.forEach.call(btns, function (btn) {
         btn.addEventListener('click', function () {
