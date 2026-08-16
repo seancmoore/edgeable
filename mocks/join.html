@@ -482,6 +482,10 @@
       /* charts inside a scroll-reveal element hold their draw until revealed */
       .reveal-ready [data-reveal]:not(.in) :is(.curve, .area-fill, .chart-dot, .dot-halo),
       .reveal-ready [data-reveal]:not(.in) .x-labels { animation-play-state: paused; }
+      /* the main performance chart holds its sweep until ~60% of it is in the viewport
+         (dedicated observer adds .chart-go); the card itself may reveal earlier */
+      .reveal-ready .chart-frame:not(.chart-go) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+      .reveal-ready .chart-frame:not(.chart-go) .x-labels { animation-play-state: paused; }
     }
     .x-labels {
       margin-top: 12px; display: flex; justify-content: space-between;
@@ -1229,6 +1233,21 @@
         });
       }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
       els.forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); });
+
+      // The performance chart's sweep waits until ~60% of the chart is on screen
+      // (Sean's order: the draw should happen in front of the visitor, not off-screen).
+      var chartFrame = document.querySelector('.chart-frame');
+      if (chartFrame) {
+        var chartIo = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('chart-go'); // once only
+              chartIo.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.6 });
+        chartIo.observe(chartFrame);
+      }
     })();
   </script>
 </body>
