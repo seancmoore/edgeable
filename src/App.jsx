@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './AuthContext.jsx';
+import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
@@ -17,11 +19,22 @@ import CardManager from './pages/admin/CardManager.jsx';
 import PublicCard from './pages/PublicCard.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
+// Root: anonymous visitors get the public landing page; signed-in users go
+// straight to their dashboard (admin or subscriber).
+function RootRoute() {
+  const { currentUser, role, loading } = useAuth();
+  if (loading) return null;
+  if (currentUser) {
+    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />;
+  }
+  return <Landing />;
+}
+
 export default function App() {
   return (
     <Routes>
-      {/* Public front door: the verifiable Daily Card, not a login wall. */}
-      <Route path="/" element={<Navigate to="/card" replace />} />
+      {/* Public front door: the landing page (verifiable record + join). */}
+      <Route path="/" element={<RootRoute />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

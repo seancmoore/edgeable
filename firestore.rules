@@ -153,6 +153,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── public daily P&L mirror (landing page, 2026-08) ──────
+    // World-readable numeric mirror of dailyPnL for the anonymous landing
+    // page chart/ROI. Fields: units, wins, losses, pushes, stakedUnits ONLY
+    // (never notes). Written by admins in the same batch as the dailyPnL doc
+    // (src/utils/pnl.js savePnLEntry); backfilled by
+    // scripts/backfill-public-pnl.js.
+    match /dailyPnLPublic/{day} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
     // ── picks (tamper-evident pick record, tiered access) ────
     // Tamper-evidence contract:
     //  * writes pinned to the owner's UID + admin role
@@ -183,12 +194,13 @@ service cloud.firestore {
         && u.subscriptionEnd > request.time;
     }
     match /picks/{pickId} {
-      // Full details: owner, active subscribers, or any signed-in user for
-      // access=='public' picks. Signed-in list queries for public picks must
-      // filter where('access','==','public') so the rule is provable.
+      // Full details: owner, active subscribers, or ANYONE (including
+      // unauthenticated visitors, for the landing page's free-pick samples,
+      // 2026-08) for access=='public' picks. List queries for public picks
+      // must filter where('access','==','public') so the rule is provable.
       allow get, list: if isOwner()
         || isActiveSubscriber()
-        || (isSignedIn() && resource.data.access == 'public');
+        || resource.data.access == 'public';
 
       allow create: if isOwner()
         && request.resource.data.keys().hasOnly(

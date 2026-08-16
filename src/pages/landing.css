@@ -1,0 +1,693 @@
+/* ============================================================================
+   Landing page ("Dusk Ledger", mocks/join.html ported) — SCOPED styles.
+   Every rule lives under .dusk-theme so the landing's tokens and classes can
+   never leak into the rest of the app (which keeps its own global tokens in
+   src/index.css). Dark mode follows the app's existing mechanism: the
+   ThemeContext toggles .dark on <html>, so the dark token block here is
+   `.dark .dusk-theme`.
+   Tokens verbatim from DESIGN.md (LOCKED + amended). No hard-coded hex
+   outside these token blocks; every color goes through hsl(var(--token)).
+   ========================================================================== */
+
+.dusk-theme {
+    --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 - page */
+    --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
+    --card: 60 20% 99%;                  /* #fdfdfc  n1 - cards sit lighter */
+    --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
+    --popover: 60 20% 99%;               /* #fdfdfc */
+    --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
+    /* --primary is FILL-ONLY in light theme (hard rule 1). Gold TEXT uses --primary-text. */
+    --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) - fills only */
+    --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
+    --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links */
+    --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
+    --secondary-foreground: 48 5.6% 17.5%;
+    --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
+    --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 - 5.68:1 */
+    --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
+    --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold - 5.29:1 on --accent */
+    --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
+    --destructive-foreground: 0 0% 100%;
+    --success: 124 38.9% 32.7%;          /* #337437  success-11 */
+    --success-foreground: 0 0% 100%;
+    --warning: 41 43% 32.4%;
+    --warning-foreground: 0 0% 100%;
+    --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 - decorative edges (rare) */
+    --input: 42 5.2% 38%;                /* #66635c  n11 - field border */
+    --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary */
+    /* raw Edge Club tokens */
+    --gold: 41 65% 59.6%;                /* #dbb155 */
+    --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+    --brass: 41 43% 32.4%;               /* #76602f */
+    --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
+    --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 - information-bearing rules ONLY */
+    --dim: 39 9.1% 63.3%;                /* #aaa499 */
+    --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
+    --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
+    /* dusk gradient hero (Section 1 backdrop only) - warm metal, no violet (amended 2026-08-14) */
+    --hero-g1: 41 88% 93.5%;             /* #fdf4e0  champagne sky (top) */
+    --hero-g2: 38 73.6% 89.6%;           /* #f8ead1  pale amber */
+    --hero-g3: 40 62.9% 86.3%;           /* #f2e3c6  warm bronze (horizon) */
+    --hero-wash-a: 0.10;                 /* atmospheric gold-wash alpha cap, light (AA-verified composite) */
+    --chart-fill-a: 0.16;                /* chart area-fill alpha, light (motion amendment 4; decorative non-text) */
+    /* soft depth */
+    --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+    --radius: 0.875rem;
+    --radius-card: 1.5rem;
+    --radius-panel: 1.75rem;
+    --radius-pill: 9999px;
+    color-scheme: light;
+}
+.dark .dusk-theme {
+    --background: 60 2.7% 7.3%;          /* #131312  n1 */
+    --foreground: 43 14.3% 90.4%;        /* #eae8e3  n12 */
+    --card: 30 4% 9.8%;                  /* #1a1918  n2 */
+    --card-foreground: 43 14.3% 90.4%;
+    --popover: 40 4.5% 13.1%;            /* #232220  n3 */
+    --popover-foreground: 43 14.3% 90.4%;
+    --primary: 41 65% 59.6%;             /* #dbb155 */
+    --primary-foreground: 42 61.9% 4.1%; /* #110d04 */
+    --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text */
+    --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
+    --secondary-foreground: 43 14.3% 90.4%;
+    --muted: 40 4.5% 13.1%;              /* #232220  n3 */
+    --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 */
+    --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
+    --accent-foreground: 40 42.9% 65.7%; /* #cdb482 */
+    --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
+    --destructive-foreground: 60 2.7% 7.3%;
+    --success: 125 60.2% 59.6%;          /* #5ad664 */
+    --success-foreground: 60 2.7% 7.3%;
+    --warning: 41 65% 59.6%;
+    --warning-foreground: 42 61.9% 4.1%;
+    --border: 38 6.9% 22.7%;             /* #3e3b36  n6 */
+    --input: 41 7% 44.7%;                /* #7a756a */
+    --ring: 41 65% 59.6%;                /* #dbb155 */
+    --gold: 41 65% 59.6%;
+    --gold-ink: 42 61.9% 4.1%;
+    --brass: 40 42.9% 65.7%;             /* #cdb482 */
+    --surface-2: 60 2.7% 7.3%;
+    --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
+    --dim: 42 7% 36.7%;
+    --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss */
+    --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win */
+    /* dusk gradient hero - warm metal, no violet (amended 2026-08-14) */
+    --hero-g1: 23 19% 8.2%;              /* #191411  deep espresso (top) */
+    --hero-g2: 30 33.3% 10.6%;           /* #241b12  dark bronze */
+    --hero-g3: 28 36.6% 16.1%;           /* #38281a  amber ember (horizon) */
+    --hero-wash-a: 0.15;                 /* atmospheric gold-wash alpha cap, dark (AA-verified composite) */
+    --chart-fill-a: 0.22;                /* chart area-fill alpha, dark (motion amendment 4) */
+    --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+    color-scheme: dark;
+}
+/* === END TOKEN BLOCKS === */
+
+/* Type + font aliases (DESIGN.md type spec). Inter + Spline Sans Mono are
+   loaded via the @import in src/index.css; only the landing scope uses Inter. */
+.dusk-theme {
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+  --text-xs: 0.75rem;    /* 12 */
+  --text-sm: 0.875rem;   /* 14 */
+  --text-base: 1rem;     /* 16 */
+  --text-lg: 1.25rem;    /* 20 */
+  --text-xl: 1.5625rem;  /* 25 */
+  --text-2xl: 1.9375rem; /* 31 */
+  --text-3xl: 2.4375rem; /* 39 */
+  --text-4xl: 3.0625rem; /* 49 */
+  --text-display: 3.8125rem; /* 61 */
+  --text-stat: 4.75rem;      /* 76 - hero record number, desktop */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-draw: cubic-bezier(0.45, 0, 0.25, 1); /* gentle in-out for the slow chart sweep */
+  --echo-h: 860px; /* dusk echo band height (bottom of page); shrinks on mobile */
+}
+
+/* === BASE (the wrapper plays the mock's <body> role) === */
+.dusk-theme {
+  min-height: 100vh;
+  font-family: var(--font-display);
+  /* Dusk echo: the hero gradient mirrored at the page's end (bottom band,
+     full-bleed), bookending the page behind the membership panel + footer. */
+  background:
+    radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% var(--echo-h) no-repeat,
+    linear-gradient(0deg,
+      hsl(var(--hero-g1)) 0%,
+      hsl(var(--hero-g2)) 44%,
+      hsl(var(--hero-g3)) 78%,
+      hsl(var(--background)) 100%) bottom center / 100% var(--echo-h) no-repeat,
+    hsl(var(--background));
+  color: hsl(var(--foreground));
+  line-height: 1.55;
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+}
+.dusk-theme a { color: hsl(var(--primary-text)); text-decoration: none; }
+.dusk-theme a:hover { text-decoration: underline; }
+.dusk-theme a:focus-visible, .dusk-theme button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dusk-theme .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.dusk-theme .measure { max-width: 640px; margin-left: auto; margin-right: auto; }
+
+.dusk-theme .eyebrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.6875rem; /* 11px */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+.dusk-theme .mono { font-family: var(--font-mono); }
+
+/* Section rhythm: 112px desktop default, 64 mobile */
+.dusk-theme .section { margin-top: 112px; }
+.dusk-theme .section-head { text-align: center; margin-bottom: 48px; }
+.dusk-theme .section-head h2 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; margin-top: 12px; }
+.dusk-theme .section-head .sub { color: hsl(var(--muted-foreground)); margin-top: 12px; }
+
+/* Soft-depth card (glow ring, no hairline edges) */
+.dusk-theme .soft-card {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-ring);
+}
+
+/* ====== DEVICE FRAMES (Portal device-frame mockups, pure HTML/CSS/SVG) ====== */
+.dusk-theme .frame {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-ring);
+  overflow: hidden;
+}
+.dusk-theme .frame-chrome {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 20px;
+  background: hsl(var(--muted));
+}
+.dusk-theme .frame-dots { display: flex; gap: 6px; flex: none; }
+/* invisible right counterweight = dots width, so the address centers on the frame midline */
+.dusk-theme .frame-chrome::after { content: ""; flex: none; width: 42px; }
+.dusk-theme .frame-dots span { width: 10px; height: 10px; border-radius: 50%; background: hsl(var(--border)); }
+.dusk-theme .frame-addr {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: hsl(var(--muted-foreground));
+  flex: 1; text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dusk-theme .frame-body { padding: 24px; }
+.dusk-theme .phone {
+  width: 300px; max-width: 100%;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: 32px;
+  box-shadow: var(--elev-ring);
+  padding: 14px 14px 22px;
+  margin: 0 auto;
+}
+.dusk-theme .phone-notch { width: 96px; height: 8px; border-radius: var(--radius-pill); background: hsl(var(--muted)); margin: 4px auto 18px; }
+
+/* ====== SECTION 0: header (on the gradient) ====== */
+.dusk-theme .dusk {
+  background:
+    radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%),
+    radial-gradient(150% 40% at 50% 100%, hsl(var(--hero-g3)) 0%, transparent 70%),
+    radial-gradient(70% 45% at 14% 0%, hsl(var(--hero-g1)) 0%, transparent 72%),
+    linear-gradient(180deg,
+      hsl(var(--hero-g1)) 0%,
+      hsl(var(--hero-g2)) 44%,
+      hsl(var(--hero-g3)) 78%,
+      hsl(var(--background)) 100%);
+  padding-bottom: 96px;
+}
+.dusk-theme header.site {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 28px;
+}
+.dusk-theme .wordmark img { height: 30px; display: block; }
+/* Bigger header logo without moving anything: extra height absorbed by
+   negative vertical margins, so the header's layout box stays 30px tall */
+.dusk-theme header.site .wordmark img { height: 38px; margin: -4px 0; }
+.dusk-theme .wordmark .wm-dark { display: none; }
+.dark .dusk-theme .wordmark .wm-light { display: none; }
+.dark .dusk-theme .wordmark .wm-dark { display: block; }
+.dusk-theme .login-link {
+  font-weight: 600; font-size: var(--text-sm);
+  color: hsl(var(--primary-text));
+  min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
+}
+
+/* ====== SECTION 1: record hero (on the gradient) ======
+   Text-on-gradient law: only --foreground / --primary-text / --muted-foreground
+   sit directly on the gradient; everything else rides a card scrim or frame. */
+.dusk-theme .hero { padding-top: 88px; }
+.dusk-theme .hero-grid {
+  display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: start;
+}
+.dusk-theme .hero h1 {
+  font-size: var(--text-display);
+  line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
+}
+.dusk-theme .hero .subhead {
+  margin-top: 24px; color: hsl(var(--muted-foreground)); max-width: 640px;
+  font-size: var(--text-lg); line-height: 1.55;
+}
+/* Live-pending indicator (motion amendment 5): the dot's soft ~1.8s blink is
+   the SECOND of exactly two permitted ambient loops on this page. */
+.dusk-theme .pending-eyebrow { margin-top: 48px; display: flex; align-items: center; gap: 8px; }
+.dusk-theme .live-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex: none;
+  background: hsl(var(--primary-text));
+}
+.dusk-theme .pending-count { color: hsl(var(--primary-text)); }
+@media (prefers-reduced-motion: no-preference) {
+  .dusk-theme .live-dot { animation: dusk-live-blink 1.8s ease-in-out infinite; }
+  @keyframes dusk-live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+}
+.dusk-theme .stat-row {
+  margin-top: 12px;
+  display: grid; grid-template-columns: repeat(3, auto); gap: 48px;
+  justify-content: start;
+}
+.dusk-theme .stat .num {
+  font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
+  font-size: var(--text-stat);
+  color: hsl(var(--foreground));
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.dusk-theme .stat .num.roi, .dusk-theme .stat .num.units { font-size: var(--text-display); padding-top: 0.35em; }
+.dusk-theme .stat .num.neg { color: hsl(var(--loss)); }
+.dusk-theme .stat .label { margin-top: 12px; }
+.dusk-theme .hero-right { display: grid; gap: 40px; }
+/* Hero fallback when the record can't load (JOURNEY error state): message,
+   never a broken stat row. */
+.dusk-theme .hero-fallback { margin-top: 16px; color: hsl(var(--muted-foreground)); }
+/* Hero chart teaser: the record inside a browser frame */
+.dusk-theme .teaser-body { padding: 20px 24px 18px; }
+.dusk-theme .teaser-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.dusk-theme .teaser-val { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); line-height: 1.0; color: hsl(var(--win)); }
+.dusk-theme .teaser-val.neg { color: hsl(var(--loss)); }
+.dusk-theme .teaser-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+.dusk-theme .teaser-chart svg { display: block; width: 100%; height: auto; margin-top: 14px; }
+/* Tamper-evidence callout: card scrim on the gradient (>=85% opacity) */
+.dusk-theme .tamper {
+  position: relative; /* anchors the stretched nav link */
+  background: hsl(var(--card) / 0.92);
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elev-ring);
+  padding: 2rem;
+  transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.dusk-theme .tamper p { margin-top: 16px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--card-foreground)); }
+.dusk-theme .tamper a { font-weight: 600; }
+/* Both hero side windows are section navigation: whole surface clickable */
+.dusk-theme .frame-nav { display: block; position: relative; text-decoration: none; color: inherit; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease); }
+/* Hover/focus overlay: window content crossfades to a destination label + arrow */
+.dusk-theme .nav-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: hsl(var(--card) / 0.93);
+  border-radius: var(--radius-card);
+  font-weight: 600; font-size: var(--text-base); color: hsl(var(--foreground));
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+  pointer-events: none;
+}
+.dusk-theme .tamper .nav-overlay { border-radius: var(--radius-panel); }
+.dusk-theme .nav-overlay svg { width: 22px; height: 22px; color: hsl(var(--primary-text)); }
+.dusk-theme .frame-nav:hover .nav-overlay, .dusk-theme .frame-nav:focus-visible .nav-overlay,
+.dusk-theme .tamper:hover .nav-overlay, .dusk-theme .tamper:focus-within .nav-overlay { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: no-preference) {
+  .dusk-theme .frame-nav:hover .nav-overlay svg, .dusk-theme .frame-nav:focus-visible .nav-overlay svg,
+  .dusk-theme .tamper:hover .nav-overlay svg, .dusk-theme .tamper:focus-within .nav-overlay svg { animation: dusk-arrow-nudge 1.2s ease-in-out infinite; }
+  @keyframes dusk-arrow-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+}
+.dusk-theme .frame-nav:hover, .dusk-theme .tamper:has(.tamper-nav:hover) { transform: translateY(-3px); }
+.dusk-theme .frame-nav:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: var(--radius-card); }
+.dusk-theme .tamper-nav { color: inherit; text-decoration: none; }
+/* Static nav affordance for touch/mobile (no hover there) */
+.dusk-theme .nav-hint { display: none; }
+/* Stretched link: the heading's anchor covers the whole panel */
+.dusk-theme .tamper-nav::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-panel); }
+.dusk-theme .tamper-nav:focus-visible::after { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+
+/* ====== SECTION 2: performance chart (inside a browser frame) ====== */
+.dusk-theme .chart-frame { max-width: 1040px; margin: 0 auto; }
+.dusk-theme .chart-body { padding: 2.5rem 2.5rem 2rem; }
+.dusk-theme .chart-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.dusk-theme .chart-headline .val {
+  font-family: var(--font-mono); font-weight: 600; font-size: var(--text-3xl); line-height: 1.0;
+  color: hsl(var(--win));
+}
+.dusk-theme .chart-headline .val.zero { color: hsl(var(--foreground)); }
+.dusk-theme .chart-headline .when { margin-top: 8px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+.dusk-theme .range-tabs { display: flex; gap: 8px; }
+.dusk-theme .range-tabs [role="tab"] {
+  font-family: var(--font-mono); font-weight: 500; font-size: var(--text-sm);
+  min-height: 44px; min-width: 56px; padding: 0 20px;
+  border-radius: var(--radius-pill);
+  background: transparent; color: hsl(var(--muted-foreground));
+  border: 1px solid transparent; cursor: pointer;
+  transition: background-color 140ms var(--ease), color 140ms var(--ease);
+}
+.dusk-theme .range-tabs [role="tab"]:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+.dusk-theme .range-tabs [role="tab"][aria-selected="true"] {
+  background: hsl(var(--gold)); color: hsl(var(--gold-ink)); font-weight: 600;
+  border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary; blends into the fill in dark */
+}
+.dusk-theme .chart-wrap { margin-top: 32px; position: relative; }
+.dusk-theme .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; overflow: visible; }
+.dusk-theme .chart-headline .val.neg { color: hsl(var(--loss)); }
+.dusk-theme .chart-note { margin-top: 16px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+.dusk-theme .chart-empty {
+  min-height: 200px; display: flex; align-items: center; justify-content: center;
+  color: hsl(var(--muted-foreground)); font-size: var(--text-sm);
+}
+/* Scrub crosshair + chip (feedback is instant, no easing per the motion law) */
+.dusk-theme .scrub-mark { visibility: hidden; }
+.dusk-theme .scrub-mark.on { visibility: visible; }
+.dusk-theme .scrub-line { stroke: hsl(var(--muted-foreground)); stroke-width: 1; stroke-dasharray: 3 3; }
+.dusk-theme .scrub-pt { fill: hsl(var(--gold)); stroke: hsl(var(--card)); stroke-width: 2; r: 5; }
+/* Distinct scrub tooltip: inverse chip, larger mono, floats clear of the line */
+.dusk-theme .scrub-chip {
+  position: absolute; top: -12px; transform: translate(-50%, -100%);
+  visibility: hidden; white-space: nowrap; pointer-events: none;
+  font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.01em;
+  background: hsl(var(--foreground)); color: hsl(var(--background));
+  border-radius: 12px; padding: 8px 14px;
+  box-shadow: 0 10px 28px -8px hsl(var(--foreground) / 0.45);
+}
+.dusk-theme .scrub-chip.on { visibility: visible; }
+/* Visually hidden live region for range announcements */
+.dusk-theme .sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.dusk-theme .curve { stroke: hsl(var(--gold)); }
+.dusk-theme .zero-baseline { stroke: hsl(var(--hairline)); } /* the ONE information-bearing hairline */
+/* Chart "live" treatment (motion amendment 4). All colors via tokens. */
+.dusk-theme .fill-stop-top { stop-color: hsl(var(--gold)); stop-opacity: var(--chart-fill-a); }
+.dusk-theme .fill-stop-bot { stop-color: hsl(var(--gold)); stop-opacity: 0; }
+.dusk-theme .area-fill { fill: url(#gold-fill); }
+.dusk-theme .mini-chart .area-fill { fill: url(#gold-fill-mini); }
+.dusk-theme .teaser-chart .area-fill { fill: url(#gold-fill-teaser); }
+.dusk-theme .dot-core { fill: hsl(var(--gold)); }
+.dusk-theme .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; } /* visible only while pulsing */
+@media (prefers-reduced-motion: no-preference) {
+  /* Slow smooth reveal: line draws AND area wipes left-to-right together over 3.2s */
+  .dusk-theme .curve {
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: dusk-draw 3200ms var(--ease-draw) forwards; /* chart reveal, once per load */
+  }
+  @keyframes dusk-draw { to { stroke-dashoffset: 0; } }
+  .dusk-theme .area-fill {
+    clip-path: inset(0 100% 0 0);
+    animation: dusk-sweep 3200ms var(--ease-draw) forwards;
+  }
+  @keyframes dusk-sweep { to { clip-path: inset(0 0 0 0); } }
+  /* the chart card's own text (headline value + range tabs) eases in slowly as the sweep begins */
+  .dusk-theme .chart-frame .chart-top { opacity: 0; animation: dusk-fade-in 1200ms var(--ease) 200ms forwards; }
+  /* labels + live dot wait for the draw to complete */
+  .dusk-theme .chart-wrap .x-labels { opacity: 0; animation: dusk-fade-in 1200ms var(--ease) 3200ms forwards; }
+  .dusk-theme .chart-dot { opacity: 0; animation: dusk-fade-in 500ms var(--ease) 3200ms forwards; }
+  /* the pulsing halo: one of the page's TWO permitted ambient loops */
+  .dusk-theme .dot-halo {
+    transform-box: fill-box; transform-origin: center;
+    animation: dusk-dot-pulse 2.4s ease-out 3.8s infinite;
+  }
+  @keyframes dusk-fade-in { to { opacity: 1; } }
+  @keyframes dusk-dot-pulse {
+    0%   { transform: scale(1);   opacity: 0.45; }
+    70%  { transform: scale(2.6); opacity: 0; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+  /* charts inside a scroll-reveal element hold their draw until revealed */
+  .dusk-theme.reveal-ready [data-reveal]:not(.in) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+  .dusk-theme.reveal-ready [data-reveal]:not(.in) .x-labels { animation-play-state: paused; }
+  /* the main performance chart holds its sweep until ~60% of it is in the viewport
+     (dedicated observer adds .chart-go); the card itself may reveal earlier */
+  .dusk-theme.reveal-ready .chart-frame:not(.chart-go) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+  .dusk-theme.reveal-ready .chart-frame:not(.chart-go) .chart-top,
+  .dusk-theme.reveal-ready .chart-frame:not(.chart-go) .x-labels { animation-play-state: paused; }
+}
+.dusk-theme .x-labels {
+  margin-top: 12px; display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+}
+
+/* ====== SECTION 3: free picks ====== */
+.dusk-theme .framing { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); max-width: 640px; margin: 0 auto; }
+.dusk-theme .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.dusk-theme .picks-grid.two { grid-template-columns: repeat(2, 1fr); max-width: 780px; margin-left: auto; margin-right: auto; }
+.dusk-theme .picks-grid.one { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+.dusk-theme .pick-card { padding: 2rem; display: flex; flex-direction: column; gap: 16px; }
+.dusk-theme .pick-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dusk-theme .pick-badge {
+  font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+  background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+  border-radius: 10px; padding: 6px 12px;
+}
+.dusk-theme .sport-chip {
+  font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  border-radius: 10px; padding: 6px 12px;
+}
+.dusk-theme .pick-desc { font-weight: 600; font-size: var(--text-lg); line-height: 1.3; }
+.dusk-theme .pick-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.dusk-theme .pick-chips .chip {
+  font-family: var(--font-mono); font-weight: 500; font-size: var(--text-xs);
+  background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+  border-radius: 10px; padding: 5px 10px;
+}
+.dusk-theme .pick-times { font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); display: grid; gap: 6px; }
+.dusk-theme .pick-times .posted { color: hsl(var(--foreground)); font-weight: 600; }
+.dusk-theme .pick-result { display: flex; align-items: center; gap: 10px; margin-top: auto; font-weight: 600; font-size: var(--text-sm); }
+.dusk-theme .result-glyph {
+  font-family: var(--font-mono); font-weight: 600;
+  width: 32px; height: 32px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.dusk-theme .result-win  { color: hsl(var(--win)); }
+.dusk-theme .result-loss { color: hsl(var(--loss)); }
+.dusk-theme .result-push { color: hsl(var(--muted-foreground)); }
+.dusk-theme .result-win .result-glyph,
+.dusk-theme .result-loss .result-glyph,
+.dusk-theme .result-push .result-glyph { background: hsl(var(--muted)); }
+
+/* ====== SECTION 4: how it works ====== */
+.dusk-theme .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.dusk-theme .step { padding: 2rem; }
+.dusk-theme .step-top { display: flex; align-items: center; justify-content: space-between; }
+.dusk-theme .step-num {
+  width: 44px; height: 44px; border-radius: var(--radius-pill);
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.dusk-theme .step-icon {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.dusk-theme .step-icon svg { width: 22px; height: 22px; }
+.dusk-theme .step h3 { margin-top: 20px; font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+.dusk-theme .step p { margin-top: 10px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+.dusk-theme .step a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; font-weight: 600; font-size: var(--text-sm); }
+.dusk-theme .steps-note { text-align: center; margin-top: 40px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+
+/* ====== SECTION 5: price + CTA ====== */
+.dusk-theme .join-grid {
+  display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: center;
+  max-width: 1040px; margin: 0 auto;
+}
+.dusk-theme .app-preview { text-align: center; }
+.dusk-theme .app-preview .eyebrow { display: block; margin-bottom: 24px; }
+.dusk-theme .phone-screen { text-align: left; }
+.dusk-theme .seg {
+  display: inline-flex; gap: 4px; background: hsl(var(--muted));
+  border-radius: var(--radius-pill); padding: 4px;
+}
+.dusk-theme .seg-btn {
+  font-family: inherit; font-weight: 600; font-size: var(--text-xs); padding: 6px 14px;
+  border-radius: var(--radius-pill); color: hsl(var(--muted-foreground));
+  background: transparent; border: 0; cursor: pointer;
+  transition: background 180ms var(--ease), color 180ms var(--ease);
+}
+.dusk-theme .seg .on {
+  background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+  border: 1px solid hsl(var(--ring)); /* light gold-fill boundary (hard rule 3) */
+}
+.dusk-theme .seg-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.dusk-theme .mini-chart svg .curve, .dusk-theme .mini-chart svg .area-fill { transition: opacity 180ms var(--ease); }
+.dusk-theme .mini-chart .curve2 { stroke: hsl(var(--muted-foreground)); stroke-dasharray: 5 4; }
+.dusk-theme .mini-legend {
+  margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+}
+.dusk-theme .mini-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dusk-theme .mini-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid hsl(var(--primary-text)); }
+.dusk-theme .mini-legend .lg-dash { border-top-style: dashed; border-top-color: hsl(var(--muted-foreground)); }
+.dusk-theme .app-blurb {
+  margin: 20px auto 0; max-width: 340px;
+  font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground));
+}
+.dusk-theme .mini-stat { margin-top: 18px; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: hsl(var(--win)); }
+.dusk-theme .mini-stat.neg { color: hsl(var(--loss)); }
+.dusk-theme .mini-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); margin-top: 4px; }
+.dusk-theme .mini-chart svg { display: block; width: 100%; height: auto; margin-top: 12px; }
+.dusk-theme .mini-days { margin-top: 16px; display: grid; gap: 8px; }
+.dusk-theme .mini-day {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  background: hsl(var(--muted)); border-radius: 10px; padding: 8px 12px;
+  color: hsl(var(--muted-foreground));
+}
+.dusk-theme .mini-day .d-win  { color: hsl(var(--win)); font-weight: 600; }
+.dusk-theme .mini-day .d-loss { color: hsl(var(--loss)); font-weight: 600; }
+.dusk-theme .price-panel {
+  background: hsl(var(--card)); color: hsl(var(--card-foreground));
+  border-radius: var(--radius-panel); box-shadow: var(--elev-ring);
+  padding: 4rem 3.5rem; text-align: center;
+}
+.dusk-theme .price-line { margin-top: 24px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.dusk-theme .price-line .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
+.dusk-theme .price-line .per { color: hsl(var(--muted-foreground)); font-size: var(--text-lg); }
+.dusk-theme .feature-list {
+  list-style: none; margin: 28px auto 0; max-width: 340px; text-align: left;
+  display: grid; gap: 14px; padding: 0;
+}
+.dusk-theme .feature-list li { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+.dusk-theme .feature-list svg { width: 20px; height: 20px; flex: none; color: hsl(var(--primary-text)); }
+.dusk-theme .cta-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 52px; padding: 0 28px; margin-top: 32px;
+  width: 100%; max-width: 400px;
+  border-radius: var(--radius-pill);
+  background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+  border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary (hard rule 3); blends in dark */
+  font-weight: 700; font-size: var(--text-base); cursor: pointer;
+  text-decoration: none;
+  transition: transform 140ms var(--ease), filter 140ms var(--ease);
+}
+.dusk-theme .cta-btn:hover { filter: brightness(1.04); text-decoration: none; }
+.dusk-theme .cta-btn:active { transform: scale(0.99); }
+.dusk-theme .cta-reassure { margin-top: 24px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+
+/* ====== SECTION 6: legal footer ====== */
+.dusk-theme footer.legal { margin-top: 112px; padding: 40px 0 32px; }
+.dusk-theme .footer-wordmark { display: flex; justify-content: center; margin-bottom: 20px; }
+.dusk-theme .footer-wordmark img { height: 16px; display: block; opacity: 0.55; }
+.dusk-theme footer.legal .blocks { display: grid; gap: 10px; max-width: 560px; margin: 0 auto; text-align: center; }
+.dusk-theme footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); line-height: 1.5; }
+.dusk-theme .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; }
+.dusk-theme .footer-links a { font-weight: 500; font-size: var(--text-xs); min-height: 44px; display: inline-flex; align-items: center; color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 3px; }
+.dusk-theme .footer-links a:hover { color: hsl(var(--primary-text)); }
+.dusk-theme .copyright { text-align: center; margin-top: 12px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+/* ====== LOADING SKELETONS (JOURNEY loading states) ====== */
+.dusk-theme .skel { background: hsl(var(--muted)); border-radius: 10px; }
+.dusk-theme .skel-stat { height: 4.75rem; width: 220px; }
+.dusk-theme .skel-stat.small { height: 3.8125rem; width: 140px; }
+.dusk-theme .skel-chart { height: 320px; border-radius: var(--radius); margin-top: 32px; }
+.dusk-theme .skel-line { height: 2.4375rem; width: 200px; }
+.dusk-theme .skel-tab { height: 44px; width: 72px; border-radius: var(--radius-pill); }
+.dusk-theme .skel-card { height: 280px; border-radius: var(--radius-card); }
+@media (prefers-reduced-motion: no-preference) {
+  .dusk-theme .skel { animation: dusk-skel 1.4s ease-in-out infinite; }
+  @keyframes dusk-skel { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+}
+
+/* ====== SCROLL ENTRANCES (motion amendment 4) ======
+   Once-only fade + 20px rise. The hidden state exists ONLY under
+   .reveal-ready (set on the .dusk-theme wrapper after JS confirms
+   IntersectionObserver support): no JS, nothing hides. */
+@media (prefers-reduced-motion: no-preference) {
+  .dusk-theme.reveal-ready [data-reveal] {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .dusk-theme.reveal-ready [data-reveal].in { opacity: 1; transform: none; }
+}
+
+/* ====== MOBILE ADAPTATION: first-class layout below 900px ====== */
+@media (max-width: 900px) {
+  .dusk-theme { --echo-h: 560px; } /* shorter dusk echo band on mobile */
+  .dusk-theme .container { padding: 0 1.25rem; }
+  .dusk-theme .section { margin-top: 64px; }
+  .dusk-theme .section-head { margin-bottom: 36px; }
+  .dusk-theme footer.legal { margin-top: 64px; padding: 32px 0 28px; }
+
+  /* hero: big but wrap-clean type; reduced paddings */
+  .dusk-theme .hero { padding-top: 56px; }
+  .dusk-theme .dusk { padding-bottom: 64px; }
+  .dusk-theme .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .dusk-theme .hero h1 { font-size: clamp(1.9375rem, 8.4vw, 2.4375rem); }
+  .dusk-theme .hero .subhead { margin-top: 16px; font-size: var(--text-base); }
+  .dusk-theme .pending-eyebrow { margin-top: 32px; }
+  /* Stat row: W-L-P leads full-width; Net Units + ROI pair beneath.
+     Sizes viewport-clamped so the row can never overflow. */
+  .dusk-theme .stat-row { margin-top: 16px; grid-template-columns: 1fr 1fr; gap: 24px 16px; justify-content: stretch; }
+  .dusk-theme .stat:first-child { grid-column: 1 / -1; }
+  .dusk-theme .stat .num { font-size: clamp(2.25rem, 12vw, 3.0625rem); }
+  .dusk-theme .stat .num.roi, .dusk-theme .stat .num.units { font-size: clamp(1.5625rem, 8vw, 1.9375rem); padding-top: 0; }
+  .dusk-theme .stat .label { margin-top: 8px; }
+  .dusk-theme .skel-stat { width: 100%; max-width: 260px; height: 3.0625rem; }
+  .dusk-theme .skel-stat.small { height: 1.9375rem; }
+
+  /* hero nav windows: compact full-width stacked cards, whole card tappable,
+     static "See ..." hint replaces the hover-only overlay affordance */
+  .dusk-theme .hero-right { gap: 20px; }
+  .dusk-theme .frame-chrome { display: none; }
+  .dusk-theme .teaser-when { display: none; }
+  .dusk-theme .teaser-body { padding: 1.25rem 1.25rem 0.875rem; }
+  .dusk-theme .tamper { padding: 1.25rem 1.25rem 0.875rem; }
+  .dusk-theme .nav-hint {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 12px;
+    font-weight: 600; font-size: var(--text-sm); color: hsl(var(--primary-text));
+  }
+  .dusk-theme .nav-hint svg { width: 16px; height: 16px; flex: none; }
+
+  /* chart: near full-bleed inside its frame; tabs share the row equally */
+  .dusk-theme .chart-body { padding: 1.25rem 1rem 1rem; }
+  .dusk-theme .chart-top { gap: 16px; }
+  .dusk-theme .chart-wrap { margin-top: 20px; }
+  .dusk-theme .range-tabs { width: 100%; gap: 6px; }
+  .dusk-theme .range-tabs [role="tab"] { flex: 1; min-width: 0; padding: 0; }
+
+  /* stacked cards, tightened */
+  .dusk-theme .picks-grid, .dusk-theme .picks-grid.two, .dusk-theme .picks-grid.one { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; max-width: none; }
+  .dusk-theme .steps { grid-template-columns: 1fr; gap: 16px; }
+  .dusk-theme .pick-card, .dusk-theme .step { padding: 1.25rem; }
+  .dusk-theme .steps-note { margin-top: 28px; }
+
+  /* membership: centered phone (300px fits 360), full-width price panel */
+  .dusk-theme .join-grid { grid-template-columns: 1fr; gap: 48px; }
+  .dusk-theme .seg-btn { min-height: 44px; } /* comfortable tap targets */
+  .dusk-theme .price-panel { padding: 2.5rem 1.25rem; }
+  .dusk-theme .cta-btn { max-width: none; }
+  .dusk-theme .footer-links { gap: 12px; flex-wrap: wrap; }
+  .dusk-theme .footer-links a { padding: 0 6px; } /* widens Terms/Privacy past 44px tap width */
+}
+/* Touch (no hover): the crossfade overlays can never appear, so hide them;
+   the whole-card anchors still navigate on tap. */
+@media (hover: none) {
+  .dusk-theme .nav-overlay { display: none; }
+}
+
+/* === prefers-reduced-motion: all animation off; chart renders complete === */
+@media (prefers-reduced-motion: reduce) {
+  .dusk-theme *, .dusk-theme *::before, .dusk-theme *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .dusk-theme .curve { stroke-dasharray: none; stroke-dashoffset: 0; }
+}
