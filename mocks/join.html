@@ -333,7 +333,8 @@
     .stat .num {
       font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
       font-size: var(--text-stat);
-      color: hsl(var(--foreground));
+      /* theme gold (text-safe step: brass light / gold dark, AA on the hero gradient) */
+      color: hsl(var(--primary-text));
       letter-spacing: -0.01em;
       white-space: nowrap;
     }
@@ -348,7 +349,7 @@
     /* Hero chart teaser: the record inside a browser frame (Portal device-frame + glow ring) */
     .teaser-body { padding: 20px 24px 18px; }
     .teaser-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-    .teaser-val { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); line-height: 1.0; color: hsl(var(--win)); }
+    .teaser-val { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); line-height: 1.0; color: hsl(var(--primary-text)); }
     .teaser-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
     .teaser-chart svg { display: block; width: 100%; height: auto; margin-top: 14px; }
     /* Tamper-evidence callout: card scrim on the gradient (>=85% opacity), panel radius, glow ring */
