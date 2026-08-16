@@ -1,0 +1,44 @@
+{
+  "detector": "detect.mjs",
+  "version": 1,
+  "attribution": "Rule subset ported from Impeccable (pbakaus/impeccable), Apache-2.0, with modifications — see file header. Catalog: references/visual/ai-tells.md.",
+  "status": "ran",
+  "sources": [
+    "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html"
+  ],
+  "rules": 16,
+  "findings": [
+    {
+      "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
+      "rule": "nested-cards",
+      "category": "layout",
+      "severity": "high",
+      "evidence": "<a class=\"cta-btn\"> is a card inside a card ancestor",
+      "line": 617
+    },
+    {
+      "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
+      "rule": "overused-font",
+      "category": "typography",
+      "severity": "medium",
+      "evidence": "overused font \"Inter\" as a primary face",
+      "line": 13
+    },
+    {
+      "source": "C:\\Users\\panky\\Desktop\\edgeable\\mocks\\join.html",
+      "rule": "aphoristic-cadence",
+      "category": "copy",
+      "severity": "medium",
+      "evidence": "5 aphoristic constructions: \"Game: Jul 19, 1:10 PM ET W Win See the complete record How it works Three steps.\"",
+      "line": null
+    }
+  ],
+  "counts": {
+    "total": 3,
+    "byRule": {
+      "nested-cards": 1,
+      "overused-font": 1,
+      "aphoristic-cadence": 1
+    }
+  }
+}

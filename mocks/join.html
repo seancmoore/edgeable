@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<!-- /join styled mock (Dusk Ledger, amended 2026-08-14 on Sean's feedback: no purple, warm-metal gradient,
+     Portal device frames + glow rings, atmospheric hero depth, anti-sparse richness).
+     Motion amendment 4 (2026-08-15, Sean's order): scroll-entrance reveals + chart area fill and
+     pulsing live dot. Motion amendment 5 (2026-08-16, Sean's order): live-pending indicator blink
+     + interactive chart ranges with scrub (sample data). The page's ambient loops are exactly two:
+     chart live dot + live-pending blink. Reduced motion disables all of it. -->
+<!-- Tokens verbatim from DESIGN.md (LOCKED + amended). Desktop-first: 1200px primary; mobile adapts down. -->
+<!-- Copy verbatim from JOURNEY.md sections 0-6; added elements are subordinate presentation + small factual labels only. -->
+<!-- No hard-coded hex outside the token blocks. Every color via hsl(var(--token)). -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edgeable: Every pick on record</title>
+  <style>
+    /* === FONTS (exact @import per DESIGN.md fonts adoption note) === */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
+
+    /* ============================================================
+       DESIGN TOKENS: DESIGN.md app token block, verbatim (HSL triples)
+       ============================================================ */
+    :root {
+        --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 - page */
+        --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
+        --card: 60 20% 99%;                  /* #fdfdfc  n1 - cards sit lighter */
+        --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
+        --popover: 60 20% 99%;               /* #fdfdfc */
+        --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
+        /* --primary is FILL-ONLY in light theme (hard rule 1). Gold TEXT uses --primary-text. */
+        --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) - fills only */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
+        --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links */
+        --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
+        --secondary-foreground: 48 5.6% 17.5%;
+        --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
+        --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 - 5.68:1 */
+        --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
+        --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold - 5.29:1 on --accent */
+        --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
+        --destructive-foreground: 0 0% 100%;
+        --success: 124 38.9% 32.7%;          /* #337437  success-11 */
+        --success-foreground: 0 0% 100%;
+        --warning: 41 43% 32.4%;
+        --warning-foreground: 0 0% 100%;
+        --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 - decorative edges (rare) */
+        --input: 42 5.2% 38%;                /* #66635c  n11 - field border */
+        --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary */
+        /* raw Edge Club tokens */
+        --gold: 41 65% 59.6%;                /* #dbb155 */
+        --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+        --brass: 41 43% 32.4%;               /* #76602f */
+        --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
+        --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 - information-bearing rules ONLY */
+        --dim: 39 9.1% 63.3%;                /* #aaa499 */
+        --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
+        --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
+        /* dusk gradient hero (Section 1 backdrop only) - warm metal, no violet (amended 2026-08-14) */
+        --hero-g1: 41 88% 93.5%;             /* #fdf4e0  champagne sky (top) */
+        --hero-g2: 38 73.6% 89.6%;           /* #f8ead1  pale amber */
+        --hero-g3: 40 62.9% 86.3%;           /* #f2e3c6  warm bronze (horizon) */
+        --hero-wash-a: 0.10;                 /* atmospheric gold-wash alpha cap, light (AA-verified composite) */
+        --chart-fill-a: 0.16;                /* chart area-fill alpha, light (motion amendment 4; decorative non-text) */
+        /* soft depth */
+        --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: light;
+        /* per-theme wordmark assets (DESIGN.md hard rule 5) */
+        --wordmark-asset: url('../public/edgeable-wordmark-ink.svg');
+    }
+    .dark {
+        --background: 60 2.7% 7.3%;          /* #131312  n1 */
+        --foreground: 43 14.3% 90.4%;        /* #eae8e3  n12 */
+        --card: 30 4% 9.8%;                  /* #1a1918  n2 */
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;            /* #232220  n3 */
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;             /* #dbb155 */
+        --primary-foreground: 42 61.9% 4.1%; /* #110d04 */
+        --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text */
+        --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;              /* #232220  n3 */
+        --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 */
+        --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
+        --accent-foreground: 40 42.9% 65.7%; /* #cdb482 */
+        --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;          /* #5ad664 */
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;             /* #3e3b36  n6 */
+        --input: 41 7% 44.7%;                /* #7a756a */
+        --ring: 41 65% 59.6%;                /* #dbb155 */
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;             /* #cdb482 */
+        --surface-2: 60 2.7% 7.3%;
+        --hairline: 40 4.5% 13.1%;           /* #232220  n3 */
+        --dim: 42 7% 36.7%;
+        --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss */
+        --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win */
+        /* dusk gradient hero - warm metal, no violet (amended 2026-08-14) */
+        --hero-g1: 23 19% 8.2%;              /* #191411  deep espresso (top) */
+        --hero-g2: 30 33.3% 10.6%;           /* #241b12  dark bronze */
+        --hero-g3: 28 36.6% 16.1%;           /* #38281a  amber ember (horizon) */
+        --hero-wash-a: 0.15;                 /* atmospheric gold-wash alpha cap, dark (AA-verified composite) */
+        --chart-fill-a: 0.22;                /* chart area-fill alpha, dark (motion amendment 4) */
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
+    }
+    /* System preference: dark tokens auto-apply unless the demo toggle forces .light.
+       (Same values as the .dark block above, comments elided.) */
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --popover: 40 4.5% 13.1%;
+        --popover-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;
+        --success-foreground: 60 2.7% 7.3%;
+        --warning: 41 65% 59.6%;
+        --warning-foreground: 42 61.9% 4.1%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;
+        --surface-2: 60 2.7% 7.3%;
+        --hairline: 40 4.5% 13.1%;
+        --dim: 42 7% 36.7%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --hero-g1: 23 19% 8.2%;
+        --hero-g2: 30 33.3% 10.6%;
+        --hero-g3: 28 36.6% 16.1%;
+        --hero-wash-a: 0.15;
+        --chart-fill-a: 0.22;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+        --wordmark-asset: url('../public/edgeable-wordmark.svg');
+      }
+    }
+    /* === END TOKEN BLOCKS === */
+
+    /* Type + font aliases (DESIGN.md type spec) */
+    :root {
+      --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+      --text-xs: 0.75rem;    /* 12 */
+      --text-sm: 0.875rem;   /* 14 */
+      --text-base: 1rem;     /* 16 */
+      --text-lg: 1.25rem;    /* 20 */
+      --text-xl: 1.5625rem;  /* 25 */
+      --text-2xl: 1.9375rem; /* 31 */
+      --text-3xl: 2.4375rem; /* 39 */
+      --text-4xl: 3.0625rem; /* 49 */
+      --text-display: 3.8125rem; /* 61 */
+      --text-stat: 4.75rem;      /* 76 - hero record number, desktop */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-draw: cubic-bezier(0.45, 0, 0.25, 1); /* gentle in-out for the slow chart sweep */
+      --echo-h: 860px; /* dusk echo band height (bottom of page); shrinks on mobile */
+    }
+
+    /* === BASE === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-display);
+      /* Dusk echo: the hero gradient mirrored at the page's end (bottom 860px band, full-bleed),
+         bookending the page behind the membership panel + footer. Same stops as the hero,
+         so all text-on-gradient contrast pairs are already verified (contrast-2c). */
+      background:
+        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% var(--echo-h) no-repeat,
+        linear-gradient(0deg,
+          hsl(var(--hero-g1)) 0%,
+          hsl(var(--hero-g2)) 44%,
+          hsl(var(--hero-g3)) 78%,
+          hsl(var(--background)) 100%) bottom center / 100% var(--echo-h) no-repeat,
+        hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.55;
+      font-size: var(--text-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: hsl(var(--primary-text)); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid hsl(var(--ring));
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .measure { max-width: 640px; margin-left: auto; margin-right: auto; }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.6875rem; /* 11px */
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+    }
+    .mono { font-family: var(--font-mono); }
+
+    /* Section rhythm: 112px desktop default, 64 mobile */
+    .section { margin-top: 112px; }
+    .section-head { text-align: center; margin-bottom: 48px; }
+    .section-head h2 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; margin-top: 12px; }
+    .section-head .sub { color: hsl(var(--muted-foreground)); margin-top: 12px; }
+
+    /* Soft-depth card (glow ring, no hairline edges) */
+    .soft-card {
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card);
+      box-shadow: var(--elev-ring);
+    }
+
+    /* ====== DEVICE FRAMES (DESIGN.md amendment 2: Portal device-frame mockups, pure HTML/CSS/SVG) ====== */
+    .frame {
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card);
+      box-shadow: var(--elev-ring);
+      overflow: hidden;
+    }
+    .frame-chrome {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px;
+      background: hsl(var(--muted));
+    }
+    .frame-dots { display: flex; gap: 6px; flex: none; }
+    /* invisible right counterweight = dots width (3x10px + 2x6px), so the address centers on the frame midline */
+    .frame-chrome::after { content: ""; flex: none; width: 42px; }
+    .frame-dots span { width: 10px; height: 10px; border-radius: 50%; background: hsl(var(--border)); }
+    .frame-addr {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: hsl(var(--muted-foreground)); /* 5.27:1 light / 7.94:1 dark on --muted (contrast-2c) */
+      flex: 1; text-align: center;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .frame-body { padding: 24px; }
+    .phone {
+      width: 300px; max-width: 100%;
+      background: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: 32px;
+      box-shadow: var(--elev-ring);
+      padding: 14px 14px 22px;
+      margin: 0 auto;
+    }
+    .phone-notch { width: 96px; height: 8px; border-radius: var(--radius-pill); background: hsl(var(--muted)); margin: 4px auto 18px; }
+
+    /* ====== SECTION 0: header (on the gradient) ====== */
+    /* Atmospheric depth (amendment 3): layered static radial washes over the linear gradient.
+       Gold washes capped at var(--hero-wash-a) (0.10 light / 0.15 dark) - composites AA-verified. */
+    .dusk {
+      background:
+        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%),
+        radial-gradient(150% 40% at 50% 100%, hsl(var(--hero-g3)) 0%, transparent 70%),
+        radial-gradient(70% 45% at 14% 0%, hsl(var(--hero-g1)) 0%, transparent 72%),
+        linear-gradient(180deg,
+          hsl(var(--hero-g1)) 0%,
+          hsl(var(--hero-g2)) 44%,
+          hsl(var(--hero-g3)) 78%,
+          hsl(var(--background)) 100%);
+      padding-bottom: 96px;
+    }
+    header.site {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 28px;
+    }
+    .wordmark img { height: 30px; display: block; }
+    /* Bigger header logo without moving anything: the extra height is absorbed by
+       negative vertical margins, so the header's layout box stays 30px tall */
+    header.site .wordmark img { height: 38px; margin: -4px 0; }
+    .wordmark .wm-dark { display: none; }
+    .dark .wordmark .wm-light { display: none; }
+    .dark .wordmark .wm-dark { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) .wordmark .wm-light { display: none; }
+      :root:not(.light) .wordmark .wm-dark { display: block; }
+    }
+    .login-link {
+      font-weight: 600; font-size: var(--text-sm);
+      color: hsl(var(--primary-text));
+      min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
+    }
+
+    /* ====== SECTION 1: record hero (on the gradient) ======
+       Text-on-gradient law: only --foreground / --primary-text / --muted-foreground
+       sit directly on the gradient; everything else rides a card scrim or frame. */
+    .hero { padding-top: 88px; }
+    .hero-grid {
+      display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: start;
+    }
+    .hero h1 {
+      font-size: var(--text-display);
+      line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .hero .subhead {
+      margin-top: 24px; color: hsl(var(--muted-foreground)); max-width: 640px;
+      font-size: var(--text-lg); line-height: 1.55;
+    }
+    /* Live-pending indicator (DESIGN.md motion amendment 5, 2026-08-16, Sean's order): a small
+       red "recording" dot plus a --loss pending count. The dot's soft ~1.8s blink is the SECOND
+       of exactly two permitted ambient loops on this page (the chart live dot is the other).
+       All color via the theme's text-safe gold token (--primary-text: brass in light, gold in dark,
+       both AA on the hero gradient); reduced motion renders the dot static, no blink. */
+    .pending-eyebrow { margin-top: 48px; display: flex; align-items: center; gap: 8px; }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex: none;
+      background: hsl(var(--primary-text));
+    }
+    .pending-count { color: hsl(var(--primary-text)); }
+    @media (prefers-reduced-motion: no-preference) {
+      .live-dot { animation: live-blink 1.8s ease-in-out infinite; }
+      @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    }
+    .stat-row {
+      margin-top: 12px;
+      display: grid; grid-template-columns: repeat(3, auto); gap: 48px;
+      justify-content: start;
+    }
+    .stat .num {
+      font-family: var(--font-mono); font-weight: 600; line-height: 1.0;
+      font-size: var(--text-stat);
+      color: hsl(var(--foreground));
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .stat .num.roi, .stat .num.units { font-size: var(--text-display); padding-top: 0.35em; }
+    .stat .label { margin-top: 12px; }
+    .hero-right { display: grid; gap: 40px; }
+    /* Hero chart teaser: the record inside a browser frame (Portal device-frame + glow ring) */
+    .teaser-body { padding: 20px 24px 18px; }
+    .teaser-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .teaser-val { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); line-height: 1.0; color: hsl(var(--win)); }
+    .teaser-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .teaser-chart svg { display: block; width: 100%; height: auto; margin-top: 14px; }
+    /* Tamper-evidence callout: card scrim on the gradient (>=85% opacity), panel radius, glow ring */
+    .tamper {
+      position: relative; /* anchors the stretched nav link */
+      background: hsl(var(--card) / 0.92);
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius-panel);
+      box-shadow: var(--elev-ring);
+      padding: 2rem;
+      transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
+    }
+    .tamper p { margin-top: 16px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--card-foreground)); }
+    .tamper a { font-weight: 600; }
+    /* Both hero side windows are section navigation: whole surface clickable, gentle lift on hover */
+    .frame-nav { display: block; position: relative; text-decoration: none; color: inherit; cursor: pointer; transition: transform 180ms var(--ease), box-shadow 180ms var(--ease); }
+    /* Hover/focus overlay: window content crossfades to a "See ..." destination label + down arrow */
+    .nav-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      background: hsl(var(--card) / 0.93);
+      border-radius: var(--radius-card);
+      font-weight: 600; font-size: var(--text-base); color: hsl(var(--foreground));
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+      pointer-events: none;
+    }
+    .tamper .nav-overlay { border-radius: var(--radius-panel); }
+    .nav-overlay svg { width: 22px; height: 22px; color: hsl(var(--primary-text)); }
+    .frame-nav:hover .nav-overlay, .frame-nav:focus-visible .nav-overlay,
+    .tamper:hover .nav-overlay, .tamper:focus-within .nav-overlay { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: no-preference) {
+      .frame-nav:hover .nav-overlay svg, .frame-nav:focus-visible .nav-overlay svg,
+      .tamper:hover .nav-overlay svg, .tamper:focus-within .nav-overlay svg { animation: arrow-nudge 1.2s ease-in-out infinite; }
+      @keyframes arrow-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+    }
+    .frame-nav:hover, .tamper:has(.tamper-nav:hover) { transform: translateY(-3px); }
+    .frame-nav:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: var(--radius-card); }
+    .tamper-nav { color: inherit; text-decoration: none; }
+    /* Static nav affordance for touch/mobile (no hover there): hidden on desktop,
+       shown inside the nav windows below 900px. Same destination labels as the overlays. */
+    .nav-hint { display: none; }
+    /* Stretched link: the heading's anchor covers the whole panel */
+    .tamper-nav::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-panel); }
+    .tamper-nav:focus-visible::after { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+
+    /* ====== SECTION 2: performance chart (inside a browser frame per amendment 2) ====== */
+    .chart-frame { max-width: 1040px; margin: 0 auto; }
+    .chart-body { padding: 2.5rem 2.5rem 2rem; }
+    .chart-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .chart-headline .val {
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-3xl); line-height: 1.0;
+      color: hsl(var(--win));
+    }
+    .chart-headline .when { margin-top: 8px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .range-tabs { display: flex; gap: 8px; }
+    .range-tabs [role="tab"] {
+      font-family: var(--font-mono); font-weight: 500; font-size: var(--text-sm);
+      min-height: 44px; min-width: 56px; padding: 0 20px;
+      border-radius: var(--radius-pill);
+      background: transparent; color: hsl(var(--muted-foreground));
+      border: 1px solid transparent; cursor: pointer;
+      transition: background-color 140ms var(--ease), color 140ms var(--ease);
+    }
+    .range-tabs [role="tab"]:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+    .range-tabs [role="tab"][aria-selected="true"] {
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink)); font-weight: 600;
+      border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary; blends into the fill in dark */
+    }
+    .chart-wrap { margin-top: 32px; position: relative; }
+    .chart-wrap svg { display: block; width: 100%; height: auto; touch-action: pan-y; overflow: visible; }
+    .chart-headline .val.neg { color: hsl(var(--loss)); }
+    /* Scrub crosshair + chip (tokens only; feedback is instant, no easing per the motion law) */
+    .scrub-mark { visibility: hidden; }
+    .scrub-mark.on { visibility: visible; }
+    .scrub-line { stroke: hsl(var(--muted-foreground)); stroke-width: 1; stroke-dasharray: 3 3; }
+    .scrub-pt { fill: hsl(var(--gold)); stroke: hsl(var(--card)); stroke-width: 2; r: 5; }
+    /* Distinct scrub tooltip: inverse chip (ink on light theme, paper on dark), larger mono, floats clear of the line */
+    .scrub-chip {
+      position: absolute; top: -12px; transform: translate(-50%, -100%);
+      visibility: hidden; white-space: nowrap; pointer-events: none;
+      font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.01em;
+      background: hsl(var(--foreground)); color: hsl(var(--background));
+      border-radius: 12px; padding: 8px 14px;
+      box-shadow: 0 10px 28px -8px hsl(var(--foreground) / 0.45);
+    }
+    .scrub-chip.on { visibility: visible; }
+    /* Visually hidden live region for range announcements */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .curve { stroke: hsl(var(--gold)); }
+    .zero-baseline { stroke: hsl(var(--hairline)); } /* the ONE information-bearing hairline */
+    /* Chart "live" treatment (DESIGN.md motion amendment 4). All colors via tokens; data unchanged. */
+    .fill-stop-top { stop-color: hsl(var(--gold)); stop-opacity: var(--chart-fill-a); }
+    .fill-stop-bot { stop-color: hsl(var(--gold)); stop-opacity: 0; }
+    .area-fill { fill: url(#gold-fill); }
+    .dot-core { fill: hsl(var(--gold)); }
+    .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; } /* visible only while pulsing; hidden static (reduced motion) */
+    @media (prefers-reduced-motion: no-preference) {
+      /* Slow smooth reveal: line draws AND area wipes left-to-right together over 3.2s */
+      .curve {
+        stroke-dasharray: 1; stroke-dashoffset: 1;
+        animation: draw 3200ms var(--ease-draw) forwards; /* chart reveal, once per load */
+      }
+      @keyframes draw { to { stroke-dashoffset: 0; } }
+      .area-fill {
+        clip-path: inset(0 100% 0 0);
+        animation: sweep 3200ms var(--ease-draw) forwards;
+      }
+      @keyframes sweep { to { clip-path: inset(0 0 0 0); } }
+      /* the chart card's own text (headline value + range tabs) eases in slowly as the sweep begins */
+      .chart-frame .chart-top { opacity: 0; animation: fade-in 1200ms var(--ease) 200ms forwards; }
+      /* labels + live dot wait for the draw to complete */
+      .chart-wrap .x-labels { opacity: 0; animation: fade-in 1200ms var(--ease) 3200ms forwards; }
+      .chart-dot { opacity: 0; animation: fade-in 500ms var(--ease) 3200ms forwards; }
+      /* the pulsing halo: one of the page's TWO permitted ambient loops (amendment 5; the other is .live-dot) */
+      .dot-halo {
+        transform-box: fill-box; transform-origin: center;
+        animation: dot-pulse 2.4s ease-out 3.8s infinite;
+      }
+      @keyframes fade-in { to { opacity: 1; } }
+      @keyframes dot-pulse {
+        0%   { transform: scale(1);   opacity: 0.45; }
+        70%  { transform: scale(2.6); opacity: 0; }
+        100% { transform: scale(2.6); opacity: 0; }
+      }
+      /* charts inside a scroll-reveal element hold their draw until revealed */
+      .reveal-ready [data-reveal]:not(.in) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+      .reveal-ready [data-reveal]:not(.in) .x-labels { animation-play-state: paused; }
+      /* the main performance chart holds its sweep until ~60% of it is in the viewport
+         (dedicated observer adds .chart-go); the card itself may reveal earlier */
+      .reveal-ready .chart-frame:not(.chart-go) :is(.curve, .area-fill, .chart-dot, .dot-halo),
+      .reveal-ready .chart-frame:not(.chart-go) .chart-top,
+      .reveal-ready .chart-frame:not(.chart-go) .x-labels { animation-play-state: paused; }
+    }
+    .x-labels {
+      margin-top: 12px; display: flex; justify-content: space-between;
+      font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
+
+    /* ====== SECTION 3: free picks (richer cards: sport + odds + units chips per JOURNEY card fields) ====== */
+    .framing { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); max-width: 640px; margin: 0 auto; }
+    .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .pick-card { padding: 2rem; display: flex; flex-direction: column; gap: 16px; }
+    .pick-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pick-badge {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: 10px; padding: 6px 12px;
+    }
+    .sport-chip {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border-radius: 10px; padding: 6px 12px;
+    }
+    .pick-desc { font-weight: 600; font-size: var(--text-lg); line-height: 1.3; }
+    .pick-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pick-chips .chip {
+      font-family: var(--font-mono); font-weight: 500; font-size: var(--text-xs);
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      border-radius: 10px; padding: 5px 10px;
+    }
+    .pick-times { font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); display: grid; gap: 6px; }
+    .pick-times .posted { color: hsl(var(--foreground)); font-weight: 600; }
+    .pick-result { display: flex; align-items: center; gap: 10px; margin-top: auto; font-weight: 600; font-size: var(--text-sm); }
+    .result-glyph {
+      font-family: var(--font-mono); font-weight: 600;
+      width: 32px; height: 32px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .result-win  { color: hsl(var(--win)); }
+    .result-loss { color: hsl(var(--loss)); }
+    .result-win .result-glyph  { background: hsl(var(--muted)); }
+    .result-loss .result-glyph { background: hsl(var(--muted)); }
+    .picks-more { text-align: center; margin-top: 40px; }
+    .picks-more a { font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+
+    /* ====== SECTION 4: how it works (step icons added per richness guidance) ====== */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .step { padding: 2rem; }
+    .step-top { display: flex; align-items: center; justify-content: space-between; }
+    .step-num {
+      width: 44px; height: 44px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .step-icon {
+      width: 44px; height: 44px; border-radius: var(--radius);
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .step-icon svg { width: 22px; height: 22px; }
+    .step h3 { margin-top: 20px; font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .step p { margin-top: 10px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .step a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; font-weight: 600; font-size: var(--text-sm); }
+    .steps-note { text-align: center; margin-top: 40px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+
+    /* ====== SECTION 5: price + CTA (substantial panel + phone-frame dashboard preview) ====== */
+    .join-grid {
+      display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: center;
+      max-width: 1040px; margin: 0 auto;
+    }
+    .app-preview { text-align: center; }
+    .app-preview .eyebrow { display: block; margin-bottom: 24px; }
+    .phone-screen { text-align: left; }
+    .seg {
+      display: inline-flex; gap: 4px; background: hsl(var(--muted));
+      border-radius: var(--radius-pill); padding: 4px;
+    }
+    .seg-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-xs); padding: 6px 14px;
+      border-radius: var(--radius-pill); color: hsl(var(--muted-foreground));
+      background: transparent; border: 0; cursor: pointer;
+      transition: background 180ms var(--ease), color 180ms var(--ease);
+    }
+    .seg .on {
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring)); /* light gold-fill boundary (hard rule 3) */
+    }
+    .seg-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+    .mini-chart svg .curve, .mini-chart svg .area-fill { transition: opacity 180ms var(--ease); }
+    .mini-chart .curve2 { stroke: hsl(var(--muted-foreground)); stroke-dasharray: 5 4; }
+    .mini-legend {
+      margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;
+      font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
+    .mini-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .mini-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid hsl(var(--primary-text)); }
+    .mini-legend .lg-dash { border-top-style: dashed; border-top-color: hsl(var(--muted-foreground)); }
+    .app-blurb {
+      margin: 20px auto 0; max-width: 340px;
+      font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground));
+    }
+    .mini-stat { margin-top: 18px; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: hsl(var(--win)); }
+    .mini-when { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); margin-top: 4px; }
+    .mini-chart svg { display: block; width: 100%; height: auto; margin-top: 12px; }
+    .mini-days { margin-top: 16px; display: grid; gap: 8px; }
+    .mini-day {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      background: hsl(var(--muted)); border-radius: 10px; padding: 8px 12px;
+      color: hsl(var(--muted-foreground));
+    }
+    .mini-day .d-win  { color: hsl(var(--win)); font-weight: 600; }
+    .mini-day .d-loss { color: hsl(var(--loss)); font-weight: 600; }
+    .price-panel {
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-panel); box-shadow: var(--elev-ring);
+      padding: 4rem 3.5rem; text-align: center;
+    }
+    .price-line { margin-top: 24px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+    .price-line .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
+    .price-line .per { color: hsl(var(--muted-foreground)); font-size: var(--text-lg); }
+    /* Feature list: the value-description phrases, verbatim, as a checked list (richness guidance) */
+    .feature-list {
+      list-style: none; margin: 28px auto 0; max-width: 340px; text-align: left;
+      display: grid; gap: 14px;
+    }
+    .feature-list li { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+    .feature-list svg { width: 20px; height: 20px; flex: none; color: hsl(var(--primary-text)); }
+    .cta-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 52px; padding: 0 28px; margin-top: 32px;
+      width: 100%; max-width: 400px;
+      border-radius: var(--radius-pill);
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring)); /* light-theme gold-fill boundary (hard rule 3); blends in dark */
+      font-weight: 700; font-size: var(--text-base); cursor: pointer;
+      text-decoration: none;
+      transition: transform 140ms var(--ease), filter 140ms var(--ease);
+    }
+    .cta-btn:hover { filter: brightness(1.04); text-decoration: none; }
+    .cta-btn:active { transform: scale(0.99); }
+    .cta-reassure { margin-top: 24px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+
+    /* ====== SECTION 6: legal footer (wordmark added per richness guidance) ====== */
+    /* Fine print, not a finale: small dimmed wordmark, quiet muted links, tight rhythm */
+    footer.legal { margin-top: 112px; padding: 40px 0 32px; }
+    .footer-wordmark { display: flex; justify-content: center; margin-bottom: 20px; }
+    .footer-wordmark img { height: 16px; display: block; opacity: 0.55; }
+    footer.legal .blocks { display: grid; gap: 10px; max-width: 560px; margin: 0 auto; text-align: center; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); line-height: 1.5; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; }
+    .footer-links a { font-weight: 500; font-size: var(--text-xs); min-height: 44px; display: inline-flex; align-items: center; color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 3px; }
+    .footer-links a:hover { color: hsl(var(--primary-text)); }
+    .copyright { text-align: center; margin-top: 12px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* Demo theme toggle (mock chrome only, not part of the page spec) */
+    .theme-toggle {
+      position: fixed; right: 20px; bottom: 20px; z-index: 10;
+      min-height: 44px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm); cursor: pointer;
+    }
+
+    /* ====== SCROLL ENTRANCES (DESIGN.md motion amendment 4) ======
+       Once-only fade + 20px rise as sections/cards enter the viewport. Card grids stagger 80ms.
+       The hidden state exists ONLY under .reveal-ready, which JS adds after confirming
+       IntersectionObserver support and marking already-visible elements: no JS, nothing hides;
+       above the fold never waits. Reduced motion never sees a hidden state (media-gated). */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal-ready [data-reveal] {
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+      .reveal-ready [data-reveal].in { opacity: 1; transform: none; }
+    }
+
+    /* ====== MOBILE ADAPTATION: first-class layout below 900px ======
+       Designed at 390px, verified 360-430px. The desktop 1200px design above is untouched;
+       everything here restyles, resizes, or HIDES (never deletes) for small screens.
+       Hidden on mobile, with rationale:
+       - .frame-chrome (browser address bars + decorative dots): the URL truncates at 360px
+         and the strip costs ~44px per frame; the glow-ring card still reads as a device
+         frame.
+       - .teaser-when ("All time" hero teaser sublabel): the full performance chart directly
+         below states its own range; the +18.4 units value stays.
+       All proof + disclosure content stays: $30, CashApp/Zelle, 21+, losses shown. */
+    @media (max-width: 900px) {
+      :root { --echo-h: 560px; } /* shorter dusk echo band on mobile */
+      .container { padding: 0 1.25rem; }
+      .section { margin-top: 64px; }        /* section rhythm: 64px (56-72 mobile band) */
+      .section-head { margin-bottom: 36px; }
+      footer.legal { margin-top: 64px; padding: 32px 0 28px; }
+
+      /* hero: big but wrap-clean type; reduced paddings */
+      .hero { padding-top: 56px; }
+      .dusk { padding-bottom: 64px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero h1 { font-size: clamp(1.9375rem, 8.4vw, 2.4375rem); }
+      .hero .subhead { margin-top: 16px; font-size: var(--text-base); }
+      .pending-eyebrow { margin-top: 32px; }
+      /* Stat row: the W-L-P record leads full-width (it IS the headline proof);
+         Net Units + ROI pair beneath. The desktop 76px nowrap mono would clip at 360px,
+         so sizes are viewport-clamped: the row can never overflow. */
+      .stat-row { margin-top: 16px; grid-template-columns: 1fr 1fr; gap: 24px 16px; justify-content: stretch; }
+      .stat:first-child { grid-column: 1 / -1; }
+      .stat .num { font-size: clamp(2.25rem, 12vw, 3.0625rem); }
+      .stat .num.roi, .stat .num.units { font-size: clamp(1.5625rem, 8vw, 1.9375rem); padding-top: 0; }
+      .stat .label { margin-top: 8px; }
+
+      /* hero nav windows: compact full-width stacked cards, whole card tappable (anchors),
+         static "See ..." hint replaces the hover-only overlay affordance */
+      .hero-right { gap: 20px; }
+      .frame-chrome { display: none; }
+      .teaser-when { display: none; }
+      .teaser-body { padding: 1.25rem 1.25rem 0.875rem; }
+      .tamper { padding: 1.25rem 1.25rem 0.875rem; }
+      .nav-hint {
+        display: inline-flex; align-items: center; gap: 8px;
+        margin-top: 12px;
+        font-weight: 600; font-size: var(--text-sm); color: hsl(var(--primary-text));
+      }
+      .nav-hint svg { width: 16px; height: 16px; flex: none; }
+
+      /* chart: near full-bleed inside its frame; tabs share the row equally */
+      .chart-body { padding: 1.25rem 1rem 1rem; }
+      .chart-top { gap: 16px; }
+      .chart-wrap { margin-top: 20px; }
+      .range-tabs { width: 100%; gap: 6px; }
+      .range-tabs [role="tab"] { flex: 1; min-width: 0; padding: 0; }
+
+      /* stacked cards, tightened */
+      .picks-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+      .steps { grid-template-columns: 1fr; gap: 16px; }
+      .pick-card, .step { padding: 1.25rem; }
+      .picks-more, .steps-note { margin-top: 28px; }
+
+      /* membership: centered phone (300px fits 360), full-width price panel */
+      .join-grid { grid-template-columns: 1fr; gap: 48px; }
+      .seg-btn { min-height: 44px; } /* comfortable tap targets in the interactive demo */
+      .price-panel { padding: 2.5rem 1.25rem; }
+      .cta-btn { max-width: none; }
+      .footer-links { gap: 12px; flex-wrap: wrap; }
+      .footer-links a { padding: 0 6px; } /* widens Terms/Privacy past 44px tap width */
+    }
+    /* Touch (no hover): the crossfade overlays can never appear, so hide them entirely;
+       the whole-card anchors still navigate on tap and the static .nav-hint (mobile) or
+       the visible card content itself carries the affordance. */
+    @media (hover: none) {
+      .nav-overlay { display: none; }
+    }
+
+    /* === prefers-reduced-motion: all animation off; chart renders complete === */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .curve { stroke-dasharray: none; stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Warm gold-hour gradient backs Section 0 + Section 1 only, dissolving into --background.
+       Atmospheric depth: layered static radial washes (horizon glow), no purple anywhere. -->
+  <div class="dusk">
+    <div class="container">
+
+      <!-- 0. Site header -->
+      <header class="site">
+        <a class="wordmark" href="/" aria-label="Edgeable home">
+          <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+          <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable">
+        </a>
+        <a class="login-link" href="/">Log in</a>
+      </header>
+
+      <!-- 1. Record hero -->
+      <section class="hero" aria-label="Record">
+        <div class="hero-grid">
+          <div>
+            <h1>Do not trust me. Check the record.</h1>
+            <p class="subhead">If you have been burned by fake slips and deleted losses, good: you are exactly who this service is for. Edgeable is a picks service built on real data, and every pick goes on the record before the game starts and stays there, wins and losses alike. Have a look around before you decide anything.</p>
+
+            <p class="eyebrow pending-eyebrow"><span class="live-dot" aria-hidden="true"></span><span>Live record. <span class="pending-count">2 picks pending.</span></span></p>
+            <div class="stat-row">
+              <div class="stat">
+                <div class="num mono">61-42-3</div>
+                <div class="label eyebrow">W-L-P</div>
+              </div>
+              <div class="stat">
+                <div class="num units mono">+18.4</div>
+                <div class="label eyebrow">Net Units</div>
+              </div>
+              <div class="stat">
+                <div class="num roi mono">+8.9%</div>
+                <div class="label eyebrow">ROI</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="hero-right">
+            <!-- Chart teaser in a browser device frame (Portal glow-ring mockup, pure HTML/CSS/SVG).
+                 Clickable: scrolls to the full performance section. -->
+            <a class="frame frame-nav" href="#performance" aria-label="Preview of the record: net units curve rising to plus 18.4. Jump to the full performance chart.">
+              <div class="frame-chrome" aria-hidden="true">
+                <span class="frame-dots"><span></span><span></span><span></span></span>
+                <span class="frame-addr">edgeabled.web.app/card</span>
+              </div>
+              <div class="teaser-body" aria-hidden="true">
+                <div class="teaser-top">
+                  <span class="teaser-val">+18.4 units</span>
+                  <span class="teaser-when">All time</span>
+                </div>
+                <div class="teaser-chart">
+                  <svg viewBox="0 0 420 130">
+                    <defs>
+                      <!-- shared gold area-fill gradient (referenced by every chart on the page; stops styled via tokens) -->
+                      <linearGradient id="gold-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" class="fill-stop-top"></stop>
+                        <stop offset="1" class="fill-stop-bot"></stop>
+                      </linearGradient>
+                    </defs>
+                    <path class="area-fill" d="M0 124C14 118 26 112 40 110C54 108 66 116 80 112C94 108 106 92 120 88C134 84 148 94 160 90C172 86 184 66 200 60C216 54 228 70 242 74C256 78 268 60 282 52C296 44 310 46 324 40C338 34 352 26 368 20C384 14 406 12 420 8L420 124Z"></path>
+                    <line class="zero-baseline" x1="0" y1="124" x2="420" y2="124" stroke-width="1"></line>
+                    <path class="curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
+                      d="M0 124C14 118 26 112 40 110C54 108 66 116 80 112C94 108 106 92 120 88C134 84 148 94 160 90C172 86 184 66 200 60C216 54 228 70 242 74C256 78 268 60 282 52C296 44 310 46 324 40C338 34 352 26 368 20C384 14 406 12 420 8"></path>
+                  </svg>
+                </div>
+                <span class="nav-hint">See performance
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+                </span>
+              </div>
+              <span class="nav-overlay" aria-hidden="true">See performance
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
+            </a>
+
+            <!-- Tamper-evidence callout: card scrim on the gradient.
+                 Clickable (stretched link): scrolls to the How it works section; the /card link stays independently clickable above it. -->
+            <aside class="tamper">
+              <h2 class="eyebrow"><a class="tamper-nav" href="#how-it-works">How it all works</a></h2>
+              <p>Daily plays, exact units, real odds. All on the record before kickoff. See the whole loop.</p>
+              <span class="nav-hint" aria-hidden="true">See how it works
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
+              <span class="nav-overlay" aria-hidden="true">See how it works
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- 2. Units performance chart (inside a browser device frame per DESIGN.md amendment 2) -->
+    <section class="section" id="performance" aria-label="Performance">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Performance</p>
+        <p class="sub">Net units over time. Dips included.</p>
+      </div>
+
+      <div class="frame chart-frame" data-reveal>
+        <div class="frame-chrome" aria-hidden="true">
+          <span class="frame-dots"><span></span><span></span><span></span></span>
+          <span class="frame-addr">edgeabled.web.app/card</span>
+        </div>
+        <div class="chart-body">
+          <div class="chart-top">
+            <div class="chart-headline">
+              <div class="val">+18.4 units</div>
+              <div class="when">All time</div>
+            </div>
+            <div class="range-tabs" role="tablist" aria-label="Chart range">
+              <button role="tab" data-range="1W" aria-selected="false" tabindex="-1">1W</button>
+              <button role="tab" data-range="1M" aria-selected="false" tabindex="-1">1M</button>
+              <button role="tab" data-range="3M" aria-selected="false" tabindex="-1">3M</button>
+              <button role="tab" data-range="All" aria-selected="true" tabindex="0">All</button>
+            </div>
+            <!-- announces the selected range + its net units to screen readers -->
+            <div class="sr-only chart-announce" aria-live="polite"></div>
+          </div>
+
+          <div class="chart-wrap">
+            <svg viewBox="0 0 1000 320" role="img" aria-label="Cumulative net units, June 1 to August 14, 2026. Rises from zero with a dip in mid-July, ending at plus 18.4 units. Zero baseline shown.">
+              <!-- soft gold area fill under the curve (motion amendment 4; same data path, closed to the baseline) -->
+              <path class="area-fill" d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10L1000 310Z"></path>
+              <!-- zero baseline: the one information-bearing hairline -->
+              <line class="zero-baseline" x1="0" y1="310" x2="1000" y2="310" stroke-width="1"></line>
+              <!-- equity curve: 75 daily points, Jun 1 to Aug 14 2026, ends +18.4 -->
+              <path class="curve" pathLength="1" fill="none" stroke-width="2.5" stroke-linecap="round"
+                d="M0 310C2.3 308.0 9.0 299.6 13.5 298.1C18.0 296.6 22.5 303.2 27 301.2C31.5 299.2 36.0 286.4 40.5 286.2C45.0 285.9 49.6 300.0 54.1 299.7C58.6 299.4 63.1 286.4 67.6 284.4C72.1 282.4 76.6 289.2 81.1 287.8C85.6 286.4 90.1 279.6 94.6 275.9C99.1 272.1 103.6 266.6 108.1 265.3C112.6 264.0 117.1 270.2 121.6 268.3C126.1 266.4 130.6 254.2 135.1 254.2C139.6 254.2 144.1 268.5 148.6 268.4C153.1 268.3 157.7 255.5 162.2 253.3C166.7 251.1 171.2 257.4 175.7 255.2C180.2 253.0 184.7 244.7 189.2 240.1C193.7 235.5 198.2 229.9 202.7 227.8C207.2 225.8 211.7 230.5 216.2 227.8C220.7 225.1 225.2 212.4 229.7 211.7C234.2 211.0 238.7 224.3 243.2 223.4C247.7 222.5 252.3 208.5 256.8 206.1C261.3 203.7 265.8 211.1 270.3 209.1C274.8 207.1 279.3 198.2 283.8 193.8C288.3 189.4 292.8 184.5 297.3 182.7C301.8 180.9 306.3 185.3 310.8 182.8C315.3 180.3 319.8 168.0 324.3 167.7C328.8 167.4 333.3 181.7 337.8 181.2C342.3 180.7 346.9 166.8 351.4 164.9C355.9 163.0 360.4 171.8 364.9 169.6C369.4 167.4 373.9 156.7 378.4 151.7C382.9 146.7 387.4 142.0 391.9 139.6C396.4 137.2 400.9 140.4 405.4 137.2C409.9 134.0 414.4 121.6 418.9 120.5C423.4 119.4 427.9 132.5 432.4 130.7C436.9 128.9 441.4 113.0 445.9 109.6C450.4 106.2 455.0 113.5 459.5 110.3C464.0 107.1 468.5 95.6 473 90.2C477.5 84.8 482.0 80.5 486.5 77.7C491.0 74.9 495.5 73.1 500 73.3C504.5 73.5 509.0 72.6 513.5 78.8C518.0 85.0 522.5 104.8 527 110.3C531.5 115.8 536.0 107.8 540.5 112.1C545.0 116.4 549.6 131.0 554.1 135.9C558.6 140.8 563.1 138.3 567.6 141.6C572.1 144.9 576.6 149.9 581.1 155.9C585.6 161.9 590.1 172.3 594.6 177.3C599.1 182.3 603.6 178.8 608.1 185.8C612.6 192.8 617.1 213.1 621.6 219.3C626.1 225.5 630.6 221.8 635.1 223.1C639.6 224.4 644.1 229.6 648.6 227.3C653.1 225.0 657.7 213.5 662.2 209.1C666.7 204.7 671.2 203.4 675.7 200.8C680.2 198.3 684.7 198.0 689.2 193.8C693.7 189.6 698.2 177.7 702.7 175.8C707.2 173.9 711.7 185.1 716.2 182.3C720.7 179.5 725.2 163.1 729.7 159.2C734.2 155.3 738.7 162.6 743.2 159C747.7 155.4 752.3 142.7 756.8 137.5C761.3 132.3 765.8 130.2 770.3 127.6C774.8 125.0 779.3 125.2 783.8 121.7C788.3 118.2 792.8 107.6 797.3 106.4C801.8 105.2 806.3 116.4 810.8 114.5C815.3 112.6 819.8 97.4 824.3 94.8C828.8 92.2 833.3 101.5 837.8 98.7C842.3 95.9 846.9 82.9 851.4 78.2C855.9 73.5 860.4 72.6 864.9 70.5C869.4 68.4 873.9 68.2 878.4 65.6C882.9 63.0 887.4 54.6 891.9 54.7C896.4 54.8 900.9 67.4 905.4 66.4C909.9 65.4 914.4 50.7 918.9 48.8C923.4 46.9 927.9 57.6 932.4 55.2C936.9 52.8 941.4 39.0 945.9 34.5C950.4 29.9 955.0 29.8 959.5 27.9C964.0 26.0 968.5 25.8 973 22.9C977.5 20.0 982.0 12.8 986.5 10.7C991.0 8.5 997.8 10.1 1000 10"></path>
+              <!-- live dot on the last data point: appears after the slow sweep completes;
+                   the halo pulse is one of the page's two permitted ambient loops (amendments 4 + 5) -->
+              <g class="chart-dot" aria-hidden="true">
+                <circle class="dot-halo" cx="1000" cy="10" r="5"></circle>
+                <circle class="dot-core" cx="1000" cy="10" r="4.5"></circle>
+              </g>
+              <!-- scrub crosshair: shown only while the pointer is over the chart -->
+              <g class="scrub-mark" aria-hidden="true">
+                <line class="scrub-line" x1="0" y1="10" x2="0" y2="310"></line>
+                <circle class="scrub-pt" r="4" cx="0" cy="0"></circle>
+              </g>
+            </svg>
+            <div class="scrub-chip mono" aria-hidden="true"></div>
+            <div class="x-labels" aria-hidden="true">
+              <span>Jun 1</span><span>Jul 1</span><span>Aug 1</span><span>Aug 14</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Free-pick samples -->
+    <section class="section" aria-label="Free picks">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Free picks</p>
+        <p class="sub measure">From time to time a pick goes out free to everyone. Here are the most recent ones: posted before tip-off, graded after.</p>
+      </div>
+
+      <div class="picks-grid" data-reveal-stagger>
+        <article class="soft-card pick-card" data-reveal>
+          <div class="pick-head">
+            <span class="pick-badge">Free pick</span>
+            <span class="sport-chip">MLB</span>
+          </div>
+          <p class="pick-desc">Yankees ML (-125) vs Red Sox, 1u</p>
+          <div class="pick-chips" aria-label="Odds and stake">
+            <span class="chip">-125</span>
+            <span class="chip">1u</span>
+          </div>
+          <div class="pick-times">
+            <span class="posted">Posted 2:12 PM ET</span>
+            <span>Game: Aug 9, 7:05 PM ET</span>
+          </div>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.8u</span></p>
+        </article>
+
+        <article class="soft-card pick-card" data-reveal>
+          <div class="pick-head">
+            <span class="pick-badge">Free pick</span>
+            <span class="sport-chip">MLB</span>
+          </div>
+          <p class="pick-desc">Dodgers -1.5 (+104) at Padres, 0.5u</p>
+          <div class="pick-chips" aria-label="Odds and stake">
+            <span class="chip">+104</span>
+            <span class="chip">0.5u</span>
+          </div>
+          <div class="pick-times">
+            <span class="posted">Posted 4:47 PM ET</span>
+            <span>Game: Jul 28, 9:40 PM ET</span>
+          </div>
+          <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> <span class="mono">-0.5u</span></p>
+        </article>
+
+        <article class="soft-card pick-card" data-reveal>
+          <div class="pick-head">
+            <span class="pick-badge">Free pick</span>
+            <span class="sport-chip">MLB</span>
+          </div>
+          <p class="pick-desc">Braves vs Mets Under 8.5 (-110), 1u</p>
+          <div class="pick-chips" aria-label="Odds and stake">
+            <span class="chip">-110</span>
+            <span class="chip">1u</span>
+          </div>
+          <div class="pick-times">
+            <span class="posted">Posted 11:58 AM ET</span>
+            <span>Game: Jul 19, 1:10 PM ET</span>
+          </div>
+          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.9u</span></p>
+        </article>
+      </div>
+
+    </section>
+
+    <!-- 4. How joining works -->
+    <section class="section" id="how-it-works" aria-label="How it works">
+      <div class="section-head" data-reveal>
+        <h2>How it works</h2>
+        <p class="sub">From joining to your first card, this is the whole loop.</p>
+      </div>
+
+      <div class="steps" data-reveal-stagger>
+        <article class="soft-card step" data-reveal>
+          <div class="step-top">
+            <span class="step-num" aria-hidden="true">1</span>
+            <span class="step-icon" aria-hidden="true">
+              <!-- account icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="8" r="3.5"></circle>
+                <path d="M3.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"></path>
+                <path d="M19 7v6M16 10h6"></path>
+              </svg>
+            </span>
+          </div>
+          <h3>Join in minutes</h3>
+          <p>Create a free account, then send $30 by CashApp or Zelle with your payment screenshot. Every member is personally reviewed and approved the same day. No checkout, no auto-billing.</p>
+          <a href="/signup">Go to signup</a>
+        </article>
+        <article class="soft-card step" data-reveal>
+          <div class="step-top">
+            <span class="step-num" aria-hidden="true">2</span>
+            <span class="step-icon" aria-hidden="true">
+              <!-- daily card icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="3" width="16" height="18" rx="2.5"></rect>
+                <path d="M8 8h8M8 12h8M8 16h4"></path>
+              </svg>
+            </span>
+          </div>
+          <h3>Get the card every day</h3>
+          <p>Data-driven plays land daily, each with the exact units to stake and the odds behind it. Nothing vague: you always know what the play is, how much, and at what number.</p>
+        </article>
+        <article class="soft-card step" data-reveal>
+          <div class="step-top">
+            <span class="step-num" aria-hidden="true">3</span>
+            <span class="step-icon" aria-hidden="true">
+              <!-- approved icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M8 12.5l2.8 2.8L16.5 9"></path>
+              </svg>
+            </span>
+          </div>
+          <h3>Everything stays on the record</h3>
+          <p>Each play is posted publicly before game time and graded when it settles. Wins and losses stay up forever, nothing is edited or deleted. That is the record you scrolled through above.</p>
+        </article>
+      </div>
+
+      <p class="steps-note measure" data-reveal>The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew.</p>
+    </section>
+
+    <!-- 5. Price + CTA: substantial panel + phone-frame dashboard preview (the gold band stays retired) -->
+    <section class="section" id="join-cta" aria-label="Membership">
+      <div class="join-grid" data-reveal-stagger>
+
+        <!-- Phone device frame: truthful miniature of the real subscriber dashboard performance card.
+             Interactive demo: Edgeable = full record; Yours = the same record counted from your join date. -->
+        <div class="app-preview" data-reveal>
+          <span class="eyebrow">Inside the app</span>
+          <div class="phone" aria-label="Interactive preview of the subscriber dashboard performance card. Toggle between Edgeable's full record and Yours, the same record since your join date.">
+            <div class="phone-notch" aria-hidden="true"></div>
+            <div class="phone-screen">
+              <span class="seg" role="group" aria-label="Performance scope">
+                <button type="button" class="seg-btn on" data-scope="edgeable" aria-pressed="true">Edgeable</button>
+                <button type="button" class="seg-btn" data-scope="yours" aria-pressed="false">Yours</button>
+                <button type="button" class="seg-btn" data-scope="compare" aria-pressed="false">Compare</button>
+              </span>
+              <div class="mini-stat" id="mini-stat">+18.4 units</div>
+              <div class="mini-when" id="mini-when">All time</div>
+              <div class="mini-chart">
+                <svg viewBox="0 0 260 96" aria-hidden="true">
+                  <path class="area-fill" id="mini-fill" d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6L260 90Z"></path>
+                  <line class="zero-baseline" x1="0" y1="90" x2="260" y2="90" stroke-width="1"></line>
+                  <path class="curve" id="mini-curve" pathLength="1" fill="none" stroke-width="2" stroke-linecap="round"
+                    d="M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6"></path>
+                  <!-- second curve for the Compare view (Yours): dashed + muted = distinguishable without color alone -->
+                  <path class="curve2" id="mini-curve2" fill="none" stroke-width="2" stroke-linecap="round" style="display:none"
+                    d="M0 90C12 88 22 86 34 87C46 88 56 82 68 80C80 78 90 84 102 82C114 80 124 72 138 70C152 68 162 74 174 72C186 70 196 66 210 64C224 62 244 63 260 62"></path>
+                </svg>
+              </div>
+              <div class="mini-legend" id="mini-legend" style="display:none" aria-hidden="true">
+                <span><i class="lg-solid"></i>Edgeable, all time</span>
+                <span><i class="lg-dash"></i>Yours, since Jun 20</span>
+              </div>
+              <div class="mini-days" aria-hidden="true">
+                <div class="mini-day"><span>Aug 13</span><span class="d-win">+1.2u</span></div>
+                <div class="mini-day"><span>Aug 12</span><span class="d-loss">-0.5u</span></div>
+                <div class="mini-day"><span>Aug 11</span><span class="d-win">+2.0u</span></div>
+              </div>
+            </div>
+          </div>
+          <p class="app-blurb">Yours is the same record, counted from the day you join. Early on your curve looks smaller. Stay, and the two charts grow together: the longer you ride the record, the more of its long-run growth ends up yours.</p>
+        </div>
+
+        <div class="price-panel" data-reveal>
+          <p class="eyebrow">Edgeable membership</p>
+          <div class="price-line">
+            <span class="amount">$30</span>
+            <span class="per">/month</span>
+          </div>
+          <!-- Value description rendered as a feature list; phrases verbatim from JOURNEY.md -->
+          <ul class="feature-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Every pick.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Full record.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live performance chart.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live updates and insights.</li>
+          </ul>
+          <a class="cta-btn" href="/signup">Join Edgeable</a>
+          <p class="cta-reassure">Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 6. Legal footer -->
+  <footer class="legal">
+    <div class="container" data-reveal>
+      <div class="footer-wordmark wordmark" aria-hidden="true">
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="">
+      </div>
+      <div class="blocks">
+        <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>
+        <p>Edgeable sells picks as opinions and analysis. We are not a sportsbook, broker, or financial advisor. Nothing here constitutes financial advice or a guaranteed investment.</p>
+        <p>Past performance does not guarantee future results. Sports betting involves substantial risk of financial loss.</p>
+      </div>
+      <nav class="footer-links" aria-label="Legal">
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </nav>
+      <p class="copyright">Edgeable 2026</p>
+    </div>
+  </footer>
+
+  <!-- Demo theme toggle (mock chrome only) -->
+  <button class="theme-toggle" type="button" aria-label="Toggle theme demo">Theme</button>
+
+  <script>
+    // Demo toggle: cycles system -> dark -> light. Tokens follow prefers-color-scheme by default.
+    (function () {
+      var root = document.documentElement;
+      var states = ['system', 'dark', 'light'];
+      var i = 0;
+      document.querySelector('.theme-toggle').addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        root.classList.remove('dark', 'light');
+        if (states[i] !== 'system') root.classList.add(states[i]);
+        this.textContent = 'Theme: ' + states[i];
+      });
+    })();
+
+    // Interactive performance chart: range tabs swap sample datasets, pointer scrub reads points.
+    // Chart honesty holds in every range: zero baseline always rendered (inside the plot when a
+    // range dips below 0), y-axis never truncated, dips shown. Reduced motion: instant swaps.
+    (function () {
+      // MOCK SAMPLE DATA: cumulative net units per day, Mar 18 to Aug 14 2026 (150 points,
+      // ends +18.4, mid-July dip included). Replace with live dailyPnL data at implementation.
+      var ALL = [0,0,-0.2,0.1,0.2,-0.3,-0.4,-0.7,-0.7,-0.4,-0.5,-0.9,-0.6,-0.4,-0.8,-1.2,-1.3,-1.2,-1.2,-1.5,-1.3,-0.8,-1,-0.7,-1,-1,-1.2,-1.3,-0.9,-0.6,-0.9,-1,-0.5,-0.3,0.3,0.3,0.4,0.2,-0.1,0.2,0.5,0.5,0.8,0.7,0.7,1.2,1.7,2,1.9,1.9,1.9,1.6,2,2.4,2.8,3.4,3.2,3.9,4,4.6,4.3,4,3.7,3.6,3.7,4,4.5,4.2,4.5,5,4.9,5.2,5,5.2,5.6,5.3,5.9,6.1,6.7,6.7,6.9,6.8,7,7,7.3,7.2,7.3,7.8,8.1,8.7,9.2,9.2,9.4,9.3,9,9.3,9.2,9.6,10.2,9.9,9.9,10.4,10.1,10.7,10.5,11.4,12.3,12.7,13.3,13.7,14.5,15.1,15.5,15.2,15.2,14.6,14.5,14,13.2,13.1,12.6,11.7,11.5,11.9,12.4,13.1,13,13.4,13.6,13.6,13.4,13.8,14.2,14.3,14.3,14.4,14.3,14.2,14.9,15.2,15.9,15.9,15.8,16.6,16.1,17.3,17.7,17.4,18,18.4];
+      var START = new Date(2026, 2, 18); // day 0 = Mar 18 2026
+      var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var RANGES = { '1W': 8, '1M': 31, '3M': 91, 'All': ALL.length };
+      var NAMES = { '1W': 'Past week', '1M': 'Past month', '3M': 'Past 3 months', 'All': 'All time' };
+
+      var svg = document.querySelector('.chart-wrap svg');
+      if (!svg) return;
+      var curve = svg.querySelector('.curve');
+      var area = svg.querySelector('.area-fill');
+      var baseline = svg.querySelector('.zero-baseline');
+      var dot = svg.querySelector('.chart-dot');
+      var dotCore = svg.querySelector('.dot-core');
+      var dotHalo = svg.querySelector('.dot-halo');
+      var scrubMark = svg.querySelector('.scrub-mark');
+      var scrubLine = svg.querySelector('.scrub-line');
+      var scrubPt = svg.querySelector('.scrub-pt');
+      var chip = document.querySelector('.scrub-chip');
+      var val = document.querySelector('.chart-headline .val');
+      var when = document.querySelector('.chart-headline .when');
+      var announce = document.querySelector('.chart-announce');
+      var xlabels = document.querySelectorAll('.chart-wrap .x-labels span');
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.range-tabs [role="tab"]'));
+
+      var W = 1000, TOP = 10, BOT = 310;
+      var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var cur = null;      // current view
+      var swapping = false;
+
+      function fmtDate(i) { // i = master-array index
+        var d = new Date(START.getTime() + i * 86400000);
+        return MONTHS[d.getMonth()] + ' ' + d.getDate();
+      }
+      function fmtUnits(v) { return (v >= 0 ? '+' : '') + v.toFixed(1); }
+
+      // Rebase the window so it starts at 0; y-scale always includes 0 (no truncation).
+      function view(key) {
+        var days = RANGES[key];
+        var start = ALL.length - days;
+        var base = ALL[start];
+        var vals = [];
+        for (var i = start; i < ALL.length; i++) vals.push(Math.round((ALL[i] - base) * 10) / 10);
+        var min = Math.min(0, Math.min.apply(null, vals));
+        var max = Math.max(0, Math.max.apply(null, vals));
+        var span = (max - min) || 1;
+        function y(v) { return BOT - (v - min) / span * (BOT - TOP); }
+        function x(i) { return i / (vals.length - 1) * W; }
+        return { key: key, vals: vals, start: start, x: x, y: y, zeroY: y(0), net: vals[vals.length - 1] };
+      }
+
+      // Catmull-Rom smoothing; control points clamped to the plot band so the drawn curve
+      // never overshoots past the data extremes (chart honesty).
+      function pathFor(v) {
+        var p = v.vals.map(function (n, i) { return [v.x(i), v.y(n)]; });
+        function cl(y) { return Math.max(TOP, Math.min(BOT, y)); }
+        var d = 'M' + p[0][0].toFixed(1) + ' ' + p[0][1].toFixed(1);
+        for (var i = 0; i < p.length - 1; i++) {
+          var p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+          d += 'C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + cl(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) +
+               ' ' + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + cl(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) +
+               ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+        }
+        return d;
+      }
+
+      function apply(v) {
+        var d = pathFor(v);
+        curve.setAttribute('d', d);
+        area.setAttribute('d', d + 'L' + W + ' ' + v.zeroY.toFixed(1) + 'L0 ' + v.zeroY.toFixed(1) + 'Z');
+        baseline.setAttribute('y1', v.zeroY.toFixed(1));
+        baseline.setAttribute('y2', v.zeroY.toFixed(1));
+        var ey = v.y(v.net).toFixed(1);
+        dotCore.setAttribute('cx', W); dotCore.setAttribute('cy', ey);
+        dotHalo.setAttribute('cx', W); dotHalo.setAttribute('cy', ey);
+        val.textContent = fmtUnits(v.net) + ' units';
+        val.classList.toggle('neg', v.net < 0);
+        when.textContent = v.key === 'All' ? 'All time' : fmtDate(v.start) + ' to ' + fmtDate(ALL.length - 1);
+        for (var i = 0; i < xlabels.length; i++) {
+          var mi = v.start + Math.round(i / (xlabels.length - 1) * (v.vals.length - 1));
+          xlabels[i].textContent = fmtDate(mi);
+        }
+        svg.setAttribute('aria-label', 'Cumulative net units, ' + fmtDate(v.start) + ' to ' +
+          fmtDate(ALL.length - 1) + ', 2026. Ends at ' + fmtUnits(v.net) + ' units. Zero baseline shown.');
+        cur = v;
+      }
+
+      function hideScrub() { scrubMark.classList.remove('on'); chip.classList.remove('on'); }
+
+      function setRange(key) {
+        if (cur && cur.key === key) return;
+        var v = view(key);
+        hideScrub();
+        announce.textContent = NAMES[key] + ': ' + fmtUnits(v.net) + ' net units.';
+        if (REDUCED) { apply(v); return; } // reduced motion: instant swap, dot static
+        // Animated re-draw (~500ms). First interaction clears the load-time CSS animations
+        // (their forwards fill would override inline styles), then the swap is driven inline.
+        swapping = true;
+        curve.style.animation = 'none';
+        area.style.animation = 'none';
+        dot.style.animation = 'none';
+        dot.style.opacity = '0';   // the live dot hides during the transition
+        area.style.opacity = '0';
+        apply(v);
+        curve.style.transition = 'none';
+        curve.style.strokeDasharray = '1';
+        curve.style.strokeDashoffset = '1';
+        void curve.getBoundingClientRect(); // reflow so the redraw starts from zero
+        curve.style.transition = 'stroke-dashoffset 500ms var(--ease)';
+        curve.style.strokeDashoffset = '0';
+        area.style.transition = 'opacity 400ms var(--ease) 150ms';
+        area.style.opacity = '1';
+        window.setTimeout(function () {
+          dot.style.transition = 'opacity 260ms var(--ease)';
+          dot.style.opacity = '1'; // and reappears on the new endpoint
+          swapping = false;
+        }, 500);
+      }
+
+      // Range tabs: roving tabindex + arrow keys, aria-selected wired to real data swaps.
+      function select(tab) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+        });
+        tab.focus();
+        setRange(tab.getAttribute('data-range'));
+      }
+      tabs.forEach(function (tab, idx) {
+        tab.addEventListener('click', function () { select(tab); });
+        tab.addEventListener('keydown', function (e) {
+          var next = null;
+          if (e.key === 'ArrowRight') next = tabs[(idx + 1) % tabs.length];
+          if (e.key === 'ArrowLeft') next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          if (next) { e.preventDefault(); select(next); }
+        });
+      });
+
+      // Scrub: crosshair + date/units chip, instant updates (no easing). touch-action: pan-y
+      // stays on the svg so vertical page scroll is never hijacked.
+      function scrub(e) {
+        if (swapping || !cur) return;
+        var r = svg.getBoundingClientRect();
+        var f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+        var i = Math.round(f * (cur.vals.length - 1));
+        var px = cur.x(i), py = cur.y(cur.vals[i]);
+        scrubLine.setAttribute('x1', px.toFixed(1)); scrubLine.setAttribute('x2', px.toFixed(1));
+        scrubPt.setAttribute('cx', px.toFixed(1)); scrubPt.setAttribute('cy', py.toFixed(1));
+        scrubMark.classList.add('on');
+        chip.textContent = fmtDate(cur.start + i) + ' · ' + fmtUnits(cur.vals[i]) + 'u';
+        chip.classList.add('on');
+        // Clamp the chip to the chart's width using its REAL half-width (measured after the
+        // text is set), so it stays fully on-screen at the edges even on narrow viewports.
+        var half = (chip.offsetWidth / 2) || 56;
+        chip.style.left = Math.min(r.width - half, Math.max(half, f * r.width)) + 'px';
+      }
+      svg.addEventListener('pointermove', scrub);
+      svg.addEventListener('pointerdown', scrub);
+      svg.addEventListener('pointerleave', hideScrub);
+
+      // Initial render: All range (the load-time CSS draw-in animates the generated path).
+      apply(view('All'));
+    })();
+
+    // "Inside the app" demo: Edgeable (full record) vs Yours (same record since your join date).
+    // MOCK SAMPLE DATA: Yours = +6.2u since Jun 20; recent days identical (same picks, same grades).
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var SCOPES = {
+        edgeable: {
+          stat: '+18.4 units', when: 'All time',
+          curve: 'M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6'
+        },
+        yours: {
+          stat: '+6.2 units', when: 'Since you joined, Jun 20',
+          curve: 'M0 90C12 88 22 86 34 87C46 88 56 82 68 80C80 78 90 84 102 82C114 80 124 72 138 70C152 68 162 74 174 72C186 70 196 66 210 64C224 62 244 63 260 62'
+        },
+        compare: {
+          stat: '+18.4 / +6.2 units', when: 'All time vs since Jun 20',
+          curve: 'M0 90C10 86 18 80 28 78C38 76 46 84 56 80C66 76 74 62 86 58C98 54 106 64 116 60C126 56 134 40 146 36C158 32 166 44 176 46C186 48 194 36 204 30C214 24 224 26 234 20C244 14 252 10 260 6'
+        }
+      };
+      var stat = document.getElementById('mini-stat');
+      var when = document.getElementById('mini-when');
+      var curve = document.getElementById('mini-curve');
+      var curve2 = document.getElementById('mini-curve2');
+      var fill = document.getElementById('mini-fill');
+      var legend = document.getElementById('mini-legend');
+      var btns = document.querySelectorAll('.seg-btn');
+      function apply(scope) {
+        var d = SCOPES[scope];
+        stat.textContent = d.stat;
+        when.textContent = d.when;
+        curve.setAttribute('d', d.curve);
+        fill.setAttribute('d', d.curve + 'L260 90Z');
+        // Compare overlays Yours (dashed, muted) on Edgeable's curve, with a legend
+        curve2.style.display = scope === 'compare' ? '' : 'none';
+        legend.style.display = scope === 'compare' ? '' : 'none';
+      }
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.classList.contains('on')) return;
+          Array.prototype.forEach.call(btns, function (b) {
+            b.classList.toggle('on', b === btn);
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          if (reduce) { apply(btn.dataset.scope); return; }
+          curve.style.opacity = fill.style.opacity = 0;
+          setTimeout(function () {
+            apply(btn.dataset.scope);
+            curve.style.opacity = fill.style.opacity = 1;
+          }, 180);
+        });
+      });
+    })();
+
+    // Scroll entrances (DESIGN.md motion amendment 4): once-only, staggered card grids,
+    // above-the-fold shown instantly. No IntersectionObserver or reduced motion: nothing hides.
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!('IntersectionObserver' in window)) return;
+      var els = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+      // 80ms stagger inside marked groups (pick cards, steps, the join grid)
+      Array.prototype.forEach.call(document.querySelectorAll('[data-reveal-stagger]'), function (group) {
+        Array.prototype.forEach.call(group.querySelectorAll('[data-reveal]'), function (el, i) {
+          el.style.setProperty('--reveal-delay', (i * 80) + 'ms');
+        });
+      });
+      // anything already in the viewport at load is shown instantly (above the fold never waits)
+      els.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+      });
+      document.documentElement.classList.add('reveal-ready');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in'); // once only: never re-triggers on scroll-up
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); });
+
+      // The performance chart's sweep waits until ~60% of the chart is on screen
+      // (Sean's order: the draw should happen in front of the visitor, not off-screen).
+      var chartFrame = document.querySelector('.chart-frame');
+      if (chartFrame) {
+        var chartIo = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('chart-go'); // once only
+              chartIo.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.6 });
+        chartIo.observe(chartFrame);
+      }
+    })();
+  </script>
+</body>
+</html>
