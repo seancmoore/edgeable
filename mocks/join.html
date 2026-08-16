@@ -188,7 +188,17 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font-display);
-      background: hsl(var(--background));
+      /* Dusk echo: the hero gradient mirrored at the page's end (bottom 860px band, full-bleed),
+         bookending the page behind the membership panel + footer. Same stops as the hero,
+         so all text-on-gradient contrast pairs are already verified (contrast-2c). */
+      background:
+        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% 860px no-repeat,
+        linear-gradient(0deg,
+          hsl(var(--hero-g1)) 0%,
+          hsl(var(--hero-g2)) 44%,
+          hsl(var(--hero-g3)) 78%,
+          hsl(var(--background)) 100%) bottom center / 100% 860px no-repeat,
+        hsl(var(--background));
       color: hsl(var(--foreground));
       line-height: 1.55;
       font-size: var(--text-base);
