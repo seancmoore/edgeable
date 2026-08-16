@@ -242,6 +242,8 @@
       background: hsl(var(--muted));
     }
     .frame-dots { display: flex; gap: 6px; flex: none; }
+    /* invisible right counterweight = dots width (3x10px + 2x6px), so the address centers on the frame midline */
+    .frame-chrome::after { content: ""; flex: none; width: 42px; }
     .frame-dots span { width: 10px; height: 10px; border-radius: 50%; background: hsl(var(--border)); }
     .frame-addr {
       font-family: var(--font-mono); font-size: var(--text-xs);
