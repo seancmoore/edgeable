@@ -182,6 +182,7 @@
       --text-stat: 4.75rem;      /* 76 - hero record number, desktop */
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
       --ease-draw: cubic-bezier(0.45, 0, 0.25, 1); /* gentle in-out for the slow chart sweep */
+      --echo-h: 860px; /* dusk echo band height (bottom of page); shrinks on mobile */
     }
 
     /* === BASE === */
@@ -193,12 +194,12 @@
          bookending the page behind the membership panel + footer. Same stops as the hero,
          so all text-on-gradient contrast pairs are already verified (contrast-2c). */
       background:
-        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% 860px no-repeat,
+        radial-gradient(90% 55% at 50% 104%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) bottom center / 100% var(--echo-h) no-repeat,
         linear-gradient(0deg,
           hsl(var(--hero-g1)) 0%,
           hsl(var(--hero-g2)) 44%,
           hsl(var(--hero-g3)) 78%,
-          hsl(var(--background)) 100%) bottom center / 100% 860px no-repeat,
+          hsl(var(--background)) 100%) bottom center / 100% var(--echo-h) no-repeat,
         hsl(var(--background));
       color: hsl(var(--foreground));
       line-height: 1.55;
@@ -399,6 +400,9 @@
     .frame-nav:hover, .tamper:has(.tamper-nav:hover) { transform: translateY(-3px); }
     .frame-nav:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: var(--radius-card); }
     .tamper-nav { color: inherit; text-decoration: none; }
+    /* Static nav affordance for touch/mobile (no hover there): hidden on desktop,
+       shown inside the nav windows below 900px. Same destination labels as the overlays. */
+    .nav-hint { display: none; }
     /* Stretched link: the heading's anchor covers the whole panel */
     .tamper-nav::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-panel); }
     .tamper-nav:focus-visible::after { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
@@ -669,27 +673,79 @@
       .reveal-ready [data-reveal].in { opacity: 1; transform: none; }
     }
 
-    /* ====== MOBILE ADAPTATION (desktop-first: overrides below 900px) ====== */
+    /* ====== MOBILE ADAPTATION: first-class layout below 900px ======
+       Designed at 390px, verified 360-430px. The desktop 1200px design above is untouched;
+       everything here restyles, resizes, or HIDES (never deletes) for small screens.
+       Hidden on mobile, with rationale:
+       - .frame-chrome (browser address bars + decorative dots): the URL truncates at 360px
+         and the strip costs ~44px per frame; the glow-ring card still reads as a device
+         frame, and the /card proof link remains in the footer ("Verify the record").
+       - .teaser-when ("All time" hero teaser sublabel): the full performance chart directly
+         below states its own range; the +18.4 units value stays.
+       All proof + disclosure content stays: $30, CashApp/Zelle, 21+, losses shown. */
     @media (max-width: 900px) {
+      :root { --echo-h: 560px; } /* shorter dusk echo band on mobile */
       .container { padding: 0 1.25rem; }
-      .section { margin-top: 64px; }
-      footer.legal { margin-top: 64px; }
-      .hero { padding-top: 64px; }
+      .section { margin-top: 64px; }        /* section rhythm: 64px (56-72 mobile band) */
+      .section-head { margin-bottom: 36px; }
+      footer.legal { margin-top: 64px; padding: 32px 0 28px; }
+
+      /* hero: big but wrap-clean type; reduced paddings */
+      .hero { padding-top: 56px; }
       .dusk { padding-bottom: 64px; }
-      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
-      .hero h1 { font-size: var(--text-3xl); }
-      .hero .subhead { font-size: var(--text-base); }
-      .stat-row { grid-template-columns: 1fr 1fr 1fr; gap: 16px; justify-content: stretch; }
-      .stat .num { font-size: var(--text-2xl); }
-      .stat .num.roi, .stat .num.units { font-size: var(--text-2xl); padding-top: 0; }
-      .picks-grid, .steps { grid-template-columns: 1fr; }
-      .chart-body, .pick-card, .step { padding: 1.5rem; }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero h1 { font-size: clamp(1.9375rem, 8.4vw, 2.4375rem); }
+      .hero .subhead { margin-top: 16px; font-size: var(--text-base); }
+      .pending-eyebrow { margin-top: 32px; }
+      /* Stat row: the W-L-P record leads full-width (it IS the headline proof);
+         Net Units + ROI pair beneath. The desktop 76px nowrap mono would clip at 360px,
+         so sizes are viewport-clamped: the row can never overflow. */
+      .stat-row { margin-top: 16px; grid-template-columns: 1fr 1fr; gap: 24px 16px; justify-content: stretch; }
+      .stat:first-child { grid-column: 1 / -1; }
+      .stat .num { font-size: clamp(2.25rem, 12vw, 3.0625rem); }
+      .stat .num.roi, .stat .num.units { font-size: clamp(1.5625rem, 8vw, 1.9375rem); padding-top: 0; }
+      .stat .label { margin-top: 8px; }
+
+      /* hero nav windows: compact full-width stacked cards, whole card tappable (anchors),
+         static "See ..." hint replaces the hover-only overlay affordance */
+      .hero-right { gap: 20px; }
+      .frame-chrome { display: none; }
+      .teaser-when { display: none; }
+      .teaser-body { padding: 1.25rem 1.25rem 0.875rem; }
+      .tamper { padding: 1.25rem 1.25rem 0.875rem; }
+      .nav-hint {
+        display: inline-flex; align-items: center; gap: 8px;
+        margin-top: 12px;
+        font-weight: 600; font-size: var(--text-sm); color: hsl(var(--primary-text));
+      }
+      .nav-hint svg { width: 16px; height: 16px; flex: none; }
+
+      /* chart: near full-bleed inside its frame; tabs share the row equally */
+      .chart-body { padding: 1.25rem 1rem 1rem; }
+      .chart-top { gap: 16px; }
+      .chart-wrap { margin-top: 20px; }
+      .range-tabs { width: 100%; gap: 6px; }
+      .range-tabs [role="tab"] { flex: 1; min-width: 0; padding: 0; }
+
+      /* stacked cards, tightened */
+      .picks-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+      .steps { grid-template-columns: 1fr; gap: 16px; }
+      .pick-card, .step { padding: 1.25rem; }
+      .picks-more, .steps-note { margin-top: 28px; }
+
+      /* membership: centered phone (300px fits 360), full-width price panel */
       .join-grid { grid-template-columns: 1fr; gap: 48px; }
-      .price-panel { padding: 3rem 1.5rem; }
-      .range-tabs { width: 100%; }
-      .range-tabs [role="tab"] { flex: 1; min-width: 0; }
+      .seg-btn { min-height: 44px; } /* comfortable tap targets in the interactive demo */
+      .price-panel { padding: 2.5rem 1.25rem; }
       .cta-btn { max-width: none; }
-      .footer-links { gap: 20px; flex-wrap: wrap; }
+      .footer-links { gap: 12px; flex-wrap: wrap; }
+      .footer-links a { padding: 0 6px; } /* widens Terms/Privacy past 44px tap width */
+    }
+    /* Touch (no hover): the crossfade overlays can never appear, so hide them entirely;
+       the whole-card anchors still navigate on tap and the static .nav-hint (mobile) or
+       the visible card content itself carries the affordance. */
+    @media (hover: none) {
+      .nav-overlay { display: none; }
     }
 
     /* === prefers-reduced-motion: all animation off; chart renders complete === */
@@ -772,6 +828,9 @@
                       d="M0 124C14 118 26 112 40 110C54 108 66 116 80 112C94 108 106 92 120 88C134 84 148 94 160 90C172 86 184 66 200 60C216 54 228 70 242 74C256 78 268 60 282 52C296 44 310 46 324 40C338 34 352 26 368 20C384 14 406 12 420 8"></path>
                   </svg>
                 </div>
+                <span class="nav-hint">See performance
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+                </span>
               </div>
               <span class="nav-overlay" aria-hidden="true">See performance
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
@@ -783,6 +842,9 @@
             <aside class="tamper">
               <h2 class="eyebrow"><a class="tamper-nav" href="#how-it-works">How it all works</a></h2>
               <p>Daily plays, exact units, real odds. All on the record before kickoff. See the whole loop.</p>
+              <span class="nav-hint" aria-hidden="true">See how it works
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
               <span class="nav-overlay" aria-hidden="true">See how it works
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
               </span>
@@ -1232,8 +1294,11 @@
         scrubPt.setAttribute('cx', px.toFixed(1)); scrubPt.setAttribute('cy', py.toFixed(1));
         scrubMark.classList.add('on');
         chip.textContent = fmtDate(cur.start + i) + ' · ' + fmtUnits(cur.vals[i]) + 'u';
-        chip.style.left = Math.min(r.width - 56, Math.max(56, f * r.width)) + 'px';
         chip.classList.add('on');
+        // Clamp the chip to the chart's width using its REAL half-width (measured after the
+        // text is set), so it stays fully on-screen at the edges even on narrow viewports.
+        var half = (chip.offsetWidth / 2) || 56;
+        chip.style.left = Math.min(r.width - half, Math.max(half, f * r.width)) + 'px';
       }
       svg.addEventListener('pointermove', scrub);
       svg.addEventListener('pointerdown', scrub);

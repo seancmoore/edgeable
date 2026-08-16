@@ -204,7 +204,8 @@
   - Error / data unavailable: Replace stat row with: "Record temporarily unavailable. View the full archive." linking to /card. Tamper-evidence callout and hero anchor CTA remain visible and functional. No broken UI.
   - Record negative / short-history: stat row shows real numbers honestly, including a negative net units figure. No hiding state. A negative ROI renders as e.g. "−4.2%" in `--loss` color with the letter "ROI" label — color + value, not color alone.
   - Zero graded picks in selected range: stat row shows "0-0-0 | 0.0 Units | 0.0% ROI" — honest zero state. Tamper-evidence callout remains. Hero anchor CTA remains.
-- Mobile: single-column stack. Stat row: 3 equal-width tiles, full-width. Desktop: hero can use a two-column grid (record left, tamper callout right).
+- Mobile: single-column stack. Stat row (updated 2026-08-16 mobile pass): W-L-P leads full-width, Net Units + ROI pair beneath, all viewport-clamped type (no fixed nowrap sizes; overflow impossible by construction). Desktop: hero two-column grid (record left, tamper callout right).
+- Mobile pass decisions (2026-08-16, applied in the mock; carry into implementation): browser-frame chrome bars + "All time" teaser sublabel hidden below 900px (proof unaffected; /card link survives in footer); hover nav overlays replaced by static "See performance ↓" / "See how it works ↓" hints under (hover: none); scrub tooltip x-clamped by measured half-width; echo gradient 560px tall on mobile; 64px section gaps; all tap targets ≥44px.
 
 **2. Units performance chart**
 
