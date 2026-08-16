@@ -271,7 +271,7 @@
     - Posted timestamp (prominent, Spline Sans Mono): "Posted [time] ET" (before game start, server clock). This is the verifiable proof element.
     - Game start timestamp: "Game: [datetime] ET" (so the visitor can confirm the pick was posted first).
     - Result badge: W / L / P glyph + color (using `--win` / `--loss` / `--muted-foreground`). Shown honestly: losses displayed, not filtered. Color + letter glyph per DESIGN.md "color never sole status signal" rule.
-  - Link below cards: "See the complete record" → /card
+  - ~~Link below cards: "See the complete record" → /card~~ (Removed 2026-08-16, Sean's call: the performance chart carries the full record; the tamper panel's "Verify the archive yourself" /card link remains the archive path.)
 - States:
   - Default: 2–3 most recent graded public picks. Ordered by `postedAt` descending (most recent first).
   - No public picks yet: section is hidden entirely. No empty-state shown — a promise with nothing behind it would undermine the proof-forward pitch. Engineering: conditional render when `picks where access='public' AND status != 'pending'` count > 0.
