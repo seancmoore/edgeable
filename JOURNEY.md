@@ -284,20 +284,20 @@
 **4. How joining works**
 - Content slots:
   - Section heading: "How it works"
-  - Section subhead: "Three steps. No checkout, no bot. Every member is personally reviewed."
+  - Section subhead: "From joining to your first card, this is the whole loop." (Reworked 2026-08-16, Sean's order: the section now conveys the full service loop — daily data-driven plays with exact units + odds, posted pre-game, never deleted — while keeping the manual-payment disclosure inside step 1.)
   - Step 1:
     - Number indicator: "1" (44px circle, `--secondary` background, `--secondary-foreground` text)
-    - Heading: "Create a free account"
-    - Body: "Sign up with your email. Takes 30 seconds. No payment yet."
+    - Heading: "Join in minutes"
+    - Body: "Create a free account, then send $30 by CashApp or Zelle with your payment screenshot. Every member is personally reviewed and approved the same day. No checkout, no auto-billing."
     - [Inline link text:] "Go to signup" → /signup (secondary link style, not a button — the primary CTA is in Section 5)
   - Step 2:
     - Number indicator: "2"
-    - Heading: "Send $30 via CashApp or Zelle"
-    - Body: "Payment info is shown in-app after you create your account. Send $30 and attach your payment screenshot. No checkout, no middleman."
+    - Heading: "Get the card every day"
+    - Body: "Data-driven plays land daily, each with the exact units to stake and the odds behind it. Nothing vague: you always know what the play is, how much, and at what number."
   - Step 3:
     - Number indicator: "3"
-    - Heading: "You're in, same day"
-    - Body: "Every request is personally reviewed. If your payment clears, you get full access the same day. You'll hear from us."
+    - Heading: "Everything stays on the record"
+    - Body: "Each play is posted publicly before game time and graded when it settles. Wins and losses stay up forever, nothing is edited or deleted. That is the record you scrolled through above."
   - Reassurance note below steps (in `--muted-foreground`, smaller body size): "The manual process is intentional. No automated billing, no surprise charges. $30/month, and you choose when to renew."
 - States:
   - Default: 3 steps rendered. (Static content — no data fetch.)
