@@ -315,24 +315,29 @@
        Text-on-gradient law: only --foreground / --primary-text / --muted-foreground
        sit directly on the gradient; everything else rides a card scrim or frame. */
     .hero { padding-top: 88px; }
+    /* Columns stretch to equal height: the left copy is a flex column whose stat block is
+       pushed to the bottom edge, so the text spans exactly the height of the three windows. */
     .hero-grid {
-      display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: start;
+      display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: stretch;
     }
+    .hero-left { display: flex; flex-direction: column; align-items: flex-start; }
     .hero h1 {
       font-size: var(--text-display);
       line-height: 1.1; font-weight: 700; letter-spacing: -0.02em;
       color: hsl(var(--foreground));
     }
+    /* Blurb sized up (2026-08-18, Sean's order): same words, more presence — larger type +
+       looser leading so the left column fills its share of the three-window column height. */
     .hero .subhead {
-      margin-top: 24px; color: hsl(var(--muted-foreground)); max-width: 640px;
-      font-size: var(--text-lg); line-height: 1.55;
+      margin-top: 32px; color: hsl(var(--muted-foreground)); max-width: 640px;
+      font-size: var(--text-xl); line-height: 1.8;
     }
     /* Live-pending indicator (DESIGN.md motion amendment 5, 2026-08-16, Sean's order): a small
        red "recording" dot plus a --loss pending count. The dot's soft ~1.8s blink is the SECOND
        of exactly two permitted ambient loops on this page (the chart live dot is the other).
        All color via the theme's text-safe gold token (--primary-text: brass in light, gold in dark,
        both AA on the hero gradient); reduced motion renders the dot static, no blink. */
-    .pending-eyebrow { margin-top: 48px; display: flex; align-items: center; gap: 8px; }
+    .pending-eyebrow { margin-top: auto; padding-top: 48px; display: flex; align-items: center; gap: 8px; }
     .live-dot {
       width: 7px; height: 7px; border-radius: 50%; flex: none;
       background: hsl(var(--primary-text));
@@ -356,7 +361,7 @@
     }
     .stat .num.roi, .stat .num.units { font-size: var(--text-display); padding-top: 0.35em; }
     .stat .label { margin-top: 12px; }
-    .hero-right { display: grid; gap: 40px; }
+    .hero-right { display: grid; gap: 24px; align-content: space-between; }
     /* Hero chart teaser: the record inside a browser frame (Portal device-frame + glow ring) */
     .teaser-body { padding: 20px 24px 18px; }
     .teaser-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
@@ -503,42 +508,7 @@
       font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground));
     }
 
-    /* ====== SECTION 3: free picks (richer cards: sport + odds + units chips per JOURNEY card fields) ====== */
-    .framing { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); max-width: 640px; margin: 0 auto; }
-    .picks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
-    .pick-card { padding: 2rem; display: flex; flex-direction: column; gap: 16px; }
-    .pick-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .pick-badge {
-      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
-      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
-      border-radius: 10px; padding: 6px 12px;
-    }
-    .sport-chip {
-      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
-      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
-      border-radius: 10px; padding: 6px 12px;
-    }
-    .pick-desc { font-weight: 600; font-size: var(--text-lg); line-height: 1.3; }
-    .pick-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .pick-chips .chip {
-      font-family: var(--font-mono); font-weight: 500; font-size: var(--text-xs);
-      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
-      border-radius: 10px; padding: 5px 10px;
-    }
-    .pick-times { font-family: var(--font-mono); font-size: var(--text-sm); color: hsl(var(--muted-foreground)); display: grid; gap: 6px; }
-    .pick-times .posted { color: hsl(var(--foreground)); font-weight: 600; }
-    .pick-result { display: flex; align-items: center; gap: 10px; margin-top: auto; font-weight: 600; font-size: var(--text-sm); }
-    .result-glyph {
-      font-family: var(--font-mono); font-weight: 600;
-      width: 32px; height: 32px; border-radius: 10px;
-      display: inline-flex; align-items: center; justify-content: center;
-    }
-    .result-win  { color: hsl(var(--win)); }
-    .result-loss { color: hsl(var(--loss)); }
-    .result-win .result-glyph  { background: hsl(var(--muted)); }
-    .result-loss .result-glyph { background: hsl(var(--muted)); }
-    .picks-more { text-align: center; margin-top: 40px; }
-    .picks-more a { font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+    /* ====== SECTION 3: free picks — REMOVED 2026-08-18 (Sean's order) ====== */
 
     /* ====== SECTION 4: how it works (step icons added per richness guidance) ====== */
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -614,6 +584,28 @@
       border-radius: var(--radius-panel); box-shadow: var(--elev-ring);
       padding: 4rem 3.5rem; text-align: center;
     }
+    /* Two-window membership pitch (2026-08-18, round 2): free tier and VIP tier are
+       SEPARATE stacked panels. Free rides the accent (champagne) tint so $0/month is the
+       loudest thing in the section; VIP stays on the standard card surface. All text on
+       the accent panel uses --foreground / --accent-foreground (both AA on --accent). */
+    .tier-stack { display: grid; gap: 24px; }
+    .tier-free {
+      background: hsl(var(--accent));
+      padding: 3rem 3.5rem;
+    }
+    .tier-free .eyebrow, .tier-free .per, .tier-free .tier-copy { color: hsl(var(--accent-foreground)); }
+    .tier-copy {
+      margin: 16px auto 0; max-width: 400px;
+      font-size: var(--text-base); line-height: 1.6;
+    }
+    .tier-vip { padding: 3rem 3.5rem; }
+    .tier-stack .cta-btn { margin-top: 28px; }
+    .cta-outline {
+      background: transparent; color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--input));
+      transition: background-color 140ms var(--ease), transform 140ms var(--ease);
+    }
+    .cta-outline:hover { background: hsl(var(--muted)); filter: none; }
     .price-line { margin-top: 24px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
     .price-line .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-display); line-height: 1.0; }
     .price-line .per { color: hsl(var(--muted-foreground)); font-size: var(--text-lg); }
@@ -671,6 +663,14 @@
         transition-delay: var(--reveal-delay, 0ms);
       }
       .reveal-ready [data-reveal].in { opacity: 1; transform: none; }
+      /* Phones keep every reveal, just snappier: shorter rise + duration reads better on a
+         small viewport and costs less per frame (opacity/transform only, still GPU-composited). */
+      @media (max-width: 900px) {
+        .reveal-ready [data-reveal] {
+          transform: translateY(14px);
+          transition-duration: 450ms;
+        }
+      }
     }
 
     /* ====== MOBILE ADAPTATION: first-class layout below 900px ======
@@ -695,8 +695,8 @@
       .dusk { padding-bottom: 64px; }
       .hero-grid { grid-template-columns: 1fr; gap: 40px; }
       .hero h1 { font-size: clamp(1.9375rem, 8.4vw, 2.4375rem); }
-      .hero .subhead { margin-top: 16px; font-size: var(--text-base); }
-      .pending-eyebrow { margin-top: 32px; }
+      .hero .subhead { margin-top: 16px; font-size: var(--text-lg); line-height: 1.7; }
+      .pending-eyebrow { margin-top: 0; padding-top: 32px; }
       /* Stat row: the W-L-P record leads full-width (it IS the headline proof);
          Net Units + ROI pair beneath. The desktop 76px nowrap mono would clip at 360px,
          so sizes are viewport-clamped: the row can never overflow. */
@@ -728,15 +728,15 @@
       .range-tabs [role="tab"] { flex: 1; min-width: 0; padding: 0; }
 
       /* stacked cards, tightened */
-      .picks-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
       .steps { grid-template-columns: 1fr; gap: 16px; }
-      .pick-card, .step { padding: 1.25rem; }
-      .picks-more, .steps-note { margin-top: 28px; }
+      .step { padding: 1.25rem; }
+      .steps-note { margin-top: 28px; }
 
-      /* membership: centered phone (300px fits 360), full-width price panel */
+      /* membership: centered phone (300px fits 360), full-width tier panels stacked tight */
       .join-grid { grid-template-columns: 1fr; gap: 48px; }
       .seg-btn { min-height: 44px; } /* comfortable tap targets in the interactive demo */
       .price-panel { padding: 2.5rem 1.25rem; }
+      .tier-stack { gap: 16px; }
       .cta-btn { max-width: none; }
       .footer-links { gap: 12px; flex-wrap: wrap; }
       .footer-links a { padding: 0 6px; } /* widens Terms/Privacy past 44px tap width */
@@ -778,7 +778,7 @@
       <!-- 1. Record hero -->
       <section class="hero" aria-label="Record">
         <div class="hero-grid">
-          <div>
+          <div class="hero-left">
             <h1>Do not trust me. Check the record.</h1>
             <p class="subhead">If you have been burned by fake slips and deleted losses, good: you are exactly who this service is for. Edgeable is a picks service built on real data, and every pick goes on the record before the game starts and stays there, wins and losses alike. Have a look around before you decide anything.</p>
 
@@ -849,6 +849,20 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
               </span>
             </aside>
+
+            <!-- Free-account signup window (added 2026-08-18, Sean's order): third hero window.
+                 Same card-scrim + stretched-link pattern as the tamper callout; scrolls to the
+                 membership section at the bottom (free signup + VIP). -->
+            <aside class="tamper">
+              <h2 class="eyebrow"><a class="tamper-nav" href="#join-cta">Sign up for free picks</a></h2>
+              <p>No payment required. A free account gets you every free pick the moment it posts. Upgrade only if the record earns it.</p>
+              <span class="nav-hint" aria-hidden="true">See how to join
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
+              <span class="nav-overlay" aria-hidden="true">See how to join
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12.5l6 6 6-6"></path></svg>
+              </span>
+            </aside>
           </div>
         </div>
       </section>
@@ -916,67 +930,8 @@
       </div>
     </section>
 
-    <!-- 3. Free-pick samples -->
-    <section class="section" aria-label="Free picks">
-      <div class="section-head" data-reveal>
-        <p class="eyebrow">Free picks</p>
-        <p class="sub measure">From time to time a pick goes out free to everyone. Here are the most recent ones: posted before tip-off, graded after.</p>
-      </div>
-
-      <div class="picks-grid" data-reveal-stagger>
-        <article class="soft-card pick-card" data-reveal>
-          <div class="pick-head">
-            <span class="pick-badge">Free pick</span>
-            <span class="sport-chip">MLB</span>
-          </div>
-          <p class="pick-desc">Yankees ML (-125) vs Red Sox, 1u</p>
-          <div class="pick-chips" aria-label="Odds and stake">
-            <span class="chip">-125</span>
-            <span class="chip">1u</span>
-          </div>
-          <div class="pick-times">
-            <span class="posted">Posted 2:12 PM ET</span>
-            <span>Game: Aug 9, 7:05 PM ET</span>
-          </div>
-          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.8u</span></p>
-        </article>
-
-        <article class="soft-card pick-card" data-reveal>
-          <div class="pick-head">
-            <span class="pick-badge">Free pick</span>
-            <span class="sport-chip">MLB</span>
-          </div>
-          <p class="pick-desc">Dodgers -1.5 (+104) at Padres, 0.5u</p>
-          <div class="pick-chips" aria-label="Odds and stake">
-            <span class="chip">+104</span>
-            <span class="chip">0.5u</span>
-          </div>
-          <div class="pick-times">
-            <span class="posted">Posted 4:47 PM ET</span>
-            <span>Game: Jul 28, 9:40 PM ET</span>
-          </div>
-          <p class="pick-result result-loss"><span class="result-glyph" aria-hidden="true">L</span> <span class="mono">-0.5u</span></p>
-        </article>
-
-        <article class="soft-card pick-card" data-reveal>
-          <div class="pick-head">
-            <span class="pick-badge">Free pick</span>
-            <span class="sport-chip">MLB</span>
-          </div>
-          <p class="pick-desc">Braves vs Mets Under 8.5 (-110), 1u</p>
-          <div class="pick-chips" aria-label="Odds and stake">
-            <span class="chip">-110</span>
-            <span class="chip">1u</span>
-          </div>
-          <div class="pick-times">
-            <span class="posted">Posted 11:58 AM ET</span>
-            <span>Game: Jul 19, 1:10 PM ET</span>
-          </div>
-          <p class="pick-result result-win"><span class="result-glyph" aria-hidden="true">W</span> <span class="mono">+0.9u</span></p>
-        </article>
-      </div>
-
-    </section>
+    <!-- 3. Free-pick samples: REMOVED 2026-08-18 (Sean's order). The free-picks pitch now
+         lives in the hero signup window + the membership section's free tier below. -->
 
     <!-- 4. How joining works -->
     <section class="section" id="how-it-works" aria-label="How it works">
@@ -998,9 +953,9 @@
               </svg>
             </span>
           </div>
-          <h3>Join in minutes</h3>
-          <p>Create a free account, then send $30 by CashApp or Zelle with your payment screenshot. Every member is personally reviewed and approved the same day. No checkout, no auto-billing.</p>
-          <a href="/signup">Go to signup</a>
+          <h3>Start free in minutes</h3>
+          <p>Create a free account and free picks start landing in your dashboard, no payment required. Want VIP access? Send $30 by CashApp or Zelle with your screenshot and you are personally approved the same day. No checkout, no auto-billing.</p>
+          <a href="signup.html">Go to signup</a>
         </article>
         <article class="soft-card step" data-reveal>
           <div class="step-top">
@@ -1037,6 +992,10 @@
 
     <!-- 5. Price + CTA: substantial panel + phone-frame dashboard preview (the gold band stays retired) -->
     <section class="section" id="join-cta" aria-label="Membership">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Join Edgeable</p>
+        <h2>Start free. Go VIP when the record earns it.</h2>
+      </div>
       <div class="join-grid" data-reveal-stagger>
 
         <!-- Phone device frame: truthful miniature of the real subscriber dashboard performance card.
@@ -1078,21 +1037,37 @@
           <p class="app-blurb">Yours is the same record, counted from the day you join. Early on your curve looks smaller. Stay, and the two charts grow together: the longer you ride the record, the more of its long-run growth ends up yours.</p>
         </div>
 
-        <div class="price-panel" data-reveal>
-          <p class="eyebrow">Edgeable membership</p>
-          <div class="price-line">
-            <span class="amount">$30</span>
-            <span class="per">/month</span>
+        <!-- Reworked 2026-08-18 (Sean's order, round 2): the tiers are now two SEPARATE
+             windows so free vs VIP reads at a glance. Free = accent-tinted panel, loud
+             $0/month, gold primary CTA (funnel entry). VIP = standard card panel, $30/month,
+             feature list, outline CTA. -->
+        <div class="tier-stack" data-reveal>
+          <div class="price-panel tier-free" id="free-signup">
+            <p class="eyebrow tier-eyebrow">Free picks</p>
+            <div class="price-line">
+              <span class="amount">$0</span>
+              <span class="per">/month</span>
+            </div>
+            <p class="tier-copy">Sign up free, no payment required. Every free pick lands in your dashboard the moment it posts, on the record like everything else.</p>
+            <a class="cta-btn" href="signup.html">Sign up for free picks</a>
           </div>
-          <!-- Value description rendered as a feature list; phrases verbatim from JOURNEY.md -->
-          <ul class="feature-list">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Every pick.</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Full record.</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live performance chart.</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live updates and insights.</li>
-          </ul>
-          <a class="cta-btn" href="/signup">Join Edgeable</a>
-          <p class="cta-reassure">Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots.</p>
+
+          <div class="price-panel tier-vip">
+            <p class="eyebrow">VIP access</p>
+            <div class="price-line">
+              <span class="amount">$30</span>
+              <span class="per">/month</span>
+            </div>
+            <!-- Value description rendered as a feature list; phrases verbatim from JOURNEY.md -->
+            <ul class="feature-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Every pick.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Full record.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live performance chart.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live updates and insights.</li>
+            </ul>
+            <a class="cta-btn cta-outline" href="signup.html">Unlock VIP access</a>
+            <p class="cta-reassure">Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is personally approved. No bots.</p>
+          </div>
         </div>
 
       </div>
@@ -1302,6 +1277,10 @@
       svg.addEventListener('pointermove', scrub);
       svg.addEventListener('pointerdown', scrub);
       svg.addEventListener('pointerleave', hideScrub);
+      // Touch: pointerleave is unreliable, so the crosshair + chip clear on finger lift
+      // (mouse keeps hover behavior; pointercancel covers scroll-interrupted touches)
+      svg.addEventListener('pointerup', function (e) { if (e.pointerType !== 'mouse') hideScrub(); });
+      svg.addEventListener('pointercancel', hideScrub);
 
       // Initial render: All range (the load-time CSS draw-in animates the generated path).
       apply(view('All'));

@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<!-- /dashboard styled mock v2 (Dusk Ledger, 2026-08-18, Sean's revision orders):
+     - Dashboard / Record / Guide are IN-PAGE TABS (centered), not separate pages, with smooth
+       animated view transitions. Built for a 10-12 pick daily card without clogging the page.
+     - Dashboard view: today's card + membership + referral. Guide removed (own tab).
+     - Record view: performance chart + unit-size facts. "Yours" includes free picks from
+       inactive periods PLUS everything from membership time.
+     - Guide view: its own tabulated thing.
+     - Mobile: hamburger sidebar drawer replaces the nav row.
+     - THREE membership states via the bottom-left demo switcher (free / vip / expired),
+       with a soft cross-fade on switch.
+     Tokens verbatim from DESIGN.md (LOCKED + amended). Desktop-first 1200px; mobile adapts.
+     No hard-coded hex outside the token blocks. Every color via hsl(var(--token)). -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- browser chrome color matches the dusk band (hero-g1) per theme -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdf4e0">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#191411">
+  <title>Edgeable: Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
+
+    /* ============================================================
+       DESIGN TOKENS: DESIGN.md app token block, verbatim (HSL triples)
+       ============================================================ */
+    :root {
+        --background: 60 14.3% 97.3%;
+        --foreground: 48 5.6% 17.5%;
+        --card: 60 20% 99%;
+        --card-foreground: 48 5.6% 17.5%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 41 43% 32.4%;
+        --secondary: 40 12.5% 90.6%;
+        --secondary-foreground: 48 5.6% 17.5%;
+        --muted: 36 16.1% 93.9%;
+        --muted-foreground: 42 5.2% 38%;
+        --accent: 39 70% 92.2%;
+        --accent-foreground: 41 43% 32.4%;
+        --destructive: 4 38.5% 42.7%;
+        --destructive-foreground: 0 0% 100%;
+        --success: 124 38.9% 32.7%;
+        --border: 42 10.6% 81.6%;
+        --input: 42 5.2% 38%;
+        --ring: 41 43% 32.4%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 41 43% 32.4%;
+        --hairline: 45 11.4% 86.3%;
+        --loss: 4 38.5% 42.7%;
+        --win: 124 38.9% 32.7%;
+        --chart-fill-a: 0.16;
+        --hero-g1: 41 88% 93.5%;
+        --hero-g2: 38 73.6% 89.6%;
+        --hero-g3: 40 62.9% 86.3%;
+        --hero-wash-a: 0.10;
+        --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: light;
+    }
+    .dark {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;
+        --hairline: 40 4.5% 13.1%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --chart-fill-a: 0.22;
+        --hero-g1: 23 19% 8.2%;
+        --hero-g2: 30 33.3% 10.6%;
+        --hero-g3: 28 36.6% 16.1%;
+        --hero-wash-a: 0.15;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --destructive-foreground: 60 2.7% 7.3%;
+        --success: 125 60.2% 59.6%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --brass: 40 42.9% 65.7%;
+        --hairline: 40 4.5% 13.1%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --chart-fill-a: 0.22;
+        --hero-g1: 23 19% 8.2%;
+        --hero-g2: 30 33.3% 10.6%;
+        --hero-g3: 28 36.6% 16.1%;
+        --hero-wash-a: 0.15;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+      }
+    }
+    /* === END TOKEN BLOCKS === */
+
+    :root {
+      --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.25rem;
+      --text-xl: 1.5625rem;
+      --text-2xl: 1.9375rem;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-draw: cubic-bezier(0.45, 0, 0.25, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Views change height when tabs switch; without a reserved gutter the scrollbar pops
+       in/out and the whole centered layout shifts sideways. Keep the gutter always. */
+    html { overflow-y: scroll; scrollbar-gutter: stable; }
+    body {
+      font-family: var(--font-display);
+      /* Site theme carried in: the /join dusk gradient as a top band behind the app shell
+         (same stops, so every text-on-gradient pair is already AA-verified), dissolving
+         into --background before the content grid. Static, no animation. */
+      background:
+        radial-gradient(90% 60% at 50% -10%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) top center / 100% 560px no-repeat,
+        linear-gradient(180deg,
+          hsl(var(--hero-g1)) 0%,
+          hsl(var(--hero-g2)) 34%,
+          hsl(var(--hero-g3)) 62%,
+          hsl(var(--background)) 100%) top center / 100% 560px no-repeat,
+        hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.55; font-size: var(--text-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: hsl(var(--primary-text)); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    /* touch: no grey tap flash, no double-tap-zoom delay on controls */
+    a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid hsl(var(--ring)); outline-offset: 2px; border-radius: 4px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .eyebrow {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+    }
+    .mono { font-family: var(--font-mono); }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .soft-card {
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card); box-shadow: var(--elev-ring);
+    }
+
+    /* ====== App shell header: wordmark | CENTERED tabs | account (grid keeps true center) ====== */
+    header.shell {
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+      padding: 22px 0;
+    }
+    .wordmark { justify-self: start; }
+    .wordmark img { height: 34px; display: block; margin: -3px 0; }
+    .wordmark .wm-dark { display: none; }
+    .dark .wordmark .wm-light { display: none; }
+    .dark .wordmark .wm-dark { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) .wordmark .wm-light { display: none; }
+      :root:not(.light) .wordmark .wm-dark { display: block; }
+    }
+    nav.tabs { display: flex; gap: 4px; justify-self: center; background: hsl(var(--muted)); border-radius: var(--radius-pill); padding: 4px; }
+    nav.tabs button {
+      font-family: inherit; font-weight: 600; font-size: var(--text-sm);
+      color: hsl(var(--muted-foreground));
+      min-height: 40px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: transparent; border: 0; cursor: pointer;
+      transition: background 180ms var(--ease), color 180ms var(--ease);
+    }
+    nav.tabs button:hover { color: hsl(var(--foreground)); }
+    nav.tabs button[aria-current="page"] { background: hsl(var(--card)); color: hsl(var(--foreground)); box-shadow: 0 2px 10px -4px hsl(var(--foreground) / 0.18); }
+    .shell-right { justify-self: end; display: flex; align-items: center; gap: 8px; }
+    .account {
+      display: inline-flex; align-items: center; gap: 10px;
+      min-height: 44px; padding: 0 8px; border-radius: var(--radius-pill);
+      font-weight: 600; font-size: var(--text-sm); color: hsl(var(--foreground));
+      background: transparent; border: 0; cursor: pointer; font-family: inherit;
+    }
+    .account:hover { background: hsl(var(--muted)); }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex: none;
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: var(--text-sm);
+    }
+    /* Account dropdown (top right): sign out */
+    .account-wrap { position: relative; }
+    .acct-chev { transition: transform 200ms var(--ease); }
+    .account[aria-expanded="true"] .acct-chev { transform: rotate(180deg); }
+    .account-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 30;
+      min-width: 230px;
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card); box-shadow: var(--elev-ring);
+      padding: 8px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .account-menu:not([hidden]) { animation: menu-in 200ms var(--ease) both; }
+      @keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    }
+    .am-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px 12px; border-bottom: 1px solid hsl(var(--hairline)); margin-bottom: 6px;
+    }
+    .am-who { min-width: 0; display: grid; }
+    .am-name { font-weight: 600; font-size: var(--text-sm); }
+    .am-mail { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .am-item {
+      display: flex; align-items: center; gap: 10px;
+      min-height: 44px; padding: 0 12px; border-radius: var(--radius);
+      font-weight: 600; font-size: var(--text-sm); color: hsl(var(--foreground));
+    }
+    .am-item:hover { background: hsl(var(--muted)); text-decoration: none; }
+    .am-item svg { width: 17px; height: 17px; flex: none; color: hsl(var(--muted-foreground)); }
+    .d-signout {
+      margin-left: auto; width: 40px; height: 40px; border-radius: 50%; flex: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: hsl(var(--muted-foreground));
+    }
+    .d-signout:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+    .d-signout svg { width: 18px; height: 18px; }
+    .menu-btn {
+      display: none; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: var(--radius-pill);
+      background: transparent; border: 0; cursor: pointer; color: hsl(var(--foreground));
+    }
+    .menu-btn:hover { background: hsl(var(--muted)); }
+    .menu-btn svg { width: 22px; height: 22px; }
+
+    /* ====== Mobile drawer (hamburger sidebar) ====== */
+    .backdrop {
+      position: fixed; inset: 0; z-index: 30;
+      background: hsl(var(--foreground) / 0.35);
+      opacity: 0; pointer-events: none;
+      transition: opacity 240ms var(--ease);
+    }
+    .backdrop.on { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 40;
+      width: min(300px, 82vw);
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
+      box-shadow: var(--elev-ring);
+      padding: 24px 20px;
+      transform: translateX(-108%);
+      transition: transform 300ms var(--ease);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .drawer.open { transform: none; }
+    .drawer .wordmark { margin-bottom: 18px; }
+    .drawer .wordmark img { height: 28px; }
+    .drawer button.d-tab {
+      font-family: inherit; font-weight: 600; font-size: var(--text-base);
+      color: hsl(var(--muted-foreground)); text-align: left;
+      min-height: 48px; padding: 0 16px; border-radius: var(--radius);
+      background: transparent; border: 0; cursor: pointer;
+    }
+    .drawer button.d-tab:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+    .drawer button.d-tab[aria-current="page"] { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+    .drawer .d-account {
+      margin-top: auto; display: flex; align-items: center; gap: 12px;
+      padding: 12px 8px; border-top: 1px solid hsl(var(--hairline));
+      font-weight: 600; font-size: var(--text-sm);
+    }
+
+    /* ====== Views + smooth transitions ====== */
+    main { min-height: 60vh; }
+    .view { display: none; }
+    .view.active { display: block; }
+    @media (prefers-reduced-motion: no-preference) {
+      .view.active { animation: view-in 340ms var(--ease) both; }
+      .view.leaving { display: block; animation: view-out 150ms var(--ease) forwards; }
+      @keyframes view-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+      @keyframes view-out { to { opacity: 0; transform: translateY(-8px); } }
+      /* tier-state switch: the whole stage cross-fades (JS toggles .tier-fade) */
+      .stage { transition: opacity 180ms var(--ease); }
+      .stage.tier-fade { opacity: 0; }
+    }
+
+    /* ====== Greeting row + status chip ====== */
+    .greeting { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .greeting h1 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; }
+    .greeting .sub { margin-top: 6px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 600; font-size: var(--text-sm);
+      border-radius: var(--radius-pill); padding: 10px 18px;
+    }
+    .status-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: currentColor; }
+    .chip-free    { background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); }
+    .chip-pending { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+    .chip-vip     { background: hsl(var(--success) / 0.14); color: hsl(var(--win)); }
+    .chip-expired { background: hsl(var(--destructive) / 0.12); color: hsl(var(--loss)); }
+    @media (prefers-reduced-motion: no-preference) {
+      .chip-pending .dot { animation: pend-blink 1.8s ease-in-out infinite; }
+      @keyframes pend-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    }
+    /* Verification progress (pending membership panel): 3 mini-steps */
+    .verify-steps { margin-top: 16px; display: grid; gap: 10px; }
+    .v-step { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: hsl(var(--accent-foreground)); }
+    .v-step .vi {
+      width: 22px; height: 22px; border-radius: 50%; flex: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600;
+      background: hsl(var(--card) / 0.6); color: hsl(var(--accent-foreground));
+    }
+    .v-step.done .vi { background: hsl(var(--success) / 0.18); color: hsl(var(--win)); }
+    .v-step.now { font-weight: 600; }
+    @media (prefers-reduced-motion: no-preference) {
+      .v-step.now .vi { animation: pend-blink 1.8s ease-in-out infinite; }
+    }
+    .v-step.todo { opacity: 0.6; }
+    /* Transaction history */
+    .txn-list { margin-top: 14px; display: grid; gap: 8px; }
+    .txn-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 11px 14px;
+    }
+    .txn-what { min-width: 0; }
+    .txn-what .t { font-weight: 600; font-size: var(--text-sm); }
+    .txn-what .d { margin-top: 2px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .txn-right { text-align: right; flex: none; }
+    .txn-right .amt { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-sm); }
+    .txn-status {
+      margin-top: 3px; display: inline-block;
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase;
+      border-radius: var(--radius-pill); padding: 2px 8px;
+    }
+    .ts-ok      { background: hsl(var(--success) / 0.14); color: hsl(var(--win)); }
+    .ts-verify  { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+    .ts-fail    { background: hsl(var(--destructive) / 0.12); color: hsl(var(--loss)); }
+    /* Rejected-payment membership panel: soft danger tint, not a red alarm wall */
+    .panel-danger { background: hsl(var(--destructive) / 0.07); }
+    .fix-list { list-style: none; margin-top: 14px; display: grid; gap: 9px; }
+    .fix-list li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--text-sm); color: hsl(var(--foreground) / 0.85); }
+    .fix-list svg { width: 16px; height: 16px; flex: none; margin-top: 3px; color: hsl(var(--loss)); }
+    .txn-empty { margin-top: 14px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+
+    .dash-grid { margin-top: 24px; display: grid; grid-template-columns: 7fr 5fr; gap: 24px; align-items: start; }
+    .col { display: grid; gap: 24px; }
+    .panel { padding: 1.75rem 2rem 2rem; }
+    .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .panel-head h2 { font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .panel-head .meta { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* ====== Today's card: compact rows, built for 10-12 picks ====== */
+    .pick-list { margin-top: 18px; display: grid; gap: 8px; }
+    .pick-row {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px;
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 11px 14px;
+    }
+    .pick-row .sport {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border-radius: 10px; padding: 5px 9px; width: 52px; text-align: center;
+    }
+    .pick-row .desc { font-weight: 600; font-size: var(--text-sm); line-height: 1.35; }
+    .pick-row .sub { margin-top: 2px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .pick-row .chips { display: flex; gap: 6px; }
+    .pick-row .chip {
+      font-family: var(--font-mono); font-weight: 500; font-size: var(--text-xs);
+      background: hsl(var(--card)); color: hsl(var(--muted-foreground));
+      border-radius: 8px; padding: 4px 9px; white-space: nowrap;
+    }
+    .free-tag {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: 10px; padding: 5px 9px; width: 52px; text-align: center;
+    }
+    .pick-row.locked .desc { display: flex; align-items: center; gap: 10px; color: hsl(var(--muted-foreground)); }
+    .lock-bar { display: inline-block; height: 10px; border-radius: 6px; background: hsl(var(--secondary)); }
+    .lock-ico { width: 15px; height: 15px; flex: none; color: hsl(var(--muted-foreground)); }
+    .locked-note { margin-top: 16px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .locked-note a { font-weight: 600; }
+    .card-summary {
+      margin-top: 16px; display: flex; gap: 20px; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
+
+    /* ====== Record view ====== */
+    .seg { display: inline-flex; gap: 4px; background: hsl(var(--muted)); border-radius: var(--radius-pill); padding: 4px; }
+    .seg-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-xs); padding: 7px 15px;
+      border-radius: var(--radius-pill); color: hsl(var(--muted-foreground));
+      background: transparent; border: 0; cursor: pointer;
+      transition: background 180ms var(--ease), color 180ms var(--ease);
+    }
+    .seg .on { background: hsl(var(--gold)); color: hsl(var(--gold-ink)); border: 1px solid hsl(var(--ring)); }
+    /* The scope toggle is PINNED to the card's top-right corner (absolute), so it never
+       moves when the headline text changes width across Edgeable / Yours / Compare. */
+    .perf-panel { position: relative; }
+    .perf-panel .seg { position: absolute; top: 1.75rem; right: 2rem; }
+    .perf-top { margin-top: 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-right: 280px; min-height: 48px; }
+    .perf-val { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); line-height: 1.0; color: hsl(var(--win)); }
+    .perf-when { margin-top: 6px; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .scope-note { margin-top: 14px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); max-width: 560px; }
+    .perf-chart svg { display: block; width: 100%; height: auto; margin-top: 18px; }
+    .fill-stop-top { stop-color: hsl(var(--gold)); stop-opacity: var(--chart-fill-a); }
+    .fill-stop-bot { stop-color: hsl(var(--gold)); stop-opacity: 0; }
+    .area-fill { fill: url(#gold-fill-d); transition: opacity 180ms var(--ease); }
+    .curve { stroke: hsl(var(--gold)); transition: opacity 180ms var(--ease); }
+    .curve2 { stroke: hsl(var(--muted-foreground)); stroke-dasharray: 5 4; transition: opacity 180ms var(--ease); }
+    .zero-baseline { stroke: hsl(var(--hairline)); }
+    .chart-legend {
+      margin-top: 12px; display: none; gap: 16px; flex-wrap: wrap;
+      font-size: var(--text-xs); color: hsl(var(--muted-foreground));
+    }
+    .chart-legend.on { display: flex; }
+    .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .chart-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid hsl(var(--primary-text)); }
+    .chart-legend .lg-dash { border-top-style: dashed; border-top-color: hsl(var(--muted-foreground)); }
+    .dot-core { fill: hsl(var(--gold)); }
+    .dot-halo { fill: hsl(var(--gold) / 0.45); opacity: 0; }
+    /* Chart draw animation rides the .chart-anim class on .perf-chart. It's added when the
+       Record tab first opens (so the draw happens in front of the visitor) and RE-ADDED
+       (after a reflow) on every scope/state switch, so Edgeable, Yours, and Compare each
+       get their own full draw-in. Without .chart-anim the chart renders complete. */
+    @media (prefers-reduced-motion: no-preference) {
+      .chart-anim .curve { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1600ms var(--ease-draw) 100ms forwards; }
+      @keyframes draw { to { stroke-dashoffset: 0; } }
+      .chart-anim .area-fill { clip-path: inset(0 100% 0 0); animation: sweep 1600ms var(--ease-draw) 100ms forwards; }
+      @keyframes sweep { to { clip-path: inset(0 0 0 0); } }
+      /* the dashed Compare overlay can't dash-draw (it IS dashes), so it fades in as the
+         main sweep lands */
+      .chart-anim .curve2 { opacity: 0; animation: fade-in 700ms var(--ease) 1100ms forwards; }
+      .chart-anim .chart-dot { opacity: 0; animation: fade-in 500ms var(--ease) 1700ms forwards; }
+      .chart-anim .dot-halo { transform-box: fill-box; transform-origin: center; animation: dot-pulse 2.4s ease-out 2200ms infinite; }
+      @keyframes fade-in { to { opacity: 1; } }
+      @keyframes dot-pulse {
+        0% { transform: scale(1); opacity: 0.45; }
+        70% { transform: scale(2.6); opacity: 0; }
+        100% { transform: scale(2.6); opacity: 0; }
+      }
+    }
+    .recent-days { margin-top: 18px; display: grid; gap: 8px; }
+    .day-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      background: hsl(var(--muted)); border-radius: 10px; padding: 9px 12px;
+      color: hsl(var(--muted-foreground));
+    }
+    .day-row .d-win { color: hsl(var(--win)); font-weight: 600; }
+    .day-row .d-loss { color: hsl(var(--loss)); font-weight: 600; }
+    .sub-facts { margin-top: 18px; display: grid; gap: 8px; }
+    .fact-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      font-size: var(--text-sm); background: hsl(var(--muted)); border-radius: 10px; padding: 10px 12px;
+    }
+    .fact-row .k { color: hsl(var(--muted-foreground)); }
+    .fact-row .v { font-family: var(--font-mono); font-weight: 600; }
+    .fact-note { margin-top: 12px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* ====== Side panels / CTAs ====== */
+    .cta-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 48px; padding: 0 24px; width: 100%;
+      border-radius: var(--radius-pill);
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring));
+      font-weight: 700; font-size: var(--text-sm); cursor: pointer; text-decoration: none;
+      transition: transform 140ms var(--ease), filter 140ms var(--ease);
+    }
+    .cta-btn:hover { filter: brightness(1.04); text-decoration: none; }
+    .cta-btn:active { transform: scale(0.99); }
+    .cta-outline {
+      background: transparent; color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--input));
+      transition: background-color 140ms var(--ease);
+    }
+    .cta-outline:hover { background: hsl(var(--muted)); filter: none; }
+    .panel-tinted { background: hsl(var(--accent)); }
+    .panel-tinted .m-copy, .panel-tinted .m-note, .panel-tinted .eyebrow { color: hsl(var(--accent-foreground)); }
+    .m-price { margin-top: 12px; display: flex; align-items: baseline; gap: 6px; }
+    .m-price .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-2xl); line-height: 1.0; }
+    .m-price .per { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+    .panel-tinted .m-price .per { color: hsl(var(--accent-foreground)); }
+    .m-copy { margin-top: 12px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground)); }
+    .m-list { list-style: none; margin-top: 14px; display: grid; gap: 9px; }
+    .m-list li { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: var(--text-sm); }
+    .m-list svg { width: 17px; height: 17px; flex: none; color: hsl(var(--primary-text)); }
+    .panel .cta-btn { margin-top: 20px; }
+    .m-note { margin-top: 14px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .ref-code {
+      margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 12px 16px;
+    }
+    .ref-code .code { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg); letter-spacing: 0.08em; }
+    .copy-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-xs);
+      min-height: 38px; padding: 0 16px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 0; cursor: pointer;
+    }
+    .copy-btn:hover { background: hsl(var(--border)); }
+
+    /* ====== Guide view: the official in-depth "How to Tail My Plays" (mirrors src/pages/Guide.jsx) ====== */
+    .guide-head { margin-top: 24px; }
+    .guide-head h1 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; }
+    .guide-head .sub { margin-top: 8px; color: hsl(var(--muted-foreground)); max-width: 640px; }
+    .guide-wrap { max-width: 780px; margin: 24px auto 0; display: grid; gap: 24px; }
+    .warn-card {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 1.25rem 1.5rem; border-radius: var(--radius-card);
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      font-size: var(--text-sm); line-height: 1.6; box-shadow: var(--elev-ring);
+    }
+    .warn-card svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+    .guide-body { padding: 2rem 2.25rem 2.25rem; display: grid; gap: 34px; }
+    .g-intro { font-size: var(--text-sm); line-height: 1.6; color: hsl(var(--muted-foreground)); }
+    .g-section h2 { font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .g-section p { margin-top: 10px; font-size: var(--text-sm); line-height: 1.6; color: hsl(var(--foreground) / 0.85); }
+    .g-sub { margin-top: 16px; font-weight: 600; font-size: var(--text-sm); color: hsl(var(--foreground)); }
+    .g-section ul, .g-section ol { margin: 8px 0 0 20px; display: grid; gap: 4px; font-size: var(--text-sm); line-height: 1.6; color: hsl(var(--foreground) / 0.85); }
+    .g-section li::marker { color: hsl(var(--muted-foreground)); }
+    .g-mono { font-family: var(--font-mono); font-size: var(--text-xs); }
+    .g-fig { margin-top: 12px; border-radius: var(--radius); overflow: hidden; border: 1px solid hsl(var(--hairline)); }
+    .g-fig img { display: block; width: 100%; }
+    .g-box { margin-top: 12px; border-radius: var(--radius); padding: 1rem 1.25rem; font-size: var(--text-sm); line-height: 1.6; }
+    .g-box .head { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 8px; }
+    .g-box .head svg { width: 16px; height: 16px; flex: none; }
+    .box-danger { background: hsl(var(--destructive) / 0.07); color: hsl(var(--foreground) / 0.85); }
+    .box-danger .head { color: hsl(var(--loss)); }
+    .box-warn { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+    .box-warn .head { color: hsl(var(--accent-foreground)); }
+    .guide-note { margin: 0 auto; max-width: 780px; font-size: var(--text-xs); line-height: 1.6; color: hsl(var(--muted-foreground)); text-align: center; }
+
+    footer.legal { margin: 64px 0 32px; text-align: center; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    footer.legal a { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ====== Tier-state visibility ====== */
+    [data-tier-show] { display: none; }
+    body[data-tier="free"]     [data-tier-show~="free"],
+    body[data-tier="pending"]  [data-tier-show~="pending"],
+    body[data-tier="rejected"] [data-tier-show~="rejected"],
+    body[data-tier="vip"]      [data-tier-show~="vip"],
+    body[data-tier="expired"]  [data-tier-show~="expired"] { display: revert; }
+
+    /* ====== Set-unit-size modal (desktop: centered card; mobile: bottom sheet) ====== */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: hsl(var(--foreground) / 0.35);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .modal-backdrop:not([hidden]) { animation: fade-in-bd 200ms var(--ease) both; }
+      @keyframes fade-in-bd { from { opacity: 0; } to { opacity: 1; } }
+      .modal:not([hidden]) { animation: modal-in 280ms var(--ease) both; }
+      @keyframes modal-in { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    }
+    .modal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 60;
+      width: min(440px, calc(100vw - 2.5rem));
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-panel); box-shadow: var(--elev-ring);
+      padding: 2rem;
+    }
+    .modal h2 { font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; }
+    .modal-sub { margin-top: 10px; font-size: var(--text-sm); line-height: 1.55; color: hsl(var(--muted-foreground)); }
+    .field-label { display: block; margin-top: 18px; font-weight: 600; font-size: var(--text-sm); }
+    .field-wrap { margin-top: 8px; position: relative; }
+    .field-prefix {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: hsl(var(--muted-foreground)); font-weight: 600;
+    }
+    .field {
+      width: 100%; min-height: 50px; padding: 0 16px 0 34px;
+      font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg);
+      background: hsl(var(--muted)); color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--input) / 0.4); border-radius: var(--radius);
+    }
+    .field:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 1px; border-color: transparent; }
+    .unit-preview {
+      margin-top: 14px; display: flex; align-items: baseline; gap: 8px;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: var(--radius); padding: 12px 16px; font-size: var(--text-sm); font-weight: 600;
+    }
+    .unit-preview .up-val { font-size: var(--text-xl); line-height: 1.0; }
+    .unit-preview .up-note { font-weight: 500; font-size: var(--text-xs); }
+    .modal .btn-row { margin-top: 20px; display: grid; gap: 10px; }
+    @media (max-width: 900px) {
+      .modal {
+        top: auto; bottom: 0; left: 0; right: 0; transform: none;
+        width: 100%; border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+        padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .modal:not([hidden]) { animation: sheet-in 300ms var(--ease) both; }
+      }
+    }
+    @keyframes sheet-in { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+
+    /* ====== Demo chrome (mock only) ====== */
+    .demo-toggle {
+      position: fixed; bottom: 20px; z-index: 20;
+      min-height: 44px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm);
+      cursor: pointer; font-family: inherit;
+    }
+    .theme-toggle { right: 20px; }
+    .state-toggle { left: 20px; }
+    /* notched phones: keep fixed chrome + drawer clear of the home bar / rounded corners */
+    .demo-toggle { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+    .drawer { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); padding-left: calc(20px + env(safe-area-inset-left, 0px)); }
+
+    /* ====== Mobile adaptation ====== */
+    @media (max-width: 900px) {
+      /* Phones do 95% of traffic (Sean). Same functionality; cheaper pixels:
+         the desktop glow-ring shadow (5px ring + 64px blur on EVERY card) is the
+         costliest paint on this page, so mobile swaps it for a 1px token ring +
+         small soft shadow. Cards still read elevated; phones repaint far less. */
+      :root { --elev-ring: 0 0 0 1px hsl(var(--hairline)), 0 10px 24px -16px hsl(0 0% 0% / 0.28); }
+      .container { padding: 0 1.25rem; }
+      header.shell { grid-template-columns: auto 1fr auto; padding: 14px 0; }
+      nav.tabs { display: none; }        /* replaced by the hamburger drawer */
+      .menu-btn { display: inline-flex; }
+      .wordmark { justify-self: center; }
+      .account .name, .account svg { display: none; }
+      .greeting { margin-top: 18px; }
+      .greeting h1 { font-size: var(--text-xl); }
+      .dash-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 18px; }
+      .col { gap: 16px; }
+      .panel { padding: 1.25rem; }
+      .pick-row { grid-template-columns: auto 1fr; }
+      .pick-row .chips { grid-column: 1 / -1; }
+      /* narrow screens: toggle returns to the flow, above the headline, same spot always */
+      .perf-panel .seg { position: static; display: inline-flex; margin-top: 4px; }
+      .perf-top { padding-right: 0; flex-direction: column-reverse; align-items: flex-start; min-height: 0; }
+      .guide-wrap { gap: 16px; }
+      .guide-body { padding: 1.25rem; gap: 26px; }
+      /* long guide: sections render lazily as they approach the viewport (no visual change) */
+      .g-section { content-visibility: auto; contain-intrinsic-size: auto 520px; }
+      /* comfortable thumbs: every control at least 44px tall */
+      .seg-btn { min-height: 44px; padding: 0 14px; }
+      .copy-btn { min-height: 44px; }
+      .status-chip { padding: 12px 18px; }
+      footer.legal { margin: 48px 0 88px; } /* clears the fixed demo buttons */
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+      }
+      .curve { stroke-dasharray: none; stroke-dashoffset: 0; }
+      .chart-dot { opacity: 1; }
+      .view.leaving { display: none; }
+    }
+  </style>
+</head>
+<body data-tier="free">
+
+  <!-- Mobile drawer + backdrop -->
+  <div class="backdrop" hidden></div>
+  <aside class="drawer" aria-label="Menu" hidden>
+    <span class="wordmark" aria-hidden="true">
+      <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="">
+      <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="">
+    </span>
+    <button class="d-tab" type="button" data-tab="dashboard" aria-current="page">Dashboard</button>
+    <button class="d-tab" type="button" data-tab="record">Record</button>
+    <button class="d-tab" type="button" data-tab="guide">Guide</button>
+    <div class="d-account">
+      <span class="avatar" aria-hidden="true">D</span>
+      <span>Danimals</span>
+      <a class="d-signout" href="login.html" aria-label="Sign out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
+      </a>
+    </div>
+  </aside>
+
+  <div class="container">
+
+    <!-- App shell header -->
+    <header class="shell">
+      <button class="menu-btn" type="button" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+      <a class="wordmark" href="dashboard.html" aria-label="Edgeable dashboard">
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable">
+      </a>
+      <nav class="tabs" aria-label="Main">
+        <button type="button" data-tab="dashboard" aria-current="page">Dashboard</button>
+        <button type="button" data-tab="record">Record</button>
+        <button type="button" data-tab="guide">Guide</button>
+      </nav>
+      <div class="shell-right">
+        <div class="account-wrap">
+          <button class="account" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu">
+            <span class="avatar" aria-hidden="true">D</span>
+            <span class="name">Danimals</span>
+            <svg class="acct-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <div class="account-menu" role="menu" hidden>
+            <div class="am-head">
+              <span class="avatar" aria-hidden="true">D</span>
+              <span class="am-who">
+                <span class="am-name">Danimals</span>
+                <span class="am-mail">danimals@gmail.com</span>
+              </span>
+            </div>
+            <a class="am-item" role="menuitem" href="login.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
+              Sign out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="stage">
+
+      <!-- ================= VIEW: DASHBOARD ================= -->
+      <section class="view active" id="view-dashboard" aria-label="Dashboard">
+
+        <div class="greeting">
+          <div>
+            <h1>Welcome back, Danimals</h1>
+            <p class="sub" data-tier-show="free">Free account. Free picks land here the moment they post.</p>
+            <p class="sub" data-tier-show="pending">Payment received. Your VIP is being verified, usually the same day.</p>
+            <p class="sub" data-tier-show="rejected">Your payment couldn't be verified yet. Two quick checks below will fix it.</p>
+            <p class="sub" data-tier-show="vip">VIP access is active. Today's full card is below.</p>
+            <p class="sub" data-tier-show="expired">Your VIP access has ended. Your record is safe; the card is waiting.</p>
+          </div>
+          <span class="status-chip chip-free" data-tier-show="free"><span class="dot" aria-hidden="true"></span>Free account</span>
+          <span class="status-chip chip-pending" data-tier-show="pending"><span class="dot" aria-hidden="true"></span>VIP · verifying payment</span>
+          <span class="status-chip chip-expired" data-tier-show="rejected"><span class="dot" aria-hidden="true"></span>VIP · payment needs attention</span>
+          <span class="status-chip chip-vip" data-tier-show="vip"><span class="dot" aria-hidden="true"></span>VIP active · renews Sep 12</span>
+          <span class="status-chip chip-expired" data-tier-show="expired"><span class="dot" aria-hidden="true"></span>VIP expired Aug 12</span>
+        </div>
+
+        <div class="dash-grid">
+          <div class="col">
+            <!-- Today's card: 11 picks (2 free + 9 VIP) — the realistic daily volume -->
+            <section class="soft-card panel" aria-label="Today's card">
+              <div class="panel-head">
+                <h2>Today's card</h2>
+                <span class="meta">Mon Aug 18 · 11 picks · posted 11:42 AM ET</span>
+              </div>
+
+              <div class="pick-list" id="pick-list"><!-- rows injected by script (11 picks) --></div>
+
+              <p class="locked-note" data-tier-show="free">9 VIP picks posted today. They went on the record at 11:42 AM, you just can't see them yet. <a href="#" data-goto="membership">Unlock VIP access</a></p>
+              <p class="locked-note" data-tier-show="pending">Today's VIP picks are posted and waiting. They unlock the moment your payment is verified, usually the same day.</p>
+              <p class="locked-note" data-tier-show="rejected">Today's VIP picks are posted and waiting. Sort out the payment check in your membership panel and they unlock on approval.</p>
+              <p class="locked-note" data-tier-show="expired">Today's 9 VIP picks are posted and waiting. <a href="#" data-goto="membership">Renew to see them</a></p>
+              <div class="card-summary" data-tier-show="vip">
+                <span>Total staked: 9.5u</span>
+                <span>Pending: 11</span>
+                <span>All picks locked before game time</span>
+              </div>
+            </section>
+          </div>
+
+          <div class="col">
+            <!-- Membership panel: per-tier -->
+            <section class="soft-card panel panel-tinted" id="membership" data-tier-show="free" aria-label="Membership">
+              <p class="eyebrow">Your membership</p>
+              <div class="m-price"><span class="amount mono">$0</span><span class="per">/month · free picks</span></div>
+              <p class="m-copy">You get every free pick the moment it posts. The full daily card, every play with exact units and odds, is VIP.</p>
+              <ul class="m-list">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Every pick, every day.</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Exact units and odds.</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live updates and insights in the private Telegram channel.</li>
+              </ul>
+              <a class="cta-btn" href="upgrade.html">Unlock VIP · $30/month</a>
+              <p class="m-note">CashApp or Zelle with your screenshot. Personally approved same day.</p>
+            </section>
+
+            <!-- Pending verification: proof submitted, approval in progress -->
+            <section class="soft-card panel panel-tinted" data-tier-show="pending" aria-label="Membership">
+              <p class="eyebrow">Your membership</p>
+              <div class="m-price"><span class="amount mono">Verifying</span><span class="per">VIP · 6 months</span></div>
+              <p class="m-copy">Payment received: $171 by Cash App. It's being personally matched and approved, usually the same day. Nothing else is needed from you.</p>
+              <div class="verify-steps" aria-label="Verification progress">
+                <div class="v-step done"><span class="vi" aria-hidden="true">✓</span>Proof received</div>
+                <div class="v-step now"><span class="vi" aria-hidden="true">●</span>Being verified</div>
+                <div class="v-step todo"><span class="vi" aria-hidden="true">3</span>Approved: card + Telegram invite unlock</div>
+              </div>
+              <p class="m-note">Sent the wrong amount or forgot the username note? Nothing is lost, it just may take a little longer to match.</p>
+            </section>
+
+            <!-- Payment rejected / couldn't be matched: clear cause + fix path, money-is-safe reassurance -->
+            <section class="soft-card panel panel-danger" data-tier-show="rejected" aria-label="Membership">
+              <p class="eyebrow">Your membership</p>
+              <div class="m-price"><span class="amount mono" style="color: hsl(var(--loss));">Needs attention</span><span class="per">VIP · 6 months</span></div>
+              <p class="m-copy">Your $171 Cash App payment couldn't be matched to your account. Almost always it's one of these:</p>
+              <ul class="fix-list">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>The payment note is missing your username, <strong class="mono">&nbsp;Danimals</strong></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>The amount sent doesn't match <strong class="mono">&nbsp;$171</strong></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>The screenshot is cropped or unreadable</li>
+              </ul>
+              <a class="cta-btn" href="upgrade.html">Resubmit your proof</a>
+              <p class="m-note">Your money isn't lost. If you paid, it gets matched and approved the moment we can connect it to your account. Stuck? Message support from the account menu.</p>
+            </section>
+
+            <section class="soft-card panel" data-tier-show="vip" aria-label="Membership">
+              <p class="eyebrow">Your membership</p>
+              <div class="m-price"><span class="amount mono">VIP</span><span class="per">$30/month</span></div>
+              <div class="sub-facts">
+                <div class="fact-row"><span class="k">Status</span><span class="v" style="color: hsl(var(--win));">Active</span></div>
+                <div class="fact-row"><span class="k">Renews</span><span class="v">Sep 12, 2026</span></div>
+                <div class="fact-row"><span class="k">Member since</span><span class="v">Jun 20, 2026</span></div>
+              </div>
+              <a class="cta-btn cta-outline" href="upgrade.html">Extend membership</a>
+              <p class="m-note">No auto-billing. You choose when to renew.</p>
+            </section>
+
+            <section class="soft-card panel" data-tier-show="expired" aria-label="Membership">
+              <p class="eyebrow">Your membership</p>
+              <div class="m-price"><span class="amount mono">Expired</span><span class="per">Aug 12, 2026</span></div>
+              <p class="m-copy">Nothing was lost: your performance history and account are intact. Renew and the full card is back instantly after approval.</p>
+              <a class="cta-btn" href="upgrade.html">Renew VIP · $30/month</a>
+              <p class="m-note">CashApp or Zelle with your screenshot. Personally approved same day.</p>
+            </section>
+
+            <!-- Transaction history: what you bought and when. Mirrors the transactions
+                 collection (subscription purchases + referral bonuses), newest first. -->
+            <section class="soft-card panel" aria-label="Transaction history">
+              <p class="eyebrow">Transaction history</p>
+
+              <p class="txn-empty" data-tier-show="free">No purchases yet. Your VIP receipts will show up here.</p>
+
+              <div class="txn-list" data-tier-show="pending">
+                <div class="txn-row">
+                  <span class="txn-what">
+                    <span class="t">VIP · 6 months</span>
+                    <span class="d">Aug 18, 2026 · Cash App</span>
+                  </span>
+                  <span class="txn-right">
+                    <span class="amt">$171</span><br>
+                    <span class="txn-status ts-verify">Verifying</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="txn-list" data-tier-show="rejected">
+                <div class="txn-row">
+                  <span class="txn-what">
+                    <span class="t">VIP · 6 months</span>
+                    <span class="d">Aug 18, 2026 · Cash App</span>
+                  </span>
+                  <span class="txn-right">
+                    <span class="amt">$171</span><br>
+                    <span class="txn-status ts-fail">Needs attention</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="txn-list" data-tier-show="vip expired">
+                <div class="txn-row">
+                  <span class="txn-what">
+                    <span class="t">Referral bonus</span>
+                    <span class="d">Jul 8, 2026 · code used by a friend</span>
+                  </span>
+                  <span class="txn-right">
+                    <span class="amt">+2 weeks</span><br>
+                    <span class="txn-status ts-ok">Applied</span>
+                  </span>
+                </div>
+                <div class="txn-row">
+                  <span class="txn-what">
+                    <span class="t">VIP · 1 month</span>
+                    <span class="d">Jun 20, 2026 · Zelle</span>
+                  </span>
+                  <span class="txn-right">
+                    <span class="amt">$30</span><br>
+                    <span class="txn-status ts-ok">Approved</span>
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Referral -->
+            <section class="soft-card panel" aria-label="Referrals">
+              <p class="eyebrow">Refer a friend</p>
+              <p class="m-copy">They enter your code at signup. When they're approved, you BOTH get +2 weeks of VIP free.</p>
+              <div class="ref-code">
+                <span class="code">7KQ4MD</span>
+                <button class="copy-btn" type="button">Copy link</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: RECORD ================= -->
+      <section class="view" id="view-record" aria-label="Record">
+        <div class="greeting">
+          <div>
+            <h1>The record</h1>
+            <p class="sub">Net units over time. Dips included, nothing deleted.</p>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="col">
+            <section class="soft-card panel perf-panel" aria-label="Performance chart">
+              <div class="perf-top">
+                <div>
+                  <div class="perf-val" id="perf-val">+18.4 units</div>
+                  <div class="perf-when" id="perf-when">All time · 61-42-3 · ROI +8.9%</div>
+                </div>
+                <span class="seg" role="group" aria-label="Performance scope">
+                  <button type="button" class="seg-btn on" data-scope="edgeable" aria-pressed="true">Edgeable</button>
+                  <button type="button" class="seg-btn" data-scope="yours" aria-pressed="false">Yours</button>
+                  <button type="button" class="seg-btn" data-scope="compare" aria-pressed="false">Compare</button>
+                </span>
+              </div>
+
+              <!-- "Yours" counts EVERYTHING you could see when it posted: free picks from your
+                   inactive stretches plus the full card during membership time -->
+              <p class="scope-note" id="scope-note" hidden></p>
+
+              <div class="perf-chart">
+                <svg viewBox="0 0 640 200" role="img" aria-label="Cumulative net units. Rises from zero to plus 18.4 units, dips included. Zero baseline shown.">
+                  <defs>
+                    <linearGradient id="gold-fill-d" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" class="fill-stop-top"></stop>
+                      <stop offset="1" class="fill-stop-bot"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path class="area-fill" id="perf-fill" d="M0 190C22 184 40 172 62 168C84 164 100 176 122 170C144 164 160 138 184 130C208 122 224 138 246 132C268 126 284 96 308 88C332 80 348 102 370 106C392 110 408 84 430 72C452 60 468 64 490 56C512 48 528 36 552 28C576 20 616 16 640 10L640 190Z"></path>
+                  <line class="zero-baseline" x1="0" y1="190" x2="640" y2="190" stroke-width="1"></line>
+                  <path class="curve" id="perf-curve" pathLength="1" fill="none" stroke-width="2.5" stroke-linecap="round"
+                    d="M0 190C22 184 40 172 62 168C84 164 100 176 122 170C144 164 160 138 184 130C208 122 224 138 246 132C268 126 284 96 308 88C332 80 348 102 370 106C392 110 408 84 430 72C452 60 468 64 490 56C512 48 528 36 552 28C576 20 616 16 640 10"></path>
+                  <!-- Compare overlay: Yours as a dashed muted line (distinguishable without color alone) -->
+                  <path class="curve2" id="perf-curve2" fill="none" stroke-width="2" stroke-linecap="round" style="display:none" d=""></path>
+                  <g class="chart-dot" aria-hidden="true">
+                    <circle class="dot-halo" id="perf-halo" cx="640" cy="10" r="5"></circle>
+                    <circle class="dot-core" id="perf-dot" cx="640" cy="10" r="4.5"></circle>
+                  </g>
+                </svg>
+                <div class="chart-legend" id="chart-legend" aria-hidden="true">
+                  <span><i></i>Edgeable, all time</span>
+                  <span><i class="lg-dash"></i><span id="legend-yours">Yours</span></span>
+                </div>
+              </div>
+
+              <div class="recent-days" aria-label="Recent days">
+                <div class="day-row"><span>Aug 17</span><span class="d-win">+1.4u</span></div>
+                <div class="day-row"><span>Aug 16</span><span class="d-loss">-0.9u</span></div>
+                <div class="day-row"><span>Aug 15</span><span class="d-win">+2.1u</span></div>
+                <div class="day-row"><span>Aug 14</span><span class="d-win">+0.6u</span></div>
+                <div class="day-row"><span>Aug 13</span><span class="d-loss">-1.2u</span></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col">
+            <!-- Units explained + YOUR unit size lives with the record it scales.
+                 One whole-panel variant per tier (no mixed rows: that's what broke the spacing). -->
+            <section class="soft-card panel" aria-label="Your units">
+              <p class="eyebrow">Your unit size</p>
+
+              <div data-tier-show="vip expired">
+                <div class="m-price"><span class="amount mono">$25</span><span class="per">= 1 unit</span></div>
+                <div class="sub-facts">
+                  <div class="fact-row"><span class="k">A 1u play costs you</span><span class="v">$25</span></div>
+                  <div class="fact-row"><span class="k">A 0.5u play</span><span class="v">$12.50</span></div>
+                  <div class="fact-row"><span class="k">+18.4u all time equals</span><span class="v" style="color: hsl(var(--win));">+$460</span></div>
+                </div>
+                <p class="fact-note">A unit is 1/500th of your bankroll (0.2%). Same unit whether you're up or down; never resize on emotion.</p>
+              </div>
+
+              <div data-tier-show="free pending rejected">
+                <div class="m-price"><span class="amount mono">Not set</span></div>
+                <p class="m-copy">Picks are tracked in units, never dollars. A unit is 1/500th of your bankroll (0.2%): set it once and every stake on the card scales to you.</p>
+                <button class="cta-btn cta-outline" type="button" id="open-unit-modal">Set your unit size</button>
+              </div>
+            </section>
+
+            <section class="soft-card panel" aria-label="Record integrity">
+              <p class="eyebrow">Why you can trust this</p>
+              <p class="m-copy">Every pick posts before game time with a server timestamp, grades one way when it settles, and can never be edited or deleted. Wins and losses stay up forever.</p>
+              <a href="card.html" style="font-weight: 600; font-size: var(--text-sm); min-height: 44px; display: inline-flex; align-items: center;">See the public record</a>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: GUIDE (mirrors the official /guide, src/pages/Guide.jsx) ================= -->
+      <section class="view" id="view-guide" aria-label="Guide">
+        <div class="guide-head">
+          <h1>How to Tail My Plays</h1>
+          <p class="sub">Understanding my card, units, and bankroll strategy.</p>
+        </div>
+
+        <div class="guide-wrap">
+          <div class="warn-card" role="note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"></path><path d="M12 9v4M12 16.5v.5"></path></svg>
+            <p>You must be 21+ (or legal age where you live). This is for entertainment and education, not financial advice, and no result is ever guaranteed. Only risk what you can afford to lose. If gambling stops being fun, step away; help is available 24/7 at <strong>1-800-GAMBLER</strong>.</p>
+          </div>
+
+          <div class="soft-card guide-body">
+            <p class="g-intro">This guide explains exactly how to read my daily card, what each part means, and how to responsibly tail my plays over the long term.</p>
+
+            <section class="g-section">
+              <h2>1. How to Read the Card</h2>
+              <figure class="g-fig">
+                <img src="../public/guide-card.jpg" loading="lazy" decoding="async" alt="Example daily card: each row shows the play, odds, game and time, and units risked.">
+              </figure>
+              <p>Using the card above as a reference, each row is one individual wager. From left to right:</p>
+              <p class="g-sub">Left side — the play itself</p>
+              <ul>
+                <li>A spread (e.g. +3, -2)</li>
+                <li>A total (Over / Under)</li>
+                <li>A first-half line (1H)</li>
+                <li>A game and start time</li>
+              </ul>
+              <p>Examples: <span class="g-mono">OSU -2 · Under 5.5 · ATL +3 · Under 109.5 (1H)</span>. This is the actual market selection you should be placing.</p>
+              <p class="g-sub">Middle — the odds</p>
+              <p>Next to the play are the odds I personally locked in (e.g. -110, -105, -101). Keep in mind:</p>
+              <ul>
+                <li>Odds vary by sportsbook</li>
+                <li>Lines can move quickly</li>
+                <li>You won't always match my exact odds</li>
+              </ul>
+              <p>That's why I strongly recommend having access to as many sportsbooks as possible. The more books you have, the closer you'll get to my number (or even beat it), the more long-term edge you preserve, and the less value you bleed over time. You don't need to match my exact odds, but getting close matters — I send cards in advance for a reason.</p>
+              <p class="g-sub">Right side — units ("x.xu")</p>
+              <p>The number on the far right (e.g. 4.5u, 5.25u) is how many units I'm wagering on that play. A unit is a fixed, small fraction of your bankroll — realistically 1/500th of it (0.2%) — not a set dollar amount for everyone. You convert it to a dollar figure once, then never change it.</p>
+              <ul>
+                <li>If 1 unit = $10, then 5u = $50</li>
+                <li>If 1 unit = $100, then 5u = $500</li>
+              </ul>
+              <p>You decide what a unit is before you start, and it should never change based on emotion or confidence.</p>
+            </section>
+
+            <section class="g-section">
+              <h2>2. Why Units Matter More Than Dollars</h2>
+              <p>On the official card, I avoid flat staking and any "feel for the amount" approach. Units let me:</p>
+              <ul>
+                <li>Scale positions properly</li>
+                <li>Control risk</li>
+                <li>Stay consistent through swings</li>
+                <li>Avoid emotional decisions (this is the most important)</li>
+              </ul>
+              <p>Some plays carry more edge than others — that's why unit size varies. I use a rough model to decide how much to risk on each play. There will be times I put more on a play than the math strictly justifies, based on personal feel — and I'll usually tell the channel when I've juiced the risk. If I don't say anything, a good rule of thumb: anything over 6 units has some personal opinion baked in.</p>
+            </section>
+
+            <section class="g-section">
+              <h2>3. Volatility: What You MUST Be Prepared For</h2>
+              <div class="g-box box-danger">
+                <p class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3L2 20h20z"></path><path d="M12 9v5M12 17.5v.5"></path></svg>The most important section.</p>
+                <p>If you tail my plays, you will experience:</p>
+                <ul>
+                  <li>Days where I go 0-10</li>
+                  <li>Weeks where I lose 100+ units</li>
+                  <li>Even full months that net -200 units</li>
+                </ul>
+                <p style="margin-top: 8px;">This is not a mistake, a collapse, or a sign the strategy "stopped working." This is variance. If you're checking your balance after every play, tilting after one bad day, chasing losses, or scaling units emotionally — this approach is not for you.</p>
+              </div>
+            </section>
+
+            <section class="g-section">
+              <h2>4. Recommended Starting Bankroll</h2>
+              <p><strong>Minimum: 500 units</strong> — that's where the 1/500th rule comes from. It lets you survive drawdowns, stick to the system, and avoid emotional decision-making.</p>
+              <p><strong>What I personally run: 1,000 units.</strong> At that size I rarely have more than 0.5% of my bankroll on a single wager — so I don't feel the need to watch the games, and I don't tilt when a play loses. The whole goal is to stay out of any position where I'd get emotional.</p>
+            </section>
+
+            <section class="g-section">
+              <h2>5. The Chase System (Baseball)</h2>
+              <p>Baseball is different from other sports because teams play in <strong>series</strong>. In the NBA the Knicks might play a new opponent almost every night. In MLB, when the Yankees play the Orioles they'll usually face them 2-4 games in a row. That back-to-back structure is what makes <strong>"chasing"</strong> a play possible: we get multiple cracks at the same edge, against the same matchup, on consecutive days.</p>
+              <p class="g-sub">How a chase works</p>
+              <p>Some of my plays are <strong>chase plays</strong>. Instead of a one-and-done entry, we ride the play through the games of the series until it hits — or until the series runs out. Every chase is built to win <strong>5 units net</strong>. If it wins in game 1, we're done. If it loses, we size the next entry to recover what we lost <em>and</em> still net our 5 units, then run it back in the next game of that series. Chases run on a <strong>three-game series</strong>, so it's at most three entries — if it still hasn't hit after game 3, the chase is over and we take the loss.</p>
+              <p class="g-sub">Example — "Under 8.5" chase</p>
+              <ol>
+                <li>Game 1: risk 5u to win 5u on the Under 8.5. If it cashes → <strong>+5u</strong>, chase over.</li>
+                <li>Game 2 (only if game 1 lost): risk 10u to win 10u — recovers the 5u lost and still nets 5u.</li>
+                <li>Game 3 (only if still losing): risk 20u to win 20u — recovers the 15u lost plus our 5u target.</li>
+              </ol>
+              <p>If it never hits by the end of game 3, we take the loss — a chase never carries into a different series. One note on the number itself: a chase is named for a number, like Under 8.5, but you always take the line actually posted for that game. A higher total on an Under only works in your favor, and that's the line that counts as the system play.</p>
+              <p class="g-sub">The ML / +1.5 System</p>
+              <p>One specific chase keys off a <strong>team name</strong> instead of a fixed play type. When the play just reads a team — say <span class="g-mono">Yankees</span> for their series vs. the Orioles — the play each game depends on whether the Yankees are favored:</p>
+              <ul>
+                <li>Favored that game → play their moneyline (ML).</li>
+                <li>Underdog that game → play their +1.5 run-line spread.</li>
+              </ul>
+              <p>It's still one continuous chase to net 5 units; only the play type flips game-to-game with their role.</p>
+              <div class="g-box box-warn">
+                <p class="head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3L2 20h20z"></path><path d="M12 9v5M12 17.5v.5"></path></svg>This is a system — not emotional chasing.</p>
+                <p>A chase here is a <strong>pre-defined, bounded plan</strong>: the number of games is capped by the series, the entries are set in advance, and the whole sequence targets a fixed 5 units. Because the stake grows each game, a full chase can risk a real chunk of bankroll — e.g. <span class="g-mono">5 + 10 + 20 = 35u</span> across a 3-game series to net 5u. That's exactly why the unit and bankroll guidance above matters: size your unit so a full failed chase is something you can absorb without flinching.</p>
+              </div>
+            </section>
+
+            <section class="g-section">
+              <h2>6. Long-Term Mindset</h2>
+              <p>At the end of the day: it's your money, your bankroll, your responsibility. You're always free to reach out with questions. I genuinely want your experience to go well, and I'm happy to give advice. But I can't manage your account and I can't monitor your actions. The discipline is on you.</p>
+            </section>
+
+            <section class="g-section">
+              <h2>7. Final Notes</h2>
+              <p>If you choose to tail:</p>
+              <ul>
+                <li>Respect the units</li>
+                <li>Respect your bankroll</li>
+                <li>Respect the variance</li>
+                <li>Trust the long-term edge</li>
+              </ul>
+              <p>I hope you profit from this. And even if you don't, I hope you walk away understanding what profitable, disciplined gambling actually looks like.</p>
+            </section>
+          </div>
+
+          <p class="guide-note">Responsible gambling: only risk what you can afford to lose, and only if you're 21+ (or legal age in your area). This service is for entertainment and education, not financial advice, and no outcome is guaranteed. If gambling stops being fun or starts causing harm, please step away — help is available 24/7 at 1-800-GAMBLER.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="legal">
+      <p>21+ only. Picks are opinions, not financial advice. Past performance does not guarantee future results. · <a href="#">Terms</a> · <a href="#">Privacy</a></p>
+    </footer>
+  </div>
+
+  <!-- Set-unit-size modal: enter bankroll, unit = 1/500th (0.2%), live preview -->
+  <div class="modal-backdrop" id="unit-backdrop" hidden></div>
+  <div class="modal" id="unit-modal" role="dialog" aria-modal="true" aria-labelledby="unit-title" hidden>
+    <h2 id="unit-title">Set your unit size</h2>
+    <p class="modal-sub">Enter your bankroll: the amount you've set aside for this, that you can afford to lose. Your unit is 1/500th of it.</p>
+    <label class="field-label" for="bankroll-input">Your bankroll</label>
+    <div class="field-wrap">
+      <span class="field-prefix mono">$</span>
+      <input class="field" id="bankroll-input" type="number" inputmode="numeric" min="0" step="100" placeholder="12,500" value="12500">
+    </div>
+    <div class="unit-preview">
+      <span>1 unit =</span>
+      <span class="mono up-val" id="unit-preview">$25</span>
+      <span class="up-note">(1/500th · 0.2%)</span>
+    </div>
+    <div class="btn-row">
+      <button class="cta-btn" type="button" id="unit-save">Save unit size</button>
+      <button class="cta-btn cta-outline" type="button" id="unit-cancel">Cancel</button>
+    </div>
+    <p class="m-note" style="text-align: center;">You can change this anytime. It only affects how dollars are shown to you, never the record.</p>
+  </div>
+
+  <!-- Demo chrome (mock only) -->
+  <button class="demo-toggle state-toggle" type="button">State: Free account</button>
+  <button class="demo-toggle theme-toggle" type="button" aria-label="Toggle theme demo">Theme</button>
+
+  <script>
+    // ===== Today's card data (MOCK): 11 picks = 2 free + 9 VIP, one posted-at batch =====
+    var PICKS = [
+      { sport: 'MLB', free: true,  desc: 'Yankees ML (-125) vs Red Sox, 1u', odds: '-125', units: '1u', game: '7:05 PM ET' },
+      { sport: 'MLB', free: false, desc: 'Mariners -1.5 (+118) at Athletics, 0.5u', odds: '+118', units: '0.5u', game: '9:40 PM ET' },
+      { sport: 'MLB', free: false, desc: 'Cubs vs Brewers Under 9 (-105), 1u', odds: '-105', units: '1u', game: '8:10 PM ET' },
+      { sport: 'WNBA', free: false, desc: 'Aces -4.5 (-110) vs Sky, 1u', odds: '-110', units: '1u', game: '10:00 PM ET' },
+      { sport: 'MLB', free: true,  desc: 'Braves vs Mets Under 8.5 (-110), 0.5u', odds: '-110', units: '0.5u', game: '7:10 PM ET' },
+      { sport: 'MLB', free: false, desc: 'Orioles ML (+102) at Rays, 1u', odds: '+102', units: '1u', game: '7:35 PM ET' },
+      { sport: 'UFC', free: false, desc: 'Fighter A ML (-135), 0.5u', odds: '-135', units: '0.5u', game: 'Sat card' },
+      { sport: 'MLB', free: false, desc: 'Dodgers team total Over 4.5 (-115), 1u', odds: '-115', units: '1u', game: '9:40 PM ET' },
+      { sport: 'WNBA', free: false, desc: 'Liberty vs Fever Over 162.5 (-108), 1u', odds: '-108', units: '1u', game: '7:00 PM ET' },
+      { sport: 'MLB', free: false, desc: 'Giants +1.5 (-140) at Padres, 1u', odds: '-140', units: '1u', game: '9:40 PM ET' },
+      { sport: 'MLB', free: false, desc: 'Tigers ML (-118) vs Twins, 1u', odds: '-118', units: '1u', game: '6:40 PM ET' }
+    ];
+    var LOCK_WIDTHS = [46, 58, 40, 52, 62, 44, 56, 38, 50];
+
+    function renderPicks() {
+      var tier = document.body.getAttribute('data-tier');
+      var unlocked = tier === 'vip';
+      var list = document.getElementById('pick-list');
+      var html = '';
+      var lockIdx = 0;
+      PICKS.forEach(function (p) {
+        var tag = p.free
+          ? '<span class="free-tag">Free</span>'
+          : '<span class="sport">' + p.sport + '</span>';
+        if (p.free || unlocked) {
+          html += '<div class="pick-row">' + tag +
+            '<div><p class="desc">' + p.desc + '</p>' +
+            '<p class="sub">Posted 11:42 AM ET · Game ' + p.game + '</p></div>' +
+            '<div class="chips"><span class="chip">' + p.odds + '</span><span class="chip">' + p.units + '</span></div></div>';
+        } else {
+          var w = LOCK_WIDTHS[lockIdx++ % LOCK_WIDTHS.length];
+          html += '<div class="pick-row locked">' + tag +
+            '<div><p class="desc">' +
+            '<svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>' +
+            '<span class="lock-bar" style="width:' + w + '%" aria-hidden="true"></span>' +
+            '<span class="sr-only">VIP pick, hidden</span></p>' +
+            '<p class="sub">Posted 11:42 AM ET · Game ' + p.game + '</p></div>' +
+            '<div class="chips"><span class="chip">VIP</span></div></div>';
+        }
+      });
+      list.innerHTML = html;
+    }
+
+    // ===== Tab switching (Dashboard / Record / Guide) with smooth out/in transition =====
+    var activeTab = 'dashboard';
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var switching = false;
+      function setCurrent(tab) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (b) {
+          if (b.dataset.tab === tab) b.setAttribute('aria-current', 'page');
+          else b.removeAttribute('aria-current');
+        });
+      }
+      window.goTab = function (tab) {
+        if (tab === activeTab || switching) return;
+        var cur = document.getElementById('view-' + activeTab);
+        var next = document.getElementById('view-' + tab);
+        activeTab = tab;
+        setCurrent(tab);
+        function show() {
+          cur.classList.remove('active', 'leaving');
+          next.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+          // first visit to Record starts the chart draw in front of the visitor
+          if (tab === 'record') document.querySelector('.perf-chart').classList.add('chart-anim');
+        }
+        if (reduce) { show(); return; }
+        switching = true;
+        cur.classList.add('leaving');
+        cur.classList.remove('active');
+        setTimeout(function () { show(); switching = false; }, 150);
+      };
+      Array.prototype.forEach.call(document.querySelectorAll('nav.tabs [data-tab]'), function (b) {
+        b.addEventListener('click', function () { goTab(b.dataset.tab); });
+      });
+      // in-content shortcuts (e.g. "Unlock VIP access" -> membership panel on dashboard)
+      Array.prototype.forEach.call(document.querySelectorAll('[data-goto]'), function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          goTab('dashboard');
+          setTimeout(function () {
+            var el = document.getElementById('membership');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 200);
+        });
+      });
+    })();
+
+    // ===== Mobile drawer =====
+    (function () {
+      var drawer = document.querySelector('.drawer');
+      var backdrop = document.querySelector('.backdrop');
+      var openBtn = document.querySelector('.menu-btn');
+      drawer.hidden = false; backdrop.hidden = false; // present but closed (CSS transforms)
+      function open() { drawer.classList.add('open'); backdrop.classList.add('on'); }
+      function close() { drawer.classList.remove('open'); backdrop.classList.remove('on'); }
+      openBtn.addEventListener('click', open);
+      backdrop.addEventListener('click', close);
+      Array.prototype.forEach.call(drawer.querySelectorAll('[data-tab]'), function (b) {
+        b.addEventListener('click', function () { goTab(b.dataset.tab); close(); });
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+
+    // ===== Demo membership-state switcher with soft cross-fade =====
+    (function () {
+      var states = [
+        { key: 'free', label: 'Free account' },
+        { key: 'pending', label: 'VIP verifying' },
+        { key: 'rejected', label: 'Payment issue' },
+        { key: 'vip', label: 'VIP active' },
+        { key: 'expired', label: 'VIP expired' }
+      ];
+      var i = 0;
+      var btn = document.querySelector('.state-toggle');
+      var stage = document.querySelector('.stage');
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      btn.addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        btn.textContent = 'State: ' + states[i].label;
+        function apply() {
+          document.body.setAttribute('data-tier', states[i].key);
+          renderPicks();
+          syncPerf();
+          stage.classList.remove('tier-fade');
+        }
+        if (reduce) { apply(); return; }
+        stage.classList.add('tier-fade');
+        setTimeout(apply, 180);
+      });
+    })();
+
+    // ===== Demo theme toggle =====
+    (function () {
+      var root = document.documentElement;
+      var states = ['system', 'dark', 'light'];
+      var i = 0;
+      document.querySelector('.theme-toggle').addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        root.classList.remove('dark', 'light');
+        if (states[i] !== 'system') root.classList.add(states[i]);
+        this.textContent = 'Theme: ' + states[i];
+      });
+    })();
+
+    // ===== Record view: Edgeable vs Yours =====
+    // "Yours" counts every pick you could see when it posted: free picks during inactive
+    // stretches PLUS the full card during membership time. IMPORTANT (Sean, 2026-08-18):
+    // free picks are usually taken FROM the paid card, so a pick that is both free and on
+    // the card is ONE pick — deduplicate by pick id; it never counts twice on the record
+    // or in units gained/lost. MOCK SAMPLE DATA.
+    var syncPerf;
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var CURVES = {
+        edgeable: {
+          val: '+18.4 units', when: 'All time', end: 10, note: '',
+          d: 'M0 190C22 184 40 172 62 168C84 164 100 176 122 170C144 164 160 138 184 130C208 122 224 138 246 132C268 126 284 96 308 88C332 80 348 102 370 106C392 110 408 84 430 72C452 60 468 64 490 56C512 48 528 36 552 28C576 20 616 16 640 10'
+        },
+        free: {
+          val: '+1.2 units', when: 'Since Aug 2 · free picks', end: 168,
+          note: 'Your curve counts every pick you could see when it posted. Right now that is the free picks. Go VIP and the full card starts counting from day one.',
+          d: 'M0 190C40 188 70 184 105 184C140 184 170 188 205 186C240 184 270 176 310 175C350 174 380 180 415 178C450 176 480 172 520 171C560 170 610 169 640 168'
+        },
+        pending: {
+          val: '+1.2 units', when: 'Since Aug 2 · free picks', end: 168,
+          note: 'Your curve counts every pick you could see when it posted. Your VIP is being verified now; once approved, the full card starts counting from that moment.',
+          d: 'M0 190C40 188 70 184 105 184C140 184 170 188 205 186C240 184 270 176 310 175C350 174 380 180 415 178C450 176 480 172 520 171C560 170 610 169 640 168'
+        },
+        rejected: {
+          val: '+1.2 units', when: 'Since Aug 2 · free picks', end: 168,
+          note: 'Your curve counts every pick you could see when it posted. Your VIP payment needs a quick fix; once it clears, the full card starts counting from approval.',
+          d: 'M0 190C40 188 70 184 105 184C140 184 170 188 205 186C240 184 270 176 310 175C350 174 380 180 415 178C450 176 480 172 520 171C560 170 610 169 640 168'
+        },
+        vip: {
+          val: '+7.4 units', when: 'Since Aug 2 · free picks + full card from Jun 20', end: 116,
+          note: 'Your curve counts every pick you could see when it posted: free picks from before you joined, then the full card from your membership start. Each pick counts once, even when a card play also went out free.',
+          d: 'M0 190C30 188 52 186 82 186C112 186 136 182 166 180C196 178 214 168 244 160C274 152 296 158 326 150C356 142 380 128 414 122C448 116 472 126 506 122C540 118 606 118 640 116'
+        },
+        expired: {
+          val: '+5.9 units', when: 'Since Aug 2 · full card until Aug 12, free picks since', end: 130,
+          note: 'Your curve kept every pick from your VIP months and still counts free picks now. Renew and the full card picks up right where it left off.',
+          d: 'M0 190C30 188 52 186 82 186C112 186 136 182 166 180C196 178 214 168 244 160C274 152 296 158 326 150C356 142 380 132 414 128C448 124 480 130 520 130C556 130 610 130 640 130'
+        }
+      };
+      var val = document.getElementById('perf-val');
+      var when = document.getElementById('perf-when');
+      var note = document.getElementById('scope-note');
+      var curve = document.getElementById('perf-curve');
+      var curve2 = document.getElementById('perf-curve2');
+      var fill = document.getElementById('perf-fill');
+      var dot = document.getElementById('perf-dot');
+      var halo = document.getElementById('perf-halo');
+      var legend = document.getElementById('chart-legend');
+      var legendYours = document.getElementById('legend-yours');
+      var btns = document.querySelectorAll('.seg-btn');
+      var scope = 'edgeable';
+
+      function apply() {
+        var yours = CURVES[document.body.getAttribute('data-tier')];
+        var main = scope === 'yours' ? yours : CURVES.edgeable;
+        var compare = scope === 'compare';
+        val.textContent = compare ? CURVES.edgeable.val.replace(' units', '') + ' / ' + yours.val.replace(' units', 'u') : main.val;
+        when.textContent = compare ? 'Edgeable, all time vs yours' :
+          (scope === 'edgeable' ? 'All time · 61-42-3 · ROI +8.9%' : main.when);
+        curve.setAttribute('d', main.d);
+        fill.setAttribute('d', main.d + 'L640 190L0 190Z');
+        dot.setAttribute('cy', main.end);
+        halo.setAttribute('cy', main.end);
+        curve2.style.display = compare ? '' : 'none';
+        if (compare) curve2.setAttribute('d', yours.d);
+        legend.classList.toggle('on', compare);
+        legendYours.textContent = 'Yours · ' + yours.when.replace('Since Aug 2 · ', '').replace('Since Aug 2', 'since Aug 2');
+        note.hidden = scope !== 'yours' || !yours.note;
+        note.textContent = yours.note || '';
+      }
+      // Restart the draw-in: drop + reflow + re-add .chart-anim so every scope gets its own sweep
+      var chartWrap = document.querySelector('.perf-chart');
+      function redraw() {
+        if (reduce) return;
+        chartWrap.classList.remove('chart-anim');
+        void chartWrap.offsetWidth; // reflow resets the animations
+        chartWrap.classList.add('chart-anim');
+      }
+      syncPerf = function () { if (scope !== 'edgeable') { apply(); redraw(); } };
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.classList.contains('on')) return;
+          Array.prototype.forEach.call(btns, function (b) {
+            b.classList.toggle('on', b === btn);
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          scope = btn.dataset.scope;
+          apply();
+          redraw();
+        });
+      });
+    })();
+
+    // ===== Account dropdown: open on click, close on outside click / Escape =====
+    (function () {
+      var btn = document.querySelector('.account');
+      var menu = document.querySelector('.account-menu');
+      function close() { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var opening = menu.hidden;
+        menu.hidden = !opening ? true : false;
+        btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      });
+      document.addEventListener('click', function (e) {
+        if (!menu.hidden && !menu.contains(e.target)) close();
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+
+    // ===== Set-unit-size modal: bankroll / 500 = unit, live preview, save updates the card =====
+    (function () {
+      var modal = document.getElementById('unit-modal');
+      var backdrop = document.getElementById('unit-backdrop');
+      var input = document.getElementById('bankroll-input');
+      var preview = document.getElementById('unit-preview');
+      function unitOf(bankroll) { return bankroll > 0 ? bankroll / 500 : 0; }
+      function fmt(n) { return '$' + (n % 1 ? n.toFixed(2) : n.toString()); }
+      function open() { modal.hidden = false; backdrop.hidden = false; input.focus(); }
+      function close() { modal.hidden = true; backdrop.hidden = true; }
+      document.getElementById('open-unit-modal').addEventListener('click', open);
+      document.getElementById('unit-cancel').addEventListener('click', close);
+      backdrop.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
+      input.addEventListener('input', function () {
+        preview.textContent = fmt(unitOf(parseFloat(input.value) || 0));
+      });
+      document.getElementById('unit-save').addEventListener('click', function () {
+        var u = unitOf(parseFloat(input.value) || 0);
+        if (u > 0) {
+          // reflect the saved size on the units card (mock: free/pending/rejected variant)
+          var card = document.querySelector('[data-tier-show="free pending rejected"]');
+          card.querySelector('.amount').textContent = fmt(u);
+          var per = document.createElement('span');
+          per.className = 'per'; per.textContent = '= 1 unit';
+          if (!card.querySelector('.m-price .per')) card.querySelector('.m-price').appendChild(per);
+          document.getElementById('open-unit-modal').textContent = 'Change unit size';
+        }
+        close();
+      });
+    })();
+
+    // ===== Copy button demo feedback =====
+    (function () {
+      var btn = document.querySelector('.copy-btn');
+      btn.addEventListener('click', function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy link'; }, 1400);
+      });
+    })();
+
+    renderPicks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<!-- /upgrade styled mock (Dusk Ledger, 2026-08-18). The VIP payment flow reached from every
+     dashboard "Unlock VIP / Renew / Extend" button. Three steps in one page with animated
+     transitions:
+       1 Pay    - $30 summary + CashApp/Zelle picker + payment instructions
+       2 Proof  - screenshot upload (simulated in this mock)
+       3 Done   - pending-approval state (the anxiety moment: reassure, set expectations)
+     Payment handles per Sean (2026-08-18): Cash App $edgeable, Zelle 917-853-5121. At
+     implementation these still load from Firestore config/paymentInfo, not hard-coded.
+     Tokens verbatim from DESIGN.md (LOCKED + amended). Mobile-first priorities (95% of
+     traffic): cheap shadows <900px, 44px targets, safe areas, no heavy paint.
+     No hard-coded hex outside the token blocks + theme-color metas. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdf4e0">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#191411">
+  <title>Edgeable: Unlock VIP</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
+
+    /* ============================================================
+       DESIGN TOKENS: DESIGN.md app token block, verbatim (HSL triples)
+       ============================================================ */
+    :root {
+        --background: 60 14.3% 97.3%;
+        --foreground: 48 5.6% 17.5%;
+        --card: 60 20% 99%;
+        --card-foreground: 48 5.6% 17.5%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 41 43% 32.4%;
+        --secondary: 40 12.5% 90.6%;
+        --secondary-foreground: 48 5.6% 17.5%;
+        --muted: 36 16.1% 93.9%;
+        --muted-foreground: 42 5.2% 38%;
+        --accent: 39 70% 92.2%;
+        --accent-foreground: 41 43% 32.4%;
+        --destructive: 4 38.5% 42.7%;
+        --success: 124 38.9% 32.7%;
+        --border: 42 10.6% 81.6%;
+        --input: 42 5.2% 38%;
+        --ring: 41 43% 32.4%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --hairline: 45 11.4% 86.3%;
+        --loss: 4 38.5% 42.7%;
+        --win: 124 38.9% 32.7%;
+        --hero-g1: 41 88% 93.5%;
+        --hero-g2: 38 73.6% 89.6%;
+        --hero-g3: 40 62.9% 86.3%;
+        --hero-wash-a: 0.10;
+        --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+        --radius: 0.875rem;
+        --radius-card: 1.5rem;
+        --radius-panel: 1.75rem;
+        --radius-pill: 9999px;
+        color-scheme: light;
+    }
+    .dark {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --success: 125 60.2% 59.6%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --hairline: 40 4.5% 13.1%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --hero-g1: 23 19% 8.2%;
+        --hero-g2: 30 33.3% 10.6%;
+        --hero-g3: 28 36.6% 16.1%;
+        --hero-wash-a: 0.15;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) {
+        --background: 60 2.7% 7.3%;
+        --foreground: 43 14.3% 90.4%;
+        --card: 30 4% 9.8%;
+        --card-foreground: 43 14.3% 90.4%;
+        --primary: 41 65% 59.6%;
+        --primary-foreground: 42 61.9% 4.1%;
+        --primary-text: 40 42.9% 65.7%;
+        --secondary: 45 4.9% 16.1%;
+        --secondary-foreground: 43 14.3% 90.4%;
+        --muted: 40 4.5% 13.1%;
+        --muted-foreground: 42 6.8% 71%;
+        --accent: 40 35.6% 11.6%;
+        --accent-foreground: 40 42.9% 65.7%;
+        --destructive: 1 70.9% 59.6%;
+        --success: 125 60.2% 59.6%;
+        --border: 38 6.9% 22.7%;
+        --input: 41 7% 44.7%;
+        --ring: 41 65% 59.6%;
+        --gold: 41 65% 59.6%;
+        --gold-ink: 42 61.9% 4.1%;
+        --hairline: 40 4.5% 13.1%;
+        --loss: 4 81.2% 77.1%;
+        --win: 122 39.2% 66.5%;
+        --hero-g1: 23 19% 8.2%;
+        --hero-g2: 30 33.3% 10.6%;
+        --hero-g3: 28 36.6% 16.1%;
+        --hero-wash-a: 0.15;
+        --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+        color-scheme: dark;
+      }
+    }
+    /* === END TOKEN BLOCKS === */
+
+    :root {
+      --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+      --text-xs: 0.75rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-lg: 1.25rem;
+      --text-xl: 1.5625rem;
+      --text-2xl: 1.9375rem;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-y: scroll; scrollbar-gutter: stable; }
+    body {
+      font-family: var(--font-display);
+      /* same dusk top band as the dashboard: theme continuity */
+      background:
+        radial-gradient(90% 60% at 50% -10%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) top center / 100% 480px no-repeat,
+        linear-gradient(180deg,
+          hsl(var(--hero-g1)) 0%,
+          hsl(var(--hero-g2)) 34%,
+          hsl(var(--hero-g3)) 62%,
+          hsl(var(--background)) 100%) top center / 100% 480px no-repeat,
+        hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.55; font-size: var(--text-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: hsl(var(--primary-text)); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid hsl(var(--ring)); outline-offset: 2px; border-radius: 4px;
+    }
+    .container { max-width: 680px; margin: 0 auto; padding: 0 2rem; }
+    .eyebrow {
+      font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+    }
+    .mono { font-family: var(--font-mono); }
+    .soft-card {
+      background: hsl(var(--card)); color: hsl(var(--card-foreground));
+      border-radius: var(--radius-card); box-shadow: var(--elev-ring);
+    }
+
+    /* ====== Header: wordmark + back to dashboard ====== */
+    header.shell { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .wordmark img { height: 30px; display: block; }
+    .wordmark .wm-dark { display: none; }
+    .dark .wordmark .wm-light { display: none; }
+    .dark .wordmark .wm-dark { display: block; }
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) .wordmark .wm-light { display: none; }
+      :root:not(.light) .wordmark .wm-dark { display: block; }
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 600; font-size: var(--text-sm); color: hsl(var(--muted-foreground));
+      min-height: 44px; padding: 0 8px;
+    }
+    .back-link:hover { color: hsl(var(--foreground)); text-decoration: none; }
+    .back-link svg { width: 16px; height: 16px; }
+
+    /* ====== Stepper ====== */
+    .flow-head { margin-top: 20px; text-align: center; }
+    .flow-head h1 { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; }
+    .flow-head .sub { margin-top: 8px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+    .stepper { margin: 28px auto 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .step-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 600; font-size: var(--text-xs);
+      border-radius: var(--radius-pill); padding: 8px 14px;
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      transition: background 240ms var(--ease), color 240ms var(--ease);
+    }
+    .step-pill .n {
+      width: 20px; height: 20px; border-radius: 50%; flex: none;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      font-family: var(--font-mono); font-size: 0.6875rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 240ms var(--ease), color 240ms var(--ease);
+    }
+    .step-pill.on { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+    .step-pill.on .n { background: hsl(var(--gold)); color: hsl(var(--gold-ink)); }
+    .step-pill.done .n { background: hsl(var(--success) / 0.15); color: hsl(var(--win)); }
+    .step-line { width: 24px; border-top: 1px solid hsl(var(--hairline)); }
+
+    /* ====== Step views + transitions (same pattern as the dashboard tabs) ====== */
+    .step-view { display: none; margin-top: 28px; }
+    .step-view.active { display: block; }
+    @media (prefers-reduced-motion: no-preference) {
+      .step-view.active { animation: view-in 340ms var(--ease) both; }
+      .step-view.leaving { display: block; animation: view-out 150ms var(--ease) forwards; }
+      @keyframes view-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+      @keyframes view-out { to { opacity: 0; transform: translateY(-8px); } }
+    }
+
+    .panel { padding: 2rem; }
+    .panel + .panel { margin-top: 20px; }
+
+    /* Step 1: summary + method picker */
+    .sum-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .sum-row .amount { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-2xl); line-height: 1.0; }
+    .sum-row .per { color: hsl(var(--muted-foreground)); font-size: var(--text-sm); }
+    .m-list { list-style: none; margin-top: 16px; display: grid; gap: 9px; }
+    .m-list li { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: var(--text-sm); }
+    .m-list svg { width: 17px; height: 17px; flex: none; color: hsl(var(--primary-text)); }
+    /* Month quantity + tiered price breakdown */
+    .qty-block { margin-top: 18px; }
+    .qty-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .qty { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+    .qty-btn {
+      width: 44px; height: 44px; border-radius: 50%; flex: none;
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 0; cursor: pointer; font-size: var(--text-lg); font-family: var(--font-mono);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 140ms var(--ease);
+    }
+    .qty-btn:hover { background: hsl(var(--border)); }
+    .qty-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
+    .qty-num { width: 52px; text-align: center; font-weight: 600; font-size: var(--text-xl); }
+    .price-brk { display: grid; gap: 6px; min-width: 190px; }
+    .brk-row { display: flex; justify-content: space-between; gap: 16px; font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .brk-row .mono { font-weight: 600; }
+    .brk-row.total { color: hsl(var(--foreground)); font-weight: 600; border-top: 1px solid hsl(var(--hairline)); padding-top: 8px; margin-top: 2px; }
+    .brk-row.total .mono { font-size: var(--text-lg); }
+    .tier-hint { margin-top: 14px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .renew-note {
+      margin-top: 16px; font-size: var(--text-sm); color: hsl(var(--muted-foreground));
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 12px 16px;
+    }
+    .method-seg { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .method-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-sm);
+      min-height: 56px; border-radius: var(--radius);
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      border: 1px solid transparent; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      transition: background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease);
+    }
+    .method-btn:hover { color: hsl(var(--foreground)); }
+    /* Official brand marks (Cash App green, Zelle purple) — the flow's ONLY off-palette
+       color, justified: recognizable logos beat on-palette abstractions at the money step */
+    .method-btn .brand-logo { width: 20px; height: 20px; display: block; }
+    .method-btn[aria-pressed="true"] {
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-color: hsl(var(--ring));
+    }
+    .pay-detail { margin-top: 18px; }
+    .pay-to {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 14px 16px;
+    }
+    .pay-to .k { font-size: var(--text-sm); color: hsl(var(--muted-foreground)); }
+    .pay-to .v { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-lg); }
+    .copy-btn {
+      font-family: inherit; font-weight: 600; font-size: var(--text-xs);
+      min-height: 40px; padding: 0 16px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 0; cursor: pointer; flex: none;
+    }
+    .copy-btn:hover { background: hsl(var(--border)); }
+    .pay-steps { margin-top: 16px; display: grid; gap: 8px; font-size: var(--text-sm); color: hsl(var(--foreground) / 0.85); }
+    .pay-steps li { margin-left: 20px; }
+    .pay-steps li::marker { color: hsl(var(--muted-foreground)); font-family: var(--font-mono); }
+    .note-chip {
+      margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
+      font-size: var(--text-sm); line-height: 1.5;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      border-radius: var(--radius); padding: 12px 16px;
+    }
+    .note-chip svg { width: 16px; height: 16px; flex: none; margin-top: 3px; }
+
+    /* Step 2: proof upload */
+    .dropzone {
+      margin-top: 18px; border-radius: var(--radius);
+      border: 2px dashed hsl(var(--input) / 0.5);
+      background: hsl(var(--muted) / 0.5);
+      padding: 2.25rem 1.5rem; text-align: center; cursor: pointer;
+      transition: border-color 180ms var(--ease), background 180ms var(--ease);
+    }
+    .dropzone:hover, .dropzone:focus-visible { border-color: hsl(var(--ring)); background: hsl(var(--accent) / 0.5); }
+    .dropzone svg { width: 34px; height: 34px; color: hsl(var(--muted-foreground)); }
+    .dropzone .dz-main { margin-top: 10px; font-weight: 600; font-size: var(--text-sm); }
+    .dropzone .dz-sub { margin-top: 4px; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .file-row {
+      margin-top: 14px; display: none; align-items: center; gap: 12px;
+      background: hsl(var(--muted)); border-radius: var(--radius); padding: 12px 16px;
+    }
+    .file-row.on { display: flex; }
+    .file-thumb {
+      width: 40px; height: 40px; border-radius: 10px; flex: none;
+      background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .file-thumb svg { width: 20px; height: 20px; }
+    .file-meta { flex: 1; min-width: 0; }
+    .file-meta .fname { font-weight: 600; font-size: var(--text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-meta .fsize { font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+    .file-x {
+      width: 36px; height: 36px; border-radius: 50%; flex: none;
+      background: transparent; border: 0; cursor: pointer; color: hsl(var(--muted-foreground));
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .file-x:hover { background: hsl(var(--secondary)); color: hsl(var(--foreground)); }
+    .file-x svg { width: 16px; height: 16px; }
+
+    /* Step 3: pending approval */
+    .done-panel { text-align: center; padding: 2.5rem 2rem; }
+    .done-icon {
+      width: 64px; height: 64px; margin: 0 auto; border-radius: 50%;
+      background: hsl(var(--success) / 0.14); color: hsl(var(--win));
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .done-icon svg { width: 30px; height: 30px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .step-view.active .done-icon { animation: pop-in 500ms var(--ease) 150ms both; }
+      @keyframes pop-in { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+    }
+    .done-panel h2 { margin-top: 18px; font-size: var(--text-xl); font-weight: 700; letter-spacing: -0.01em; }
+    .done-panel .d-sub { margin-top: 10px; color: hsl(var(--muted-foreground)); font-size: var(--text-sm); max-width: 420px; margin-left: auto; margin-right: auto; }
+    .next-list { margin: 24px auto 0; max-width: 420px; text-align: left; display: grid; gap: 12px; }
+    .next-item { display: flex; gap: 12px; align-items: flex-start; font-size: var(--text-sm); }
+    .next-item .ni {
+      width: 26px; height: 26px; border-radius: 50%; flex: none; margin-top: 1px;
+      background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .next-item .t { color: hsl(var(--foreground) / 0.85); }
+    .next-item .t strong { color: hsl(var(--foreground)); }
+
+    /* Buttons */
+    .cta-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 50px; padding: 0 24px; width: 100%;
+      border-radius: var(--radius-pill);
+      background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+      border: 1px solid hsl(var(--ring));
+      font-weight: 700; font-size: var(--text-sm); cursor: pointer; text-decoration: none;
+      font-family: inherit;
+      transition: transform 140ms var(--ease), filter 140ms var(--ease), opacity 140ms var(--ease);
+    }
+    .cta-btn:hover { filter: brightness(1.04); text-decoration: none; }
+    .cta-btn:active { transform: scale(0.99); }
+    .cta-btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+    .cta-outline {
+      background: transparent; color: hsl(var(--foreground));
+      border: 1px solid hsl(var(--input));
+    }
+    .cta-outline:hover { background: hsl(var(--muted)); filter: none; }
+    .btn-row { margin-top: 20px; display: grid; gap: 10px; }
+    .fine { margin-top: 16px; text-align: center; font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    footer.legal { margin: 56px 0 32px; text-align: center; }
+    footer.legal p { font-size: var(--text-xs); color: hsl(var(--muted-foreground)); }
+
+    /* Demo chrome */
+    .demo-toggle {
+      position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+      min-height: 44px; padding: 0 20px; border-radius: var(--radius-pill);
+      background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--input)); font-weight: 600; font-size: var(--text-sm);
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* ====== Mobile ====== */
+    @media (max-width: 900px) {
+      :root { --elev-ring: 0 0 0 1px hsl(var(--hairline)), 0 10px 24px -16px hsl(0 0% 0% / 0.28); }
+      .container { padding: 0 1.25rem; }
+      header.shell { padding: 14px 0; }
+      .flow-head h1 { font-size: var(--text-xl); }
+      .stepper { margin-top: 22px; }
+      .step-line { width: 12px; }
+      .step-pill { padding: 8px 10px; }
+      .step-pill .lbl { display: none; }   /* number-only pills at 360px; labels live in the heading */
+      .step-pill.on .lbl { display: inline; }
+      .panel { padding: 1.25rem; }
+      .done-panel { padding: 2rem 1.25rem; }
+      /* month picker: breakdown drops below the stepper and spans full width */
+      .price-brk { width: 100%; }
+      .qty-row { gap: 14px; }
+      footer.legal { margin-bottom: 88px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+      .step-view.leaving { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header class="shell">
+      <a class="wordmark" href="dashboard.html" aria-label="Edgeable dashboard">
+        <img class="wm-light" src="../public/edgeable-wordmark-ink.svg" alt="Edgeable">
+        <img class="wm-dark" src="../public/edgeable-wordmark.svg" alt="Edgeable">
+      </a>
+      <a class="back-link" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>
+        Back to dashboard
+      </a>
+    </header>
+
+    <div class="flow-head">
+      <h1 id="flow-title">Unlock VIP access</h1>
+      <p class="sub">$30/month. No auto-billing, no checkout bots. Paid person-to-person, approved personally.</p>
+    </div>
+
+    <div class="stepper" aria-label="Progress">
+      <span class="step-pill on" data-step-pill="1"><span class="n">1</span><span class="lbl">Pay</span></span>
+      <span class="step-line" aria-hidden="true"></span>
+      <span class="step-pill" data-step-pill="2"><span class="n">2</span><span class="lbl">Proof</span></span>
+      <span class="step-line" aria-hidden="true"></span>
+      <span class="step-pill" data-step-pill="3"><span class="n">3</span><span class="lbl">Approval</span></span>
+    </div>
+
+    <main>
+
+      <!-- ============ STEP 1: PAY ============ -->
+      <section class="step-view active" id="step-1" aria-label="Pay">
+        <div class="soft-card panel">
+          <div class="sum-row">
+            <span class="eyebrow">VIP access</span>
+            <span><span class="amount mono" id="rate-big">$30</span> <span class="per">/month</span></span>
+          </div>
+          <ul class="m-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Every pick, every day — the full card.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Exact units and odds on every play.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>Live updates and insights in the private Telegram channel.</li>
+          </ul>
+
+          <!-- Month quantity + tiered pricing (Sean, 2026-08-18):
+               1-5 months $30/mo · 6-11 months 5% off/mo ($28.50) · 12+ months 10% off/mo ($27).
+               Discount caps at 10%. -->
+          <div class="qty-block">
+            <div class="qty-row">
+              <div>
+                <p class="eyebrow">How many months?</p>
+                <div class="qty">
+                  <button class="qty-btn" type="button" id="qty-minus" aria-label="Fewer months">−</button>
+                  <span class="qty-num mono" id="qty-num" aria-live="polite">1</span>
+                  <button class="qty-btn" type="button" id="qty-plus" aria-label="More months">+</button>
+                </div>
+              </div>
+              <div class="price-brk">
+                <div class="brk-row"><span>Rate</span><span class="mono" id="brk-rate">$30/mo</span></div>
+                <div class="brk-row" id="brk-disc-row" hidden><span>Discount</span><span class="mono" id="brk-disc" style="color: hsl(var(--win));">5% off</span></div>
+                <div class="brk-row total"><span>Total due</span><span class="mono" id="brk-total">$30</span></div>
+              </div>
+            </div>
+            <p class="tier-hint">1-5 months $30/mo · 6+ months 5% off every month · 12+ months 10% off every month</p>
+          </div>
+
+          <p class="renew-note">Renewing? Same flow. New months stack onto whatever time you have left, nothing is wasted.</p>
+        </div>
+
+        <div class="soft-card panel">
+          <p class="eyebrow">Choose how to pay</p>
+          <div class="method-seg" role="group" aria-label="Payment method">
+            <button type="button" class="method-btn" data-method="cashapp" aria-pressed="true">
+              <img class="brand-logo" src="cashapp-logo.svg" alt="" aria-hidden="true">
+              Cash App
+            </button>
+            <button type="button" class="method-btn" data-method="zelle" aria-pressed="false">
+              <img class="brand-logo" src="zelle-logo.svg" alt="" aria-hidden="true">
+              Zelle
+            </button>
+          </div>
+
+          <div class="pay-detail">
+            <div class="pay-to">
+              <div>
+                <div class="k" id="pay-k">Send $30 on Cash App to</div>
+                <div class="v" id="pay-v">$edgeable</div>
+              </div>
+              <button class="copy-btn" type="button" id="copy-handle">Copy</button>
+            </div>
+            <ol class="pay-steps">
+              <li id="send-exact">Send exactly <strong class="mono">$30</strong>.</li>
+              <li>Put your Edgeable username — <strong class="mono">Danimals</strong> — in the payment note.</li>
+              <li>Screenshot the confirmation. You'll attach it in the next step.</li>
+            </ol>
+            <div class="note-chip" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>
+              <span>The username in the note is how your payment gets matched to your account fast. Without it, approval can take longer.</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="cta-btn" type="button" id="to-step-2">I've sent the $30</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ STEP 2: PROOF ============ -->
+      <section class="step-view" id="step-2" aria-label="Proof">
+        <div class="soft-card panel">
+          <p class="eyebrow">Attach your payment screenshot</p>
+          <p style="margin-top: 10px; font-size: var(--text-sm); color: hsl(var(--muted-foreground));">The screenshot is your receipt. It's how your payment is verified and approved, usually the same day.</p>
+
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload payment screenshot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+            <p class="dz-main">Tap to choose your screenshot</p>
+            <p class="dz-sub">or drag it here · PNG or JPG</p>
+          </div>
+
+          <div class="file-row" id="file-row">
+            <span class="file-thumb" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><circle cx="9.5" cy="9.5" r="1.5"></circle><path d="M20 15l-4.5-4.5L6 20"></path></svg>
+            </span>
+            <span class="file-meta">
+              <span class="fname">cashapp-receipt.png</span>
+              <span class="fsize">1.2 MB</span>
+            </span>
+            <button class="file-x" type="button" id="file-remove" aria-label="Remove screenshot">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+            </button>
+          </div>
+
+          <div class="btn-row">
+            <button class="cta-btn" type="button" id="to-step-3" disabled>Submit for approval</button>
+            <button class="cta-btn cta-outline" type="button" id="back-to-1">Back</button>
+          </div>
+          <p class="fine">Nothing is charged through the app. Your screenshot goes only to the owner for verification.</p>
+        </div>
+      </section>
+
+      <!-- ============ STEP 3: PENDING APPROVAL ============ -->
+      <section class="step-view" id="step-3" aria-label="Pending approval">
+        <div class="soft-card done-panel">
+          <span class="done-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+          </span>
+          <h2>Proof received. You're in the queue.</h2>
+          <p class="d-sub">Every membership is personally reviewed and approved, usually the <strong>same day</strong>. Nothing else is needed from you.</p>
+
+          <div class="next-list">
+            <div class="next-item">
+              <span class="ni" aria-hidden="true">1</span>
+              <span class="t"><strong>Your payment gets matched</strong> to your account using the username in the note.</span>
+            </div>
+            <div class="next-item">
+              <span class="ni" aria-hidden="true">2</span>
+              <span class="t"><strong>You're approved</strong> and your VIP month starts that moment, not when you paid.</span>
+            </div>
+            <div class="next-item">
+              <span class="ni" aria-hidden="true">3</span>
+              <span class="t"><strong>The full card unlocks instantly</strong> on your dashboard, starting with today's picks.</span>
+            </div>
+            <div class="next-item">
+              <span class="ni" aria-hidden="true">4</span>
+              <span class="t"><strong>Your Telegram invite arrives</strong> — a private link to the channel where live updates and insights drop.</span>
+            </div>
+          </div>
+
+          <div class="btn-row" style="max-width: 420px; margin-left: auto; margin-right: auto;">
+            <a class="cta-btn" href="dashboard.html">Back to dashboard</a>
+          </div>
+          <p class="fine">Sent the wrong amount or forgot the note? Nothing is lost, it just may take a little longer to match. You can also message support from your account menu.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="legal">
+      <p>21+ only. Payments are non-refundable per the Terms. No auto-billing: your month ends unless you renew it.</p>
+    </footer>
+  </div>
+
+  <button class="demo-toggle theme-toggle" type="button" aria-label="Toggle theme demo">Theme</button>
+
+  <script>
+    // ===== Step transitions (same pattern as the dashboard tabs) =====
+    var activeStep = 1;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function goStep(n) {
+      if (n === activeStep) return;
+      var cur = document.getElementById('step-' + activeStep);
+      var next = document.getElementById('step-' + n);
+      var prev = activeStep;
+      activeStep = n;
+      // stepper pills: current = on, earlier = done
+      Array.prototype.forEach.call(document.querySelectorAll('[data-step-pill]'), function (p) {
+        var i = parseInt(p.dataset.stepPill, 10);
+        p.classList.toggle('on', i === n);
+        p.classList.toggle('done', i < n);
+        if (i < n) p.querySelector('.n').textContent = '✓';
+        else p.querySelector('.n').textContent = i;
+      });
+      function show() {
+        cur.classList.remove('active', 'leaving');
+        next.classList.add('active');
+        window.scrollTo(0, 0);
+      }
+      if (reduce) { show(); return; }
+      cur.classList.add('leaving');
+      cur.classList.remove('active');
+      setTimeout(show, 150);
+    }
+
+    document.getElementById('to-step-2').addEventListener('click', function () { goStep(2); });
+    document.getElementById('back-to-1').addEventListener('click', function () { goStep(1); });
+    document.getElementById('to-step-3').addEventListener('click', function () {
+      if (!this.disabled) goStep(3);
+    });
+
+    // ===== Months + tiered pricing (Sean's deal, 2026-08-18):
+    // 1-5 months $30/mo · 6-11 months 5% off/mo · 12+ months 10% off/mo (discount caps at 10%).
+    // Everything money-related on the page follows the selection.
+    (function () {
+      var BASE = 30, MAX_MONTHS = 24;
+      var months = 1;
+      var method = 'cashapp';
+      var METHODS = {
+        cashapp: { where: 'on Cash App', v: '$edgeable' },
+        zelle: { where: 'with Zelle', v: '917-853-5121' }
+      };
+      var payK = document.getElementById('pay-k');
+      var payV = document.getElementById('pay-v');
+
+      function rate() { return months >= 12 ? BASE * 0.9 : months >= 6 ? BASE * 0.95 : BASE; }
+      function fmt(n) { return '$' + (n % 1 ? n.toFixed(2) : n.toString()); }
+
+      function update() {
+        var r = rate(), total = r * months;
+        document.getElementById('qty-num').textContent = months;
+        document.getElementById('qty-minus').disabled = months <= 1;
+        document.getElementById('qty-plus').disabled = months >= MAX_MONTHS;
+        document.getElementById('rate-big').textContent = fmt(r);
+        document.getElementById('brk-rate').textContent = fmt(r) + '/mo';
+        var discRow = document.getElementById('brk-disc-row');
+        discRow.hidden = months < 6;
+        document.getElementById('brk-disc').textContent = (months >= 12 ? '10%' : '5%') + ' off every month';
+        document.getElementById('brk-total').textContent = fmt(total) + (months > 1 ? ' · ' + months + ' months' : '');
+        // downstream copy: instructions, handle line, advance button
+        payK.textContent = 'Send ' + fmt(total) + ' ' + METHODS[method].where + ' to';
+        payV.textContent = METHODS[method].v;
+        document.getElementById('send-exact').innerHTML = 'Send exactly <strong class="mono">' + fmt(total) + '</strong>.';
+        document.getElementById('to-step-2').textContent = "I've sent the " + fmt(total);
+      }
+
+      document.getElementById('qty-minus').addEventListener('click', function () { if (months > 1) { months--; update(); } });
+      document.getElementById('qty-plus').addEventListener('click', function () { if (months < MAX_MONTHS) { months++; update(); } });
+
+      Array.prototype.forEach.call(document.querySelectorAll('.method-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+          Array.prototype.forEach.call(document.querySelectorAll('.method-btn'), function (b) {
+            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          });
+          method = btn.dataset.method;
+          update();
+        });
+      });
+      var copy = document.getElementById('copy-handle');
+      copy.addEventListener('click', function () {
+        copy.textContent = 'Copied';
+        setTimeout(function () { copy.textContent = 'Copy'; }, 1400);
+      });
+      update();
+    })();
+
+    // ===== Proof upload (SIMULATED in this mock: tap = a file appears) =====
+    (function () {
+      var dz = document.getElementById('dropzone');
+      var row = document.getElementById('file-row');
+      var submit = document.getElementById('to-step-3');
+      function attach() {
+        row.classList.add('on');
+        dz.style.display = 'none';
+        submit.disabled = false;
+      }
+      function detach() {
+        row.classList.remove('on');
+        dz.style.display = '';
+        submit.disabled = true;
+      }
+      dz.addEventListener('click', attach);
+      dz.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); attach(); } });
+      document.getElementById('file-remove').addEventListener('click', detach);
+    })();
+
+    // ===== Demo theme toggle =====
+    (function () {
+      var root = document.documentElement;
+      var states = ['system', 'dark', 'light'];
+      var i = 0;
+      document.querySelector('.theme-toggle').addEventListener('click', function () {
+        i = (i + 1) % states.length;
+        root.classList.remove('dark', 'light');
+        if (states[i] !== 'system') root.classList.add(states[i]);
+        this.textContent = 'Theme: ' + states[i];
+      });
+    })();
+  </script>
+</body>
+</html>
