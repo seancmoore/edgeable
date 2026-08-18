@@ -42,7 +42,9 @@ export default function ChangeEmailModal({ authEmail, currentEmail, onClose }) {
     try {
       const cred = EmailAuthProvider.credential(authEmail, password);
       await reauthenticateWithCredential(user, cred);
-      await verifyBeforeUpdateEmail(user, target);
+      await verifyBeforeUpdateEmail(user, target, {
+        url: 'https://edgeabled.web.app/account',
+      });
       setSentTo(target);
     } catch (err) {
       const code = err?.code || '';

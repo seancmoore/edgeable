@@ -147,7 +147,9 @@ export default function Account() {
     setPwBusy(true);
     setPwError('');
     try {
-      await sendPasswordResetEmail(auth, authEmail);
+      await sendPasswordResetEmail(auth, authEmail, {
+        url: 'https://edgeabled.web.app/login',
+      });
       setPwSent(true);
     } catch (err) {
       setPwError(err?.code === 'auth/too-many-requests'

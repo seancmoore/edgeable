@@ -72,7 +72,13 @@ export function AuthProvider({ children }) {
 
   const logout = () => signOut(auth);
 
-  const resetPassword = (email) => sendPasswordResetEmail(auth, normalizeEmail(email));
+  // continueUrl gives Firebase's hosted action page a "Continue" button back into
+  // the app. (A fully branded /auth-action handler exists, but Firebase locks
+  // template action-URL customization until a custom email domain is verified.)
+  const resetPassword = (email) =>
+    sendPasswordResetEmail(auth, normalizeEmail(email), {
+      url: 'https://edgeabled.web.app/login',
+    });
 
   // Re-send the verification email to the currently signed-in user.
   const resendVerification = async () => {
