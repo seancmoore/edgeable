@@ -44,12 +44,25 @@ service cloud.firestore {
         && reqStr(request.resource.data.phone, 7, 20)
         && optStrMax(request.resource.data, 'authEmail', 254);
 
-      // Subscribers can self-update only the `unitSize` preference. Everything
-      // else (status, subscription dates, role, etc.) requires admin.
+      // Subscribers can self-update only:
+      //  * unitSize (preference)
+      //  * phone (Account page self-service; paired with the owner-scoped
+      //    phones/{phone} delete + create below so login lookup stays in sync)
+      //  * email/authEmail, but ONLY to the caller's own live Auth token email
+      //    (self-heal after a verifyBeforeUpdateEmail change confirmed on
+      //    /auth-action — nothing spoofable, the token is ground truth)
+      // Everything else (status, subscription dates, role, etc.) requires admin.
       allow update: if isAdmin()
         || (isSignedIn()
             && request.auth.uid == uid
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unitSize']));
+            && (
+              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unitSize'])
+              || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone'])
+                  && reqStr(request.resource.data.phone, 7, 20))
+              || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'authEmail'])
+                  && request.resource.data.email == request.auth.token.email
+                  && request.resource.data.authEmail == request.auth.token.email)
+            ));
       allow delete: if isAdmin();
     }
 
@@ -58,6 +71,10 @@ service cloud.firestore {
     // List/query is denied so nobody can dump all usernames/phones.
     // Create is constrained to {uid, authEmail} for the caller's own uid so the
     // docs can't be stuffed with extra data.
+    // Owner self-heal (Account page): the doc's owner may refresh ONLY the
+    // authEmail field, and only to their own live Auth token email. Squatting
+    // stays blocked: you can never touch a doc whose uid isn't yours, and
+    // create still fails on existing docs.
     match /usernames/{username} {
       allow get: if true;
       allow list: if false;
@@ -65,9 +82,18 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.keys().hasOnly(['uid', 'authEmail'])
         && optStrMax(request.resource.data, 'authEmail', 254);
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (isSignedIn()
+            && request.auth.uid == resource.data.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authEmail'])
+            && request.resource.data.authEmail == request.auth.token.email);
+      allow delete: if isAdmin();
     }
 
+    // Phone move (Account page self-service) = owner delete of their own doc
+    // + create of the new number with their own uid (create rule above the
+    // dash unchanged). A number owned by someone else can't be deleted or
+    // overwritten. Owner authEmail self-heal mirrors usernames.
     match /phones/{phone} {
       allow get: if true;
       allow list: if false;
@@ -75,7 +101,13 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.keys().hasOnly(['uid', 'authEmail'])
         && optStrMax(request.resource.data, 'authEmail', 254);
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (isSignedIn()
+            && request.auth.uid == resource.data.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authEmail'])
+            && request.resource.data.authEmail == request.auth.token.email);
+      allow delete: if isAdmin()
+        || (isSignedIn() && request.auth.uid == resource.data.uid);
     }
 
     // ── referral codes (uniqueness + code→uid lookup) ───────

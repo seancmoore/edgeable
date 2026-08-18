@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, KeyRound, LogOut, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, KeyRound, LogOut, Menu, UserCog } from 'lucide-react';
 import Wordmark from '../Wordmark.jsx';
 
 const TABS = [
@@ -20,6 +21,7 @@ export default function ShellHeader({
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   const initial = (displayName || email || '?').trim().charAt(0).toUpperCase();
 
@@ -62,6 +64,14 @@ export default function ShellHeader({
             {t.label}
           </button>
         ))}
+        <button
+          type="button"
+          className="d-tab"
+          onClick={() => { setDrawerOpen(false); navigate('/account'); }}
+          tabIndex={drawerOpen ? 0 : -1}
+        >
+          Account settings
+        </button>
         <div className="d-account">
           <span className="avatar" aria-hidden="true">{initial}</span>
           <span>{displayName}</span>
@@ -122,6 +132,15 @@ export default function ShellHeader({
                     <span className="am-mail">{email}</span>
                   </span>
                 </div>
+                <button
+                  className="am-item"
+                  role="menuitem"
+                  type="button"
+                  onClick={() => { setMenuOpen(false); navigate('/account'); }}
+                >
+                  <UserCog aria-hidden="true" />
+                  Account settings
+                </button>
                 <button
                   className="am-item"
                   role="menuitem"

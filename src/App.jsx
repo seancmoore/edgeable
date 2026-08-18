@@ -8,6 +8,8 @@ import Privacy from './pages/Privacy.jsx';
 import Terms from './pages/Terms.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Upgrade from './pages/Upgrade.jsx';
+import Account from './pages/Account.jsx';
+import AuthAction from './pages/AuthAction.jsx';
 import Guide from './pages/Guide.jsx';
 import Admin from './pages/Admin.jsx';
 import NewTransaction from './pages/admin/NewTransaction.jsx';
@@ -39,6 +41,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/auth-action" element={<AuthAction />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/card" element={<PublicCard />} />
@@ -47,6 +50,14 @@ export default function App() {
         element={
           <ProtectedRoute requiredRole="user">
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute requiredRole="user">
+            <Account />
           </ProtectedRoute>
         }
       />
