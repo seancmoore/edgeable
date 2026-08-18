@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Terms from './pages/Terms.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Upgrade from './pages/Upgrade.jsx';
 import Guide from './pages/Guide.jsx';
 import Admin from './pages/Admin.jsx';
 import NewTransaction from './pages/admin/NewTransaction.jsx';
@@ -46,6 +47,14 @@ export default function App() {
         element={
           <ProtectedRoute requiredRole="user">
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upgrade"
+        element={
+          <ProtectedRoute requiredRole="user">
+            <Upgrade />
           </ProtectedRoute>
         }
       />

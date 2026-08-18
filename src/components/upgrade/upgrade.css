@@ -1,0 +1,307 @@
+/* /upgrade — VIP payment flow (Dusk Ledger). Styles ported verbatim from
+   mocks/upgrade.html, scoped under .upg. All colors come from the global
+   design tokens in src/index.css (--gold, --hairline, --hero-*, --elev-ring,
+   --radius-card/panel/pill, plus the shadcn HSL aliases). No hard-coded hex. */
+
+.upg {
+  --upg-font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+  --upg-text-xs: 0.75rem;
+  --upg-text-sm: 0.875rem;
+  --upg-text-lg: 1.25rem;
+  --upg-text-xl: 1.5625rem;
+  --upg-text-2xl: 1.9375rem;
+  --upg-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* same dusk top band as the dashboard: theme continuity */
+  background:
+    radial-gradient(90% 60% at 50% -10%, hsl(var(--gold) / var(--hero-wash-a)) 0%, transparent 62%) top center / 100% 480px no-repeat,
+    linear-gradient(180deg,
+      hsl(var(--hero-g1)) 0%,
+      hsl(var(--hero-g2)) 34%,
+      hsl(var(--hero-g3)) 62%,
+      hsl(var(--background)) 100%) top center / 100% 480px no-repeat,
+    hsl(var(--background));
+  color: hsl(var(--foreground));
+  line-height: 1.55;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+}
+.upg a { color: hsl(var(--primary-text)); text-decoration: none; }
+.upg a:hover { text-decoration: underline; }
+.upg a, .upg button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.upg a:focus-visible, .upg button:focus-visible, .upg [role='button']:focus-visible {
+  outline: 2px solid hsl(var(--ring)); outline-offset: 2px; border-radius: 4px;
+}
+.upg-container { max-width: 680px; margin: 0 auto; padding: 0 2rem; }
+.upg-eyebrow {
+  font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+.upg-mono { font-family: var(--upg-font-mono); }
+.upg-soft-card {
+  background: hsl(var(--card)); color: hsl(var(--card-foreground));
+  border-radius: var(--radius-card); box-shadow: var(--elev-ring);
+}
+
+/* ====== Header: wordmark + back to dashboard ====== */
+.upg-shell { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+.upg-wordmark img { height: 30px; display: block; }
+.upg-wordmark .upg-wm-dark { display: none; }
+.dark .upg-wordmark .upg-wm-light { display: none; }
+.dark .upg-wordmark .upg-wm-dark { display: block; }
+.upg-back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 600; font-size: var(--upg-text-sm); color: hsl(var(--muted-foreground));
+  min-height: 44px; padding: 0 8px;
+}
+.upg-back-link:hover { color: hsl(var(--foreground)); text-decoration: none; }
+.upg-back-link svg { width: 16px; height: 16px; }
+
+/* ====== Stepper ====== */
+.upg-flow-head { margin-top: 20px; text-align: center; }
+.upg-flow-head h1 { font-size: var(--upg-text-2xl); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+.upg-flow-head .upg-sub { margin: 8px 0 0; color: hsl(var(--muted-foreground)); font-size: var(--upg-text-sm); }
+.upg-stepper { margin: 28px auto 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.upg-step-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: var(--upg-text-xs);
+  border-radius: var(--radius-pill); padding: 8px 14px;
+  background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+  transition: background 240ms var(--upg-ease), color 240ms var(--upg-ease);
+}
+.upg-step-pill .upg-n {
+  width: 20px; height: 20px; border-radius: 50%; flex: none;
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  font-family: var(--upg-font-mono); font-size: 0.6875rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 240ms var(--upg-ease), color 240ms var(--upg-ease);
+}
+.upg-step-pill.on { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+.upg-step-pill.on .upg-n { background: hsl(var(--gold)); color: hsl(var(--gold-ink)); }
+.upg-step-pill.done .upg-n { background: hsl(var(--success) / 0.15); color: hsl(var(--win)); }
+.upg-step-line { width: 24px; border-top: 1px solid hsl(var(--hairline)); }
+
+/* ====== Step views + transitions (same pattern as the dashboard tabs) ====== */
+.upg-step-view { margin-top: 28px; }
+@media (prefers-reduced-motion: no-preference) {
+  .upg-step-view.entering { animation: upg-view-in 340ms var(--upg-ease) both; }
+  .upg-step-view.leaving { animation: upg-view-out 150ms var(--upg-ease) forwards; }
+  @keyframes upg-view-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes upg-view-out { to { opacity: 0; transform: translateY(-8px); } }
+}
+
+.upg-panel { padding: 2rem; }
+.upg-panel + .upg-panel { margin-top: 20px; }
+
+/* Step 1: summary + method picker */
+.upg-sum-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.upg-sum-row .upg-amount { font-family: var(--upg-font-mono); font-weight: 600; font-size: var(--upg-text-2xl); line-height: 1.0; }
+.upg-sum-row .upg-per { color: hsl(var(--muted-foreground)); font-size: var(--upg-text-sm); }
+.upg-m-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 9px; }
+.upg-m-list li { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: var(--upg-text-sm); }
+.upg-m-list svg { width: 17px; height: 17px; flex: none; color: hsl(var(--primary-text)); }
+/* Month quantity + tiered price breakdown */
+.upg-qty-block { margin-top: 18px; }
+.upg-qty-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.upg-qty { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+.upg-qty-btn {
+  width: 44px; height: 44px; border-radius: 50%; flex: none;
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  border: 0; cursor: pointer; font-size: var(--upg-text-lg); font-family: var(--upg-font-mono);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 140ms var(--upg-ease);
+}
+.upg-qty-btn:hover { background: hsl(var(--border)); }
+.upg-qty-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
+.upg-qty-num { width: 52px; text-align: center; font-weight: 600; font-size: var(--upg-text-xl); }
+.upg-price-brk { display: grid; gap: 6px; min-width: 190px; }
+.upg-brk-row { display: flex; justify-content: space-between; gap: 16px; font-size: var(--upg-text-sm); color: hsl(var(--muted-foreground)); }
+.upg-brk-row .upg-mono { font-weight: 600; }
+.upg-brk-row.total { color: hsl(var(--foreground)); font-weight: 600; border-top: 1px solid hsl(var(--hairline)); padding-top: 8px; margin-top: 2px; }
+.upg-brk-row.total .upg-mono { font-size: var(--upg-text-lg); }
+.upg-brk-disc { color: hsl(var(--win)); }
+.upg-tier-hint { margin: 14px 0 0; font-size: var(--upg-text-xs); color: hsl(var(--muted-foreground)); }
+.upg-renew-note {
+  margin: 16px 0 0; font-size: var(--upg-text-sm); color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted)); border-radius: var(--radius); padding: 12px 16px;
+}
+.upg-method-seg { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.upg-method-btn {
+  font-family: inherit; font-weight: 600; font-size: var(--upg-text-sm);
+  min-height: 56px; border-radius: var(--radius);
+  background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+  border: 1px solid transparent; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 180ms var(--upg-ease), color 180ms var(--upg-ease), border-color 180ms var(--upg-ease);
+}
+.upg-method-btn:hover { color: hsl(var(--foreground)); }
+/* Official brand marks (Cash App green, Zelle purple): the flow's only
+   off-palette color. Recognizable logos beat on-palette abstractions at the
+   money step. */
+.upg-method-btn .upg-brand-logo { width: 20px; height: 20px; display: block; }
+.upg-method-btn[aria-pressed='true'] {
+  background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+  border-color: hsl(var(--ring));
+}
+.upg-pay-detail { margin-top: 18px; }
+.upg-pay-to {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: hsl(var(--muted)); border-radius: var(--radius); padding: 14px 16px;
+}
+.upg-pay-to .upg-k { font-size: var(--upg-text-sm); color: hsl(var(--muted-foreground)); }
+.upg-pay-to .upg-v { font-family: var(--upg-font-mono); font-weight: 600; font-size: var(--upg-text-lg); overflow-wrap: anywhere; }
+.upg-copy-btn {
+  font-family: inherit; font-weight: 600; font-size: var(--upg-text-xs);
+  min-height: 40px; padding: 0 16px; border-radius: var(--radius-pill);
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  border: 0; cursor: pointer; flex: none;
+}
+.upg-copy-btn:hover { background: hsl(var(--border)); }
+.upg-pay-steps { margin: 16px 0 0; padding: 0; display: grid; gap: 8px; font-size: var(--upg-text-sm); color: hsl(var(--foreground) / 0.85); }
+.upg-pay-steps li { margin-left: 20px; }
+.upg-pay-steps li::marker { color: hsl(var(--muted-foreground)); font-family: var(--upg-font-mono); }
+.upg-note-chip {
+  margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
+  font-size: var(--upg-text-sm); line-height: 1.5;
+  background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+  border-radius: var(--radius); padding: 12px 16px;
+}
+.upg-note-chip svg { width: 16px; height: 16px; flex: none; margin-top: 3px; }
+.upg-method-off {
+  margin-top: 16px; font-size: var(--upg-text-sm);
+  background: hsl(var(--destructive) / 0.1); color: hsl(var(--destructive));
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: var(--radius); padding: 12px 16px;
+}
+
+/* Step 2: proof upload */
+.upg-dropzone {
+  margin-top: 18px; border-radius: var(--radius);
+  border: 2px dashed hsl(var(--input) / 0.5);
+  background: hsl(var(--muted) / 0.5);
+  padding: 2.25rem 1.5rem; text-align: center; cursor: pointer;
+  transition: border-color 180ms var(--upg-ease), background 180ms var(--upg-ease);
+}
+.upg-dropzone:hover, .upg-dropzone:focus-visible, .upg-dropzone.dragging {
+  border-color: hsl(var(--ring)); background: hsl(var(--accent) / 0.5);
+}
+.upg-dropzone svg { width: 34px; height: 34px; color: hsl(var(--muted-foreground)); }
+.upg-dropzone .upg-dz-main { margin: 10px 0 0; font-weight: 600; font-size: var(--upg-text-sm); }
+.upg-dropzone .upg-dz-sub { margin: 4px 0 0; font-size: var(--upg-text-xs); color: hsl(var(--muted-foreground)); }
+.upg-file-row {
+  margin-top: 14px; display: flex; align-items: center; gap: 12px;
+  background: hsl(var(--muted)); border-radius: var(--radius); padding: 12px 16px;
+}
+.upg-file-thumb {
+  width: 40px; height: 40px; border-radius: 10px; flex: none; overflow: hidden;
+  background: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.upg-file-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.upg-file-thumb svg { width: 20px; height: 20px; }
+.upg-file-meta { flex: 1; min-width: 0; display: grid; }
+.upg-file-meta .upg-fname { font-weight: 600; font-size: var(--upg-text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upg-file-meta .upg-fsize { font-family: var(--upg-font-mono); font-size: var(--upg-text-xs); color: hsl(var(--muted-foreground)); }
+.upg-file-x {
+  width: 44px; height: 44px; border-radius: 50%; flex: none;
+  background: transparent; border: 0; cursor: pointer; color: hsl(var(--muted-foreground));
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.upg-file-x:hover { background: hsl(var(--secondary)); color: hsl(var(--foreground)); }
+.upg-file-x svg { width: 16px; height: 16px; }
+.upg-upload-err {
+  margin-top: 14px; font-size: var(--upg-text-sm);
+  background: hsl(var(--destructive) / 0.1); color: hsl(var(--destructive));
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: var(--radius); padding: 12px 16px;
+}
+.upg-verify-box {
+  margin-top: 16px; font-size: var(--upg-text-sm);
+  background: hsl(var(--muted)); border-radius: var(--radius); padding: 14px 16px;
+  display: grid; gap: 10px;
+}
+.upg-verify-box .upg-verify-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.upg-verify-box button {
+  font-family: inherit; font-weight: 600; font-size: var(--upg-text-xs);
+  min-height: 40px; padding: 0 16px; border-radius: var(--radius-pill);
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
+  border: 0; cursor: pointer;
+}
+.upg-verify-box button:hover { background: hsl(var(--border)); }
+.upg-verify-box button[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* Step 3: pending approval */
+.upg-done-panel { text-align: center; padding: 2.5rem 2rem; }
+.upg-done-icon {
+  width: 64px; height: 64px; margin: 0 auto; border-radius: 50%;
+  background: hsl(var(--success) / 0.14); color: hsl(var(--win));
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.upg-done-icon svg { width: 30px; height: 30px; }
+@media (prefers-reduced-motion: no-preference) {
+  .upg-step-view.entering .upg-done-icon { animation: upg-pop-in 500ms var(--upg-ease) 150ms both; }
+  @keyframes upg-pop-in { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+}
+.upg-done-panel h2 { margin: 18px 0 0; font-size: var(--upg-text-xl); font-weight: 700; letter-spacing: -0.01em; }
+.upg-done-panel .upg-d-sub { margin: 10px auto 0; color: hsl(var(--muted-foreground)); font-size: var(--upg-text-sm); max-width: 420px; }
+.upg-next-list { margin: 24px auto 0; max-width: 420px; text-align: left; display: grid; gap: 12px; }
+.upg-next-item { display: flex; gap: 12px; align-items: flex-start; font-size: var(--upg-text-sm); }
+.upg-next-item .upg-ni {
+  width: 26px; height: 26px; border-radius: 50%; flex: none; margin-top: 1px;
+  background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+  font-family: var(--upg-font-mono); font-size: 0.6875rem; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.upg-next-item .upg-t { color: hsl(var(--foreground) / 0.85); }
+.upg-next-item .upg-t strong { color: hsl(var(--foreground)); }
+
+/* Buttons */
+.upg-cta-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 50px; padding: 0 24px; width: 100%;
+  border-radius: var(--radius-pill);
+  background: hsl(var(--gold)); color: hsl(var(--gold-ink));
+  border: 1px solid hsl(var(--ring));
+  font-weight: 700; font-size: var(--upg-text-sm); cursor: pointer; text-decoration: none;
+  font-family: inherit;
+  transition: transform 140ms var(--upg-ease), filter 140ms var(--upg-ease), opacity 140ms var(--upg-ease);
+}
+.upg-cta-btn:hover { filter: brightness(1.04); text-decoration: none; color: hsl(var(--gold-ink)); }
+.upg-cta-btn:active { transform: scale(0.99); }
+.upg-cta-btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+.upg-cta-outline {
+  background: transparent; color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--input));
+}
+.upg-cta-outline:hover { background: hsl(var(--muted)); filter: none; color: hsl(var(--foreground)); }
+.upg-btn-row { margin-top: 20px; display: grid; gap: 10px; }
+.upg-fine { margin: 16px 0 0; text-align: center; font-size: var(--upg-text-xs); color: hsl(var(--muted-foreground)); }
+
+.upg-legal { margin: 56px 0 32px; text-align: center; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.upg-legal p { margin: 0; font-size: var(--upg-text-xs); color: hsl(var(--muted-foreground)); }
+
+/* ====== Mobile: cheap shadows, 44px targets, number-only pills ====== */
+@media (max-width: 900px) {
+  .upg { --elev-ring: 0 0 0 1px hsl(var(--hairline)), 0 10px 24px -16px hsl(0 0% 0% / 0.28); }
+  .upg-container { padding: 0 1.25rem; }
+  .upg-shell { padding: 14px 0; }
+  .upg-flow-head h1 { font-size: var(--upg-text-xl); }
+  .upg-stepper { margin-top: 22px; }
+  .upg-step-line { width: 12px; }
+  .upg-step-pill { padding: 8px 10px; }
+  .upg-step-pill .upg-lbl { display: none; } /* number-only pills; labels live in the heading */
+  .upg-step-pill.on .upg-lbl { display: inline; }
+  .upg-panel { padding: 1.25rem; }
+  .upg-done-panel { padding: 2rem 1.25rem; }
+  /* month picker: breakdown drops below the stepper and spans full width */
+  .upg-price-brk { width: 100%; }
+  .upg-qty-row { gap: 14px; }
+  .upg-legal { margin-bottom: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upg *, .upg *::before, .upg *::after { animation: none !important; transition-duration: 0.01ms !important; }
+}

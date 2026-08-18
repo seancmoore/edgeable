@@ -1,106 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Mulish:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
+/* Dusk Ledger fonts (DESIGN.md): Inter 400-700 + Spline Sans Mono 500/600.
+   Bodoni Moda KEPT until wordmark SVGs are verified to render without it. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* Edge Club palette. Light is the default (:root); .dark overrides.
-     Semantic shadcn names are remapped to the Edge Club tokens so all
-     existing components reskin automatically. Raw --gold/--surface-2/
-     --hairline/--dim are exposed for direct use. */
+  /* Dusk Ledger palette (DESIGN.md, LOCKED 2026-08-14). Light is the default
+     (:root); the app toggles a .dark class on <html> (index.html pre-paint
+     script + theme setting) — no prefers-color-scheme token block here.
+     Semantic shadcn names are remapped so all existing components reskin
+     automatically. Raw Edge Club tokens exposed for direct use. */
   :root {
-    --background: 39 44% 94%;        /* --bg     #f6f1e8 */
-    --foreground: 33 19% 9%;         /* --text   #1c1813 */
-
-    --card: 43 100% 99%;             /* --surface #fffdf8 */
-    --card-foreground: 33 19% 9%;
-
-    --popover: 43 100% 99%;
-    --popover-foreground: 33 19% 9%;
-
-    --primary: 39 50% 47%;           /* --gold (light) #b58a3c */
-    --primary-foreground: 43 100% 99%; /* --gold-ink (light) #fffdf8 */
-
-    --secondary: 39 45% 86%;         /* --border #ece1cd */
-    --secondary-foreground: 33 19% 9%;
-
-    --muted: 40 37% 84%;             /* --hairline #e6dcc8 */
-    --muted-foreground: 33 10% 44%;  /* --muted #7a7064 */
-
-    --accent: 40 54% 88%;            /* warm gold tint #f1e6d0 */
-    --accent-foreground: 39 50% 47%;
-
-    --destructive: 10 59% 45%;       /* --loss #b4452f */
-    --destructive-foreground: 43 100% 99%;
-
-    --success: 148 45% 34%;          /* --win #2f7d54 */
-    --success-foreground: 0 0% 100%;
-
-    --warning: 39 50% 47%;           /* gold doubles as warning */
-    --warning-foreground: 33 19% 9%;
-
-    --border: 39 45% 86%;            /* #ece1cd */
-    --input: 40 32% 78%;             /* field border #d9cdb5 */
-    --ring: 39 50% 47%;
-
+    --background: 60 14.3% 97.3%;        /* #f9f9f7  n2 — page */
+    --foreground: 48 5.6% 17.5%;         /* #2f2e2a  n12 */
+    --card: 60 20% 99%;                  /* #fdfdfc  n1 — cards sit lighter */
+    --card-foreground: 48 5.6% 17.5%;    /* #2f2e2a */
+    --popover: 60 20% 99%;               /* #fdfdfc */
+    --popover-foreground: 48 5.6% 17.5%; /* #2f2e2a */
+    /* --primary is FILL-ONLY in light theme: #dbb155 as text on the page bg is 1.91:1 — hard AA FAIL.
+       Never use text-primary / color: hsl(var(--primary)) for foreground text in light theme.
+       All gold-colored TEXT uses --primary-text (= --brass #76602f, 5.72:1 on page bg). */
+    --primary: 41 65% 59.6%;             /* #dbb155  gold (accent-9) — fills only, always with --primary-foreground ink */
+    --primary-foreground: 42 61.9% 4.1%; /* #110d04  ink-on-gold 9.63:1 */
+    --primary-text: 41 43% 32.4%;        /* #76602f  gold-colored text/icons/links (alias of --brass) — 5.72:1 on bg, 5.92:1 on card */
+    --secondary: 40 12.5% 90.6%;         /* #eae8e4  n4 */
+    --secondary-foreground: 48 5.6% 17.5%;
+    --muted: 36 16.1% 93.9%;             /* #f2f0ed  n3 */
+    --muted-foreground: 42 5.2% 38%;     /* #66635c  n11 — 5.68:1 */
+    --accent: 39 70% 92.2%;              /* #f9efdd  gold tint (accent-3) */
+    --accent-foreground: 41 43% 32.4%;   /* #76602f  deep gold — 5.29:1 on --accent #f9efdd */
+    --destructive: 4 38.5% 42.7%;        /* #974843  error-11 (fill + text) */
+    --destructive-foreground: 0 0% 100%; /* 6.32:1 on fill */
+    --success: 124 38.9% 32.7%;          /* #337437  success-11 */
+    --success-foreground: 0 0% 100%;     /* 5.68:1 */
+    --warning: 41 43% 32.4%;             /* #76602f  deep gold as warning */
+    --warning-foreground: 0 0% 100%;     /* 6.03:1 */
+    --border: 42 10.6% 81.6%;            /* #d5d2cb  n6 — decorative edges (rare; see depth system) */
+    --input: 42 5.2% 38%;                /* #66635c  n11 — field border ≥3:1 (5.68:1) */
+    --ring: 41 43% 32.4%;                /* #76602f  focus + light gold-fill boundary — 5.92:1 vs card */
     /* raw Edge Club tokens */
-    --gold: 39 50% 47%;
-    --gold-ink: 43 100% 99%;
-    --brass: 38 52% 40%;
-    --surface-2: 43 58% 95%;         /* inset wells #faf6ec */
-    --hairline: 40 37% 84%;
-    --dim: 31 12% 59%;               /* placeholder #a3978a */
-
-    --radius: 0.6875rem;             /* 11px fields */
-
+    --gold: 41 65% 59.6%;                /* #dbb155 */
+    --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+    --brass: 41 43% 32.4%;               /* #76602f  deep gold: gold TEXT + light gold-fill border */
+    --surface-2: 36 16.1% 93.9%;         /* #f2f0ed  inset wells (n3) */
+    --hairline: 45 11.4% 86.3%;          /* #e0ded8  n5 — information-bearing rules ONLY (chart zero baseline) */
+    --dim: 39 9.1% 63.3%;                /* #aaa499  n10 placeholder */
+    --loss: 4 38.5% 42.7%;               /* #974843  text-safe loss */
+    --win: 124 38.9% 32.7%;              /* #337437  text-safe win */
+    /* dusk gradient hero (Section 1 backdrop only) — warm metal, no violet (amended 2026-08-14).
+       Every stop AA-verified for hero text colors, incl. under the 10% gold atmospheric wash. */
+    --hero-g1: 41 88% 93.5%;             /* #fdf4e0  champagne sky (top) */
+    --hero-g2: 38 73.6% 89.6%;           /* #f8ead1  pale amber */
+    --hero-g3: 40 62.9% 86.3%;           /* #f2e3c6  warm bronze (horizon) */
+    --hero-wash-a: 0.10;                 /* atmospheric gold-wash alpha cap, light (AA-verified composite) */
+    --chart-fill-a: 0.16;                /* chart area-fill alpha, light (motion amendment 4; decorative non-text) */
+    /* soft depth */
+    --elev-ring: 0 0 0 5px hsl(45 11% 86% / 0.6), 0 24px 64px -32px hsl(33 20% 20% / 0.16);
+    --radius: 0.875rem;                  /* 14px — fields, small controls */
+    --radius-card: 1.5rem;               /* 24px — cards */
+    --radius-panel: 1.75rem;             /* 28px — feature panels (tamper callout, price panel) */
+    --radius-pill: 9999px;               /* pill buttons + tabs */
     color-scheme: light;
+    /* per-theme wordmark assets (DESIGN.md hard rule 5) — components reference the alias, never a hardcoded path */
+    --wordmark-asset: url('/edgeable-wordmark-ink.svg');
+    --icon-asset: url('/edgeable-icon-ink.svg');
+    /* font aliases (DESIGN.md type spec) */
+    --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;  /* display + body */
+    --font-mono: 'Spline Sans Mono', ui-monospace, monospace;                   /* numerals, timestamps, odds, price */
   }
 
   .dark {
-    --background: 34 21% 6%;         /* --bg     #14110d */
-    --foreground: 35 36% 91%;        /* --text   #f0e9df */
-
-    --card: 33 22% 10%;              /* --surface #1f1a14 */
-    --card-foreground: 35 36% 91%;
-
-    --popover: 33 22% 10%;
-    --popover-foreground: 35 36% 91%;
-
-    --primary: 40 56% 65%;           /* --gold #d8b773 */
-    --primary-foreground: 35 51% 7%; /* --gold-ink #1c1409 */
-
-    --secondary: 33 22% 16%;         /* --border #322a20 */
-    --secondary-foreground: 35 36% 91%;
-
-    --muted: 34 24% 11%;             /* --hairline #241e16 */
-    --muted-foreground: 36 12% 55%;  /* --muted #9a8f7f */
-
-    --accent: 37 38% 12%;            /* warm gold tint #2a2113 */
-    --accent-foreground: 40 56% 65%;
-
-    --destructive: 9 45% 55%;        /* --loss #c06a5a */
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 132 29% 61%;          /* --win #7fb88a */
-    --success-foreground: 35 51% 7%;
-
-    --warning: 40 56% 65%;
-    --warning-foreground: 35 51% 7%;
-
-    --border: 33 22% 16%;            /* #322a20 */
-    --input: 34 25% 18%;             /* field border #3a3023 */
-    --ring: 40 56% 65%;
-
+    --background: 60 2.7% 7.3%;          /* #131312  n1 */
+    --foreground: 43 14.3% 90.4%;        /* #eae8e3  n12 */
+    --card: 30 4% 9.8%;                  /* #1a1918  n2 */
+    --card-foreground: 43 14.3% 90.4%;
+    --popover: 40 4.5% 13.1%;            /* #232220  n3 */
+    --popover-foreground: 43 14.3% 90.4%;
+    /* Dark theme: --primary passes as text too (#dbb155 on #131312 = 9.24:1), but use --primary-text
+       for all gold TEXT anyway so components stay theme-agnostic (one alias, safe in both themes). */
+    --primary: 41 65% 59.6%;             /* #dbb155  gold — fills pair with --primary-foreground ink */
+    --primary-foreground: 42 61.9% 4.1%; /* #110d04  9.63:1 */
+    --primary-text: 40 42.9% 65.7%;      /* #cdb482  gold-colored text (alias of dark --brass) — 9.25:1 on bg, 8.73:1 on card */
+    --secondary: 45 4.9% 16.1%;          /* #2b2a27  n4 */
+    --secondary-foreground: 43 14.3% 90.4%;
+    --muted: 40 4.5% 13.1%;              /* #232220  n3 */
+    --muted-foreground: 42 6.8% 71%;     /* #bab7b0  n11 — 9.29:1 */
+    --accent: 40 35.6% 11.6%;            /* #282113  gold tint (accent-3) */
+    --accent-foreground: 40 42.9% 65.7%; /* #cdb482  7.93:1 */
+    --destructive: 1 70.9% 59.6%;        /* #e1524f  error-9 fill */
+    --destructive-foreground: 60 2.7% 7.3%; /* ink fg — 4.89:1 */
+    --success: 125 60.2% 59.6%;          /* #5ad664  success-9 */
+    --success-foreground: 60 2.7% 7.3%;  /* 9.95:1 */
+    --warning: 41 65% 59.6%;             /* #dbb155 */
+    --warning-foreground: 42 61.9% 4.1%;
+    --border: 38 6.9% 22.7%;             /* #3e3b36  n6 — decorative edges (rare) */
+    --input: 41 7% 44.7%;                /* #7a756a  n8.5 interpolation — 4.05:1 */
+    --ring: 41 65% 59.6%;                /* #dbb155  9.24:1 */
     /* raw Edge Club tokens */
-    --gold: 40 56% 65%;
-    --gold-ink: 35 51% 7%;
-    --brass: 39 50% 47%;
-    --surface-2: 34 21% 6%;
-    --hairline: 34 24% 11%;
-    --dim: 35 12% 39%;
-
+    --gold: 41 65% 59.6%;                /* #dbb155 */
+    --gold-ink: 42 61.9% 4.1%;           /* #110d04 */
+    --brass: 40 42.9% 65.7%;             /* #cdb482  deep-gold text tone */
+    --surface-2: 60 2.7% 7.3%;           /* #131312  wells = page depth */
+    --hairline: 40 4.5% 13.1%;           /* #232220  n3 — information-bearing rules ONLY */
+    --dim: 42 7% 36.7%;                  /* #646057  n8 placeholder */
+    --loss: 4 81.2% 77.1%;               /* #f49c95  text-safe loss — 8.88:1 */
+    --win: 122 39.2% 66.5%;              /* #88cb8a  text-safe win — 9.70:1 */
+    /* dusk gradient hero — warm metal, no violet (amended 2026-08-14).
+       Every stop AA-verified for hero text colors, incl. under the 15% gold atmospheric wash. */
+    --hero-g1: 23 19% 8.2%;              /* #191411  deep espresso (top) */
+    --hero-g2: 30 33.3% 10.6%;           /* #241b12  dark bronze */
+    --hero-g3: 28 36.6% 16.1%;           /* #38281a  amber ember (horizon) */
+    --hero-wash-a: 0.15;                 /* atmospheric gold-wash alpha cap, dark (AA-verified composite) */
+    --chart-fill-a: 0.22;                /* chart area-fill alpha, dark (motion amendment 4) */
+    /* soft depth */
+    --elev-ring: 0 0 0 5px hsl(40 5% 13% / 0.8), 0 24px 64px -32px hsl(0 0% 0% / 0.55);
+    --radius: 0.875rem;
+    --radius-card: 1.5rem;
+    --radius-panel: 1.75rem;
+    --radius-pill: 9999px;
     color-scheme: dark;
+    --wordmark-asset: url('/edgeable-wordmark.svg');
+    --icon-asset: url('/edgeable-icon.svg');
   }
 
   * {
@@ -158,11 +181,11 @@
       0 24px 56px -22px rgb(0 0 0 / 0.5);
   }
 
-  /* Eyebrow label — Mulish 600, 10px, .2em, uppercase, muted */
+  /* Eyebrow label — Inter 600, 11px, 0.14em, uppercase, muted (DESIGN.md type spec) */
   .eyebrow {
     @apply font-sans font-semibold uppercase text-muted-foreground;
-    font-size: 10px;
-    letter-spacing: 0.2em;
+    font-size: 11px;
+    letter-spacing: 0.14em;
   }
 
   /* Edgeable logo loader — the gold blade repeatedly "cuts" across the E while

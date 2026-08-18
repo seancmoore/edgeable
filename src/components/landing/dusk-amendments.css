@@ -1,0 +1,77 @@
+/* ============================================================================
+   Dusk Ledger amendments (mocks/join.html revisions of 2026-08-16/18), layered
+   AFTER src/pages/landing.css. Same .dusk-theme scope; deltas only:
+   - Hero columns stretch: left copy is a flex column whose stat block is pushed
+     to the bottom edge, so the text spans the height of the three windows.
+   - Hero blurb sized up (same words, more presence).
+   - Hero right becomes THREE nav windows spaced across the column height.
+   - Membership reworked into two SEPARATE stacked tier windows (free + VIP).
+   - Mobile: snappier/shorter reveals + lighter card shadows below 900px.
+   ========================================================================== */
+
+/* ====== SECTION 1: record hero ====== */
+.dusk-theme .hero-grid { align-items: stretch; }
+.dusk-theme .hero-left { display: flex; flex-direction: column; align-items: flex-start; }
+/* Blurb sized up (2026-08-18, Sean's order): same words, more presence */
+.dusk-theme .hero .subhead {
+  margin-top: 32px;
+  font-size: var(--text-xl);
+  line-height: 1.8;
+}
+/* The live-record eyebrow rides margin-top auto so the stat row sits on the
+   bottom edge of the stretched left column. */
+.dusk-theme .pending-eyebrow { margin-top: auto; padding-top: 48px; }
+/* Three equal windows spaced across the stretched column */
+.dusk-theme .hero-right { gap: 24px; align-content: space-between; }
+
+/* ====== SECTION 5: two-window membership pitch (2026-08-18, round 2) ======
+   Free tier and VIP tier are SEPARATE stacked panels. Free rides the accent
+   (champagne) tint so $0/month is the loudest thing in the section; VIP stays
+   on the standard card surface. All text on the accent panel uses
+   --foreground / --accent-foreground (both AA on --accent). */
+.dusk-theme .tier-stack { display: grid; gap: 24px; }
+.dusk-theme .tier-free {
+  background: hsl(var(--accent));
+  padding: 3rem 3.5rem;
+}
+.dusk-theme .tier-free .eyebrow,
+.dusk-theme .tier-free .per,
+.dusk-theme .tier-free .tier-copy { color: hsl(var(--accent-foreground)); }
+.dusk-theme .tier-copy {
+  margin: 16px auto 0; max-width: 400px;
+  font-size: var(--text-base); line-height: 1.6;
+}
+.dusk-theme .tier-vip { padding: 3rem 3.5rem; }
+.dusk-theme .tier-stack .cta-btn { margin-top: 28px; }
+.dusk-theme .cta-outline {
+  background: transparent; color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--input));
+  transition: background-color 140ms var(--ease), transform 140ms var(--ease);
+}
+.dusk-theme .cta-outline:hover { background: hsl(var(--muted)); filter: none; }
+
+/* ====== SCROLL ENTRANCES: mobile keeps every reveal, just snappier ======
+   Shorter rise + duration reads better on a small viewport and costs less
+   per frame (opacity/transform only, still GPU-composited). */
+@media (prefers-reduced-motion: no-preference) and (max-width: 900px) {
+  .dusk-theme.reveal-ready [data-reveal] {
+    transform: translateY(14px);
+    transition-duration: 450ms;
+  }
+}
+
+/* ====== MOBILE ADAPTATION deltas (below 900px) ====== */
+@media (max-width: 900px) {
+  /* Lighter card depth on phones: 1px hairline ring + small shadow instead
+     of the desktop glow ring (cheaper to composite, reads cleaner small). */
+  .dusk-theme { --elev-ring: 0 0 0 1px hsl(var(--hairline)), 0 10px 28px -20px hsl(33 20% 20% / 0.28); }
+  .dark .dusk-theme { --elev-ring: 0 0 0 1px hsl(var(--hairline)), 0 10px 28px -20px hsl(0 0% 0% / 0.6); }
+
+  /* hero: the stacked layout drops the stretch, so the eyebrow spacing is fixed */
+  .dusk-theme .hero .subhead { margin-top: 16px; font-size: var(--text-lg); line-height: 1.7; }
+  .dusk-theme .pending-eyebrow { margin-top: 0; padding-top: 32px; }
+
+  /* membership: full-width tier panels stacked tight */
+  .dusk-theme .tier-stack { gap: 16px; }
+  .dusk-theme .tier-free, .dusk-theme .tier-vip { padding: 2.5rem 1.25rem; }
+}

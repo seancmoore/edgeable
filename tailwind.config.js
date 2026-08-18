@@ -74,12 +74,14 @@ export default {
         field: '11px',
       },
       letterSpacing: {
-        eyebrow: '0.2em',
+        eyebrow: '0.14em',
       },
       fontFamily: {
-        sans: ['Mulish', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['"Bodoni Moda"', 'Georgia', 'ui-serif', 'serif'],
-        mono: ['"Spline Sans Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        // Dusk Ledger (DESIGN.md): display + body = Inter; mono = Spline Sans Mono.
+        // Serif (Bodoni Moda) is wordmark-asset only, never page text.
+        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        mono: ['"Spline Sans Mono"', 'ui-monospace', 'monospace'],
       },
       keyframes: {
         'fade-in': {

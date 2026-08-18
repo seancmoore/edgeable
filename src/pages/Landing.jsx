@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchPublicRecord, fetchPublicPnLSeries, fetchFreePicks } from '../utils/publicLanding.js';
-import { formatOdds, formatPostedAt, pickNetUnits } from '../utils/picks.js';
+import { fetchPublicRecord, fetchPublicPnLSeries } from '../utils/publicLanding.js';
 import { smoothPath, scaleSeries, fmtUnits } from '../components/landing/curve.js';
 import LandingChart from '../components/landing/LandingChart.jsx';
 import PhoneDemo from '../components/landing/PhoneDemo.jsx';
 import './landing.css';
+import '../components/landing/dusk-amendments.css';
 
 // Public landing page at "/" — a faithful React port of the approved mock
-// (mocks/join.html, Dusk Ledger). All visuals are scoped under .dusk-theme
-// (src/pages/landing.css); the rest of the app keeps its own global tokens.
-// Data comes from ONE world-readable summary doc (landingStats/current, via
-// src/utils/publicLanding.js): record + pending count, net units + chart +
-// ROI, and the free-pick samples, all in a single read.
+// (mocks/join.html, Dusk Ledger, incl the 2026-08-16/18 amendments: three hero
+// nav windows, free-first membership tiers, free-picks sample section removed).
+// All visuals are scoped under .dusk-theme (src/pages/landing.css + the
+// amendments layer in src/components/landing/dusk-amendments.css); the rest of
+// the app keeps its own global tokens. Data comes from ONE world-readable
+// summary doc (landingStats/current, via src/utils/publicLanding.js): record +
+// pending count, net units + chart + ROI, in a single read.
 
 const DownArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -26,26 +28,11 @@ const Check = () => (
   </svg>
 );
 
-// Result badge for a graded free pick: W/L/P glyph + honest units outcome.
-function PickResult({ pick }) {
-  const net = Math.round(pickNetUnits(pick) * 100) / 100;
-  const cls = pick.status === 'win' ? 'result-win' : pick.status === 'loss' ? 'result-loss' : 'result-push';
-  const glyph = pick.status === 'win' ? 'W' : pick.status === 'loss' ? 'L' : 'P';
-  const label = pick.status === 'push' ? '0u' : `${net > 0 ? '+' : ''}${net}u`;
-  return (
-    <p className={`pick-result ${cls}`}>
-      <span className="result-glyph" aria-hidden="true">{glyph}</span>{' '}
-      <span className="mono">{label}</span>
-    </p>
-  );
-}
-
 export default function Landing() {
   const rootRef = useRef(null);
 
   const [record, setRecord] = useState({ loading: true, data: null, error: false });
   const [pnl, setPnl] = useState({ loading: true, data: null, error: false });
-  const [picks, setPicks] = useState({ loading: true, data: [], error: false });
 
   useEffect(() => {
     let alive = true;
@@ -55,9 +42,6 @@ export default function Landing() {
     fetchPublicPnLSeries()
       .then((data) => { if (alive) setPnl({ loading: false, data, error: false }); })
       .catch(() => { if (alive) setPnl({ loading: false, data: null, error: true }); });
-    fetchFreePicks(3)
-      .then((data) => { if (alive) setPicks({ loading: false, data, error: false }); })
-      .catch(() => { if (alive) setPicks({ loading: false, data: [], error: true }); });
     return () => { alive = false; };
   }, []);
 
@@ -105,7 +89,7 @@ export default function Landing() {
       root.querySelectorAll('[data-reveal]:not(.in)').forEach((el) => el.classList.add('in'));
     }, 1200);
     return () => { window.clearTimeout(failsafe); io.disconnect(); };
-  }, [record.loading, pnl.loading, picks.loading]);
+  }, [record.loading, pnl.loading]);
 
   // Smooth-scroll section navigation (the two hero windows). Obeys
   // prefers-reduced-motion: instant jump.
@@ -138,10 +122,6 @@ export default function Landing() {
     return { d, area: `${d}L420 ${zeroY.toFixed(1)}L0 ${zeroY.toFixed(1)}Z`, zeroY };
   }, [series]);
 
-  const gradedFreePicks = picks.data;
-  const picksGridClass =
-    gradedFreePicks.length === 2 ? 'picks-grid two' : gradedFreePicks.length === 1 ? 'picks-grid one' : 'picks-grid';
-
   return (
     <div className="dusk-theme" ref={rootRef}>
       {/* Warm gold-hour gradient backs Section 0 + Section 1 only. */}
@@ -160,7 +140,7 @@ export default function Landing() {
           {/* 1. Record hero */}
           <section className="hero" aria-label="Record">
             <div className="hero-grid">
-              <div>
+              <div className="hero-left">
                 <h1>Do not trust me. Check the record.</h1>
                 <p className="subhead">
                   If you have been burned by fake slips and deleted losses, good: you are exactly who
@@ -270,6 +250,20 @@ export default function Landing() {
                   <span className="nav-hint" aria-hidden="true">See how it works <DownArrow /></span>
                   <span className="nav-overlay" aria-hidden="true">See how it works <DownArrow /></span>
                 </aside>
+
+                {/* Free-account signup window (2026-08-18 amendment): third hero
+                    window. Same card-scrim + stretched-link pattern; scrolls to
+                    the membership section at the bottom (free signup + VIP). */}
+                <aside className="tamper">
+                  <h2 className="eyebrow">
+                    <a className="tamper-nav" href="#join-cta" onClick={(e) => scrollToSection(e, 'join-cta')}>
+                      Sign up for free picks
+                    </a>
+                  </h2>
+                  <p>No payment required. A free account gets you every free pick the moment it posts. Upgrade only if the record earns it.</p>
+                  <span className="nav-hint" aria-hidden="true">See how to join <DownArrow /></span>
+                  <span className="nav-overlay" aria-hidden="true">See how to join <DownArrow /></span>
+                </aside>
               </div>
             </div>
           </section>
@@ -325,46 +319,9 @@ export default function Landing() {
           )}
         </section>
 
-        {/* 3. Free-pick samples — hidden entirely when there are none */}
-        {(picks.loading || gradedFreePicks.length > 0) && (
-          <section className="section" aria-label="Free picks">
-            <div className="section-head" data-reveal>
-              <p className="eyebrow">Free picks</p>
-              <p className="sub measure">
-                From time to time a pick goes out free to everyone. Here are the most recent ones:
-                posted before tip-off, graded after.
-              </p>
-            </div>
-
-            {picks.loading ? (
-              <div className="picks-grid two" aria-hidden="true">
-                <div className="skel skel-card" />
-                <div className="skel skel-card" />
-              </div>
-            ) : (
-              <div className={picksGridClass} data-reveal-stagger>
-                {gradedFreePicks.map((p) => (
-                  <article className="soft-card pick-card" data-reveal key={p.id}>
-                    <div className="pick-head">
-                      <span className="pick-badge">Free pick</span>
-                      <span className="sport-chip">{p.sport}</span>
-                    </div>
-                    <p className="pick-desc">{p.description}</p>
-                    <div className="pick-chips" aria-label="Odds and stake">
-                      <span className="chip">{formatOdds(p.odds)}</span>
-                      <span className="chip">{Math.round((Number(p.stakeUnits) || 0) * 100) / 100}u</span>
-                    </div>
-                    <div className="pick-times">
-                      <span className="posted">Posted {formatPostedAt(p.postedAt)} ET</span>
-                      <span>Game: {formatPostedAt(p.gameStartTime, { withDate: true })} ET</span>
-                    </div>
-                    <PickResult pick={p} />
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
+        {/* 3. Free-pick samples: REMOVED 2026-08-18 (Sean's order). The
+            free-picks pitch now lives in the hero signup window + the
+            membership section's free tier below. */}
 
         {/* 4. How joining works */}
         <section className="section" id="how-it-works" aria-label="How it works">
@@ -385,10 +342,11 @@ export default function Landing() {
                   </svg>
                 </span>
               </div>
-              <h3>Join in minutes</h3>
+              <h3>Start free in minutes</h3>
               <p>
-                Create a free account, then send $30 by CashApp or Zelle with your payment screenshot.
-                Every member is personally reviewed and approved the same day. No checkout, no auto-billing.
+                Create a free account and free picks start landing in your dashboard, no payment
+                required. Want VIP access? Send $30 by CashApp or Zelle with your screenshot and you
+                are personally approved the same day. No checkout, no auto-billing.
               </p>
               <Link to="/signup">Go to signup</Link>
             </article>
@@ -432,29 +390,51 @@ export default function Landing() {
           </p>
         </section>
 
-        {/* 5. Price + CTA */}
+        {/* 5. Price + CTA: two SEPARATE tier windows (2026-08-18, round 2).
+            Free = accent-tinted panel, loud $0/month, gold primary CTA (funnel
+            entry). VIP = standard card panel, $30/month, feature list, outline
+            CTA. */}
         <section className="section" id="join-cta" aria-label="Membership">
+          <div className="section-head" data-reveal>
+            <p className="eyebrow">Join Edgeable</p>
+            <h2>Start free. Go VIP when the record earns it.</h2>
+          </div>
           <div className="join-grid" data-reveal-stagger>
 
             <PhoneDemo series={series} />
 
-            <div className="price-panel" data-reveal>
-              <p className="eyebrow">Edgeable membership</p>
-              <div className="price-line">
-                <span className="amount">$30</span>
-                <span className="per">/month</span>
+            <div className="tier-stack" data-reveal>
+              <div className="price-panel tier-free" id="free-signup">
+                <p className="eyebrow tier-eyebrow">Free picks</p>
+                <div className="price-line">
+                  <span className="amount">$0</span>
+                  <span className="per">/month</span>
+                </div>
+                <p className="tier-copy">
+                  Sign up free, no payment required. Every free pick lands in your dashboard the
+                  moment it posts, on the record like everything else.
+                </p>
+                <Link className="cta-btn" to="/signup">Sign up for free picks</Link>
               </div>
-              <ul className="feature-list">
-                <li><Check />Every pick.</li>
-                <li><Check />Full record.</li>
-                <li><Check />Live performance chart.</li>
-                <li><Check />Live updates and insights.</li>
-              </ul>
-              <Link className="cta-btn" to="/signup">Join Edgeable</Link>
-              <p className="cta-reassure">
-                Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is
-                personally approved. No bots.
-              </p>
+
+              <div className="price-panel tier-vip">
+                <p className="eyebrow">VIP access</p>
+                <div className="price-line">
+                  <span className="amount">$30</span>
+                  <span className="per">/month</span>
+                </div>
+                <ul className="feature-list">
+                  <li><Check />Every pick.</li>
+                  <li><Check />Full record.</li>
+                  <li><Check />Live performance chart.</li>
+                  <li><Check />Live updates and insights in the private Telegram channel.</li>
+                </ul>
+                <Link className="cta-btn cta-outline" to="/signup">Unlock VIP access</Link>
+                <p className="cta-reassure">
+                  Payment is manual: CashApp or Zelle, $30, attach your screenshot. Every membership is
+                  personally approved. No bots.
+                </p>
+              </div>
             </div>
 
           </div>

@@ -6,9 +6,13 @@ import {
   normalizeTelegramUsername, isValidTelegramUsername,
   normalizePhone, isValidPhone, isValidEmail,
 } from '../utils/auth.js';
-import AuthLayout from '../components/AuthLayout.jsx';
+import AuthLayout, {
+  authAlertClass,
+  authButtonClass,
+  authInputClass,
+  goldLinkClass,
+} from '../components/AuthLayout.jsx';
 import { Button } from '../components/ui/button.jsx';
-import { Card, CardContent } from '../components/ui/card.jsx';
 import { Input } from '../components/ui/input.jsx';
 import { Label } from '../components/ui/label.jsx';
 
@@ -81,200 +85,198 @@ export default function Signup() {
   };
 
   return (
-    <AuthLayout>
-      <Card>
-        <CardContent className="p-6 sm:p-8">
-          {error && (
-            <div
-              ref={errorRef}
-              role="alert"
-              className="mb-5 flex gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
-            >
-              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-medium">Sign-up failed</div>
-                <div className="text-destructive/90">{error}</div>
-              </div>
+    <AuthLayout width="lg" headerLink={{ to: '/login', label: 'Log in' }}>
+      <h1 className="text-[1.5625rem] font-bold leading-[1.1] tracking-tight">
+        Create your free account
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        No payment required. Free picks land in your dashboard the moment you're in; VIP is there
+        whenever you want it.
+      </p>
+
+      <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+        {error && (
+          <div ref={errorRef} role="alert" className={authAlertClass}>
+            <AlertCircle className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+            <div>
+              <div className="font-semibold">Sign-up failed</div>
+              <div>{error}</div>
             </div>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="displayName">Display name</Label>
+          <Input
+            id="displayName"
+            className={authInputClass}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            required
+            autoFocus
+            placeholder="How you'd like to be called"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            className={authInputClass}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            maxLength={254}
+            autoCapitalize="off"
+            autoCorrect="off"
+            placeholder="you@example.com"
+          />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            You'll get a link to confirm this email. Used to sign in and to reset your password if
+            you forget it.
+          </p>
+        </div>
+
+        <div className="grid gap-3.5 rounded-lg bg-muted p-4">
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Both your Telegram username and phone number are required.
+          </p>
+          <div className="space-y-2">
+            <Label htmlFor="telegramUsername">Telegram username</Label>
+            <Input
+              id="telegramUsername"
+              className={authInputClass}
+              value={telegramUsername}
+              onChange={(e) => setTelegramUsername(e.target.value)}
+              required
+              maxLength={33}
+              autoCapitalize="off"
+              autoCorrect="off"
+              placeholder="@yourname"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              className={authInputClass}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              placeholder="+1 555 123 4567"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              className={authInputClass}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="6+ characters"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              className={authInputClass}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="referralCode">Referral code (optional)</Label>
+          <Input
+            id="referralCode"
+            className={`${authInputClass} font-mono font-medium uppercase tracking-[0.06em] placeholder:font-sans placeholder:font-normal placeholder:normal-case placeholder:tracking-normal`}
+            value={referralCode}
+            onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+            maxLength={12}
+            autoCapitalize="characters"
+            autoCorrect="off"
+            placeholder="Got a code from a friend?"
+          />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Enter a friend's code and you'll each get 2 extra weeks of VIP once your first payment
+            is approved.
+          </p>
+        </div>
+
+        <div className="flex items-start gap-2.5 rounded-lg bg-muted px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
+          <Info className="mt-px h-4 w-4 shrink-0" />
+          <span>
+            Your free account works <strong className="font-semibold text-foreground">immediately</strong>:
+            free picks, the live record, and the guide. The full daily card is VIP, $30/month, and
+            you can unlock it anytime from your dashboard.
+          </span>
+        </div>
+
+        <div className="grid gap-1 rounded-lg bg-muted p-4">
+          <label className="flex min-h-[44px] cursor-pointer items-start gap-3 px-1 py-2 text-xs leading-relaxed text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={agreeAge}
+              onChange={(e) => setAgreeAge(e.target.checked)}
+              className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer rounded border-border accent-gold"
+            />
+            <span>
+              I am at least <strong className="font-semibold text-foreground">21 years old</strong>{' '}
+              (or the legal gambling age where I live).
+            </span>
+          </label>
+          <label className="flex min-h-[44px] cursor-pointer items-start gap-3 px-1 py-2 text-xs leading-relaxed text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
+              className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer rounded border-border accent-gold"
+            />
+            <span>
+              I have read and agree to the{' '}
+              <Link to="/terms" target="_blank" rel="noreferrer" className={goldLinkClass}>
+                Terms &amp; Disclaimers
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" target="_blank" rel="noreferrer" className={goldLinkClass}>
+                Privacy Policy
+              </Link>
+              , including that Edgeable sells opinions and information only, places no wagers, gives
+              no financial advice, and is not responsible for any losses.
+            </span>
+          </label>
+        </div>
+
+        <Button type="submit" disabled={submitting} className={authButtonClass}>
+          {submitting ? (
+            'Creating account…'
+          ) : (
+            <>
+              <UserPlus className="h-4 w-4" />
+              Create account
+            </>
           )}
+        </Button>
+      </form>
 
-          <div className="mb-6">
-            <h1 className="font-display text-2xl font-semibold tracking-tight">Create your account</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Add your Telegram and phone so we can match you to your subscription.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="displayName">Display name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                required
-                autoFocus
-                placeholder="How you'd like to be called"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                maxLength={254}
-                autoCapitalize="off"
-                autoCorrect="off"
-                placeholder="you@example.com"
-              />
-              <p className="text-xs text-muted-foreground">
-                You'll get a link to confirm this email. Used to sign in and to reset your
-                password if you forget it.
-              </p>
-            </div>
-
-            <div className="rounded-md border border-border bg-muted/40 p-3">
-              <p className="mb-3 text-xs text-muted-foreground">
-                Both your Telegram username and phone number are required.
-              </p>
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="telegramUsername">Telegram username</Label>
-                  <Input
-                    id="telegramUsername"
-                    value={telegramUsername}
-                    onChange={(e) => setTelegramUsername(e.target.value)}
-                    required
-                    maxLength={33}
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    placeholder="@yourname"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone">Phone number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                    placeholder="+1 555 123 4567"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  placeholder="6+ characters"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword">Confirm</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="referralCode">Referral code (optional)</Label>
-              <Input
-                id="referralCode"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                maxLength={12}
-                autoCapitalize="characters"
-                autoCorrect="off"
-                placeholder="Got a code from a friend?"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter a friend's code and you'll each get 2 extra weeks once you're approved.
-              </p>
-            </div>
-
-            <div className="flex gap-2 rounded-md border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>
-                After signing up your account will be <strong className="text-foreground">inactive</strong>{' '}
-                until your first payment is processed. You'll be able to submit a renewal request from your dashboard.
-              </span>
-            </div>
-
-            <div className="space-y-3 rounded-md border border-border bg-muted/40 p-3">
-              <label className="flex cursor-pointer gap-2.5 text-xs leading-relaxed text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={agreeAge}
-                  onChange={(e) => setAgreeAge(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
-                />
-                <span>
-                  I am at least <strong className="text-foreground">21 years old</strong> (or the legal
-                  gambling age where I live).
-                </span>
-              </label>
-              <label className="flex cursor-pointer gap-2.5 text-xs leading-relaxed text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={agreeTerms}
-                  onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
-                />
-                <span>
-                  I have read and agree to the{' '}
-                  <Link to="/terms" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
-                    Terms &amp; Disclaimers
-                  </Link>{' '}
-                  and{' '}
-                  <Link to="/privacy" target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
-                    Privacy Policy
-                  </Link>
-                  , including that Edgeable sells opinions and information only, places no wagers, gives no
-                  financial advice, and is not responsible for any losses.
-                </span>
-              </label>
-            </div>
-
-            <Button type="submit" disabled={submitting} size="lg" className="w-full">
-              {submitting ? (
-                'Creating account…'
-              ) : (
-                <>
-                  <UserPlus className="h-4 w-4" />
-                  Create account
-                </>
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-primary hover:underline">
-              Sign in
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{' '}
+        <Link to="/login" className={goldLinkClass}>
+          Sign in
+        </Link>
+      </p>
     </AuthLayout>
   );
 }
