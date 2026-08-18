@@ -4,6 +4,8 @@ import { fetchPublicRecord, fetchPublicPnLSeries } from '../utils/publicLanding.
 import { smoothPath, scaleSeries, fmtUnits } from '../components/landing/curve.js';
 import LandingChart from '../components/landing/LandingChart.jsx';
 import PhoneDemo from '../components/landing/PhoneDemo.jsx';
+import EdgeableLogo from '../components/EdgeableLogo.jsx';
+import { useTheme } from '../ThemeContext.jsx';
 import './landing.css';
 import '../components/landing/dusk-amendments.css';
 
@@ -30,6 +32,8 @@ const Check = () => (
 
 export default function Landing() {
   const rootRef = useRef(null);
+  const { resolvedTheme } = useTheme();
+  const logoMode = resolvedTheme === 'dark' ? 'dark' : 'light';
 
   const [record, setRecord] = useState({ loading: true, data: null, error: false });
   const [pnl, setPnl] = useState({ loading: true, data: null, error: false });
@@ -130,9 +134,11 @@ export default function Landing() {
 
           {/* 0. Site header */}
           <header className="site">
+            {/* Inline SVG logo: <img>-loaded SVGs can't use webfonts, which left
+                the Bodoni wordmark unbranded/blank on mobile. EdgeableLogo renders
+                live SVG text with the page's loaded font. */}
             <Link className="wordmark" to="/" aria-label="Edgeable home">
-              <img className="wm-light" src="/edgeable-wordmark-ink.svg" alt="Edgeable" />
-              <img className="wm-dark" src="/edgeable-wordmark.svg" alt="Edgeable" />
+              <EdgeableLogo variant="wordmark" mode={logoMode} height={34} />
             </Link>
             <Link className="login-link" to="/login">Log in</Link>
           </header>
@@ -446,8 +452,7 @@ export default function Landing() {
       <footer className="legal">
         <div className="container" data-reveal>
           <div className="footer-wordmark wordmark" aria-hidden="true">
-            <img className="wm-light" src="/edgeable-wordmark-ink.svg" alt="" />
-            <img className="wm-dark" src="/edgeable-wordmark.svg" alt="" />
+            <EdgeableLogo variant="wordmark" mode={logoMode} height={16} style={{ opacity: 0.55 }} />
           </div>
           <div className="blocks">
             <p>You must be 21 or older to subscribe. By joining, you confirm you meet the legal gambling age in your jurisdiction.</p>

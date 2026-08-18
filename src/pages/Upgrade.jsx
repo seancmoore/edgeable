@@ -6,6 +6,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext.jsx';
+import { useTheme } from '../ThemeContext.jsx';
+import EdgeableLogo from '../components/EdgeableLogo.jsx';
 import { getPaymentInfo } from '../utils/paymentInfo.js';
 import submitUpgradeRequest from '../components/upgrade/submitUpgradeRequest.js';
 import '../components/upgrade/upgrade.css';
@@ -46,6 +48,8 @@ function CheckIcon(props) {
 
 export default function Upgrade() {
   const { currentUser, userDoc, emailVerified, resendVerification, refreshEmailVerified } = useAuth();
+  const { resolvedTheme } = useTheme();
+  const logoMode = resolvedTheme === 'dark' ? 'dark' : 'light';
 
   // ── flow state ──
   const [step, setStep] = useState(1);
@@ -194,9 +198,9 @@ export default function Upgrade() {
       <div className="upg-container">
 
         <header className="upg-shell">
+          {/* Inline SVG logo: img-loaded SVGs can't use webfonts (blank on mobile) */}
           <Link className="upg-wordmark" to="/dashboard" aria-label="Edgeable dashboard">
-            <img className="upg-wm-light" src="/edgeable-wordmark-ink.svg" alt="Edgeable" />
-            <img className="upg-wm-dark" src="/edgeable-wordmark.svg" alt="Edgeable" />
+            <EdgeableLogo variant="wordmark" mode={logoMode} height={30} />
           </Link>
           <Link className="upg-back-link" to="/dashboard">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
